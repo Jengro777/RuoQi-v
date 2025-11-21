@@ -1,18 +1,18 @@
 {
-  "name": "@vben/simple-admin-core",
-  "version": "1.6.7",
-  "homepage": "https://doc.ryansu.tech/",
-  "bugs": "https://github.com/suyuan32/simple-admin-vben5-ui/issues",
+  "name": "@vben/ruoqi-sys-admin",
+  "version": "1.0.0",
+  "homepage": "",
+  "bugs": "https://github.com/jengro/RuoQi/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/suyuan32/simple-admin-vben5-ui.git",
-    "directory": "apps/simple-admin-core"
+    "url": "git+https://github.com/jengro/RuoQi.git",
+    "directory": "apps/ruoqi-sys-admin"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Ryan SU",
-    "email": "yuansu.china.work@gmail.com",
-    "url": "https://github.com/suyuan32"
+    "name": "Jengro",
+    "email": "IT@gmail.com",
+    "url": "https://github.com/Jengro"
   },
   "type": "module",
   "scripts": {
