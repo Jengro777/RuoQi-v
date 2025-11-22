@@ -27,6 +27,10 @@ package-lock.json
 .env.local
 .env.*.local
 .eslintcache
+!.env.analyze
+!.env.development
+!.env.production
+!.env.test
 
 logs
 *.log
