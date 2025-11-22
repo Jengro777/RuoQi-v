@@ -5,7 +5,7 @@
       "path": "apps/backend-mock",
     },
     {
-      "name": "@vben/simple-admin-core",
+      "name": "@vben/sys-admin-core",
       "path": "apps/sys-admin",
     },
     {

@@ -10,13 +10,13 @@ export const overridesPreferences = defineOverridesPreferences({
   app: {
     name: import.meta.env.VITE_APP_TITLE,
     defaultAvatar:
-      'https://simpleadmin-2024.oss-cn-shanghai.aliyuncs.com/logo.png',
+      'https://design.codeberg.org/logo-kit/icon_inverted.svg',
     accessMode: 'backend',
     defaultHomePath: '/dashboard',
   },
   logo: {
     enable: true,
-    source: 'https://simpleadmin-2024.oss-cn-shanghai.aliyuncs.com/logo.png',
+    source: 'https://design.codeberg.org/logo-kit/icon_inverted.svg',
   },
   tabbar: {
     keepAlive: true,
