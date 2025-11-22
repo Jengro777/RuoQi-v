@@ -646,7 +646,7 @@ importers:
         specifier: 'catalog:'
         version: 1.15.4
 
-  apps/simple-admin-core:
+  apps/ruoqi-sys-admin:
     dependencies:
       '@ant-design/icons-vue':
         specifier: ^7.0.1

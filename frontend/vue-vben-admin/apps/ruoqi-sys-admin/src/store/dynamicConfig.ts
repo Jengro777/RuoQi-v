@@ -108,13 +108,13 @@ export const useDynamicConfigStore = defineStore('dynamic-config', {
         const overridesPreferences = defineOverridesPreferences({
           app: {
             enablePreferences: this.showSettingButton,
-            name: this.systemName === '' ? 'Simple Admin' : this.systemName,
+            name: this.systemName === '' ? 'Sys Admin' : this.systemName,
           },
           logo: {
             enable: true,
             source:
               this.systemLogo === ''
-                ? 'https://simpleadmin-2024.oss-cn-shanghai.aliyuncs.com/logo.png'
+                ? 'https://design.codeberg.org/logo-kit/icon_inverted.svg'
                 : this.systemLogo,
           },
           breadcrumb: {
