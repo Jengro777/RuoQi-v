@@ -46,8 +46,8 @@ fn get_captcha_domain() ! {
 
 // ----------------- DTO 层 -----------------
 pub struct GetCaptchaResp {
-	captcha_token string @[json: 'captcha_token']
-	captcha_image string @[json: 'captcha_image']
+	captcha_token string @[json: 'captchaToken']
+	captcha_image string @[json: 'captchaImage']
 }
 
 // ----------------- Repository / Adapter 层 -----------------
