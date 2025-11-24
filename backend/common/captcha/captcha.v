@@ -14,7 +14,7 @@ mut:
 pub fn generate_captcha() Captcha {
 	width := 120
 	height := 40
-	char_count := 5
+	char_count := 4
 
 	// 设置随机种子,每次运行程序时生成不同的随机数序列
 	now := time.now()
