@@ -5,7 +5,7 @@ fn test_generate_captcha() {
 	captcha := generate_captcha()
 	dump('验证码文本: ${captcha.text}')
 	dump('图像数据: ${captcha.image[..50]}...') // 打印部分Base64数据
-	assert captcha.text.len == 5
+	assert captcha.text.len == 4
 	assert typeof(captcha.image).name == 'string'
 }
 

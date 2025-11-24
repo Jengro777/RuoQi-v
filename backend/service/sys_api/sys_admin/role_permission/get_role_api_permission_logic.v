@@ -8,8 +8,8 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/role/api_list'; post]
-pub fn(app &RolePermission)role_api_permission_handler(mut ctx Context) veb.Result {
+@['/api/role'; post]
+pub fn (app &RolePermission) role_api_permission_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetRoleApiListReq](ctx.req.data) or {
@@ -41,18 +41,18 @@ fn validate_role_api_list_domain(req GetRoleApiListReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct GetRoleApiListReq {
-	role_id string @[json: 'role_id']
+	role_id string @[json: 'id']
 }
 
 pub struct GetRoleApiListResp {
 	id             string  @[json: 'id']
+	method         string  @[json: 'method']
 	path           string  @[json: 'path']
 	description    ?string @[json: 'description']
-	api_group      string  @[json: 'api_group']
-	service_name   string  @[json: 'service_name']
-	method         string  @[json: 'method']
-	is_required    u8      @[json: 'is_required']
-	has_permission bool    @[json: 'has_permission']
+	api_group      string  @[json: 'apiGroup']
+	service_name   string  @[json: 'serviceName']
+	is_required    u8      @[json: 'isRequired']
+	has_permission bool    @[json: 'hasPermission']
 }
 
 // ----------------- Repository 层 -----------------
@@ -79,11 +79,11 @@ fn get_role_api_list(mut ctx Context, req GetRoleApiListReq) !map[string][]GetRo
 	for row in all_apis_db {
 		all_apis << GetRoleApiListResp{
 			id:             row.id
+			method:         row.method
 			path:           row.path
 			description:    row.description
 			api_group:      row.api_group
 			service_name:   row.service_name
-			method:         row.method
 			is_required:    row.is_required
 			has_permission: row.is_required == 1 || row.id in owned_api_ids
 		}

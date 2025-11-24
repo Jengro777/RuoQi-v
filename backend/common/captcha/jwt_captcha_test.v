@@ -10,7 +10,7 @@ fn test_captcha_generate() {
 	assert typeof(token).name.len > 0
 	assert typeof(captcha_image).name == 'string'
 	assert typeof(captcha_text).name == 'string'
-	assert captcha_text.len == 5
+	assert captcha_text.len == 4
 }
 
 fn test_captcha_verify() {

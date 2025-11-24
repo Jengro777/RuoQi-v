@@ -10,8 +10,8 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/token/id'; post]
-pub fn(app &Token)token_by_id_handler(mut ctx Context) veb.Result {
+@['/'; post]
+pub fn (app &Token) token_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[TokenByIdReq](ctx.req.data) or {
@@ -36,27 +36,27 @@ pub fn token_by_id_usecase(mut ctx Context, req TokenByIdReq) !TokenByIdResp {
 
 // ----------------- Domain 层 -----------------
 fn token_by_id_domain(req TokenByIdReq) ! {
-	if req.id == '' {
+	if req.token_id == '' {
 		return error('token id is required')
 	}
 }
 
 // ----------------- DTO 层 -----------------
 pub struct TokenByIdReq {
-	id string @[json: 'id']
+	token_id string @[json: 'id']
 }
 
 pub struct TokenByIdResp {
 	id         string @[json: 'id']
-	user_id    string @[json: 'user_id']
+	user_id    string @[json: 'uuid']
 	username   string @[json: 'username']
 	token      string @[json: 'token']
 	source     string @[json: 'source']
-	expired_at string @[json: 'expired_at']
+	expired_at string @[json: 'expiredAt']
 	status     int    @[json: 'status']
-	created_at string @[json: 'created_at']
-	updated_at string @[json: 'updated_at']
-	deleted_at string @[json: 'deleted_at']
+	created_at string @[json: 'createdAt']
+	updated_at string @[json: 'updatedAt']
+	deleted_at string @[json: 'deletedAt']
 }
 
 // ----------------- Repository 层 -----------------
@@ -67,7 +67,7 @@ fn token_by_id(mut ctx Context, req TokenByIdReq) !TokenByIdResp {
 	}
 
 	mut q := orm.new_query[SysToken](db)
-	query := q.select()!.where('id = ?', req.id)!
+	query := q.select()!.where('id = ?', req.token_id)!
 	result := query.query()!
 
 	if result.len == 0 {

@@ -13,8 +13,8 @@ import common.jwt
 import common.opt
 
 // ----------------- Handler 层 -----------------
-@['/auth/login_by_email'; post]
-pub fn(app &Authentication)login_by_email_handler(mut ctx Context) veb.Result {
+@['/login_by_email'; post]
+pub fn (app &Authentication) login_by_email_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[LoginByEmailReq](ctx.req.data) or {

@@ -79,9 +79,9 @@ fn update_password(mut ctx Context, req ChangePasswordReq) ! {
 // DTO 层 | 请求/返回结构
 // ================================
 pub struct ChangePasswordReq {
-	user_id      string @[json: 'user_id']
-	old_password string @[json: 'old_password']
-	new_password string @[json: 'new_password']
+	user_id      string @[json: 'userId']
+	old_password string @[json: 'oldPassword']
+	new_password string @[json: 'newPassword']
 }
 
 pub struct ChangePasswordResp {

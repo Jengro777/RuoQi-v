@@ -27,6 +27,7 @@ pub:
 	status     bool
 	request_id string
 	data       T
+	msg        ?string
 }
 
 pub fn json_success[T](input ApiSuccessResponse[T]) ApiSuccessResponse[T] {
@@ -36,6 +37,7 @@ pub fn json_success[T](input ApiSuccessResponse[T]) ApiSuccessResponse[T] {
 		status:     true
 		request_id: uuid
 		data:       input.data
+		msg:        input.msg
 	}
 	return response
 }
