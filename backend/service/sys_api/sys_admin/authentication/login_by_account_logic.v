@@ -59,19 +59,17 @@ fn login_by_account_domain(mut ctx Context, req LoginByAccountReq) ! {
 pub struct LoginByAccountReq {
 	username     string  @[json: 'username']
 	password     string  @[json: 'password']
-	captcha_text string  @[json: 'captcha_text']
-	captcha_id   string  @[json: 'captcha_id']
-	status       u8      @[json: 'status']
-	user_id      string  @[json: 'user_id']
-	source       string  @[json: 'source']
+	captcha_text string  @[json: 'captcha']
+	captcha_id   string  @[json: 'captchaId']
+	source       ?string @[json: 'source']
 	login_ip     ?string @[json: 'login_ip']
 	device_id    ?string @[json: 'device_id']
 }
 
 pub struct LoginByAccountResp {
-	expired_at string @[json: 'expired_at']
-	user_id    string @[json: 'user_id']
-	token_jwt  string @[json: 'token_jwt']
+	expired_at i64    @[json: 'expire']
+	user_id    string @[json: 'userId']
+	token_jwt  string @[json: 'token']
 }
 
 // ----------------- Repository 层 -----------------
@@ -98,16 +96,16 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 
 	// 生成 token
 	expired_at := time.now().add_days(30)
-	token_jwt := token_jwt_generate(mut ctx, req)
+	token_jwt := token_jwt_generate(mut ctx, req, user_info[0].id)
 
 	// 保存 token 到数据库
 	tokens := SysToken{
 		id:         rand.uuid_v7()
-		status:     req.status
-		user_id:    req.user_id
-		username:   req.username
+		status:     0
+		user_id:    user_info[0].id
+		username:   user_info[0].username
 		token:      token_jwt
-		source:     req.source
+		source:     'sys'
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -117,19 +115,19 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 	q_token.insert(tokens)!
 
 	return LoginByAccountResp{
-		expired_at: expired_at.str()
-		user_id:    req.user_id
+		expired_at: expired_at.unix()
+		user_id:    user_info[0].id
 		token_jwt:  token_jwt
 	}
 }
 
 // ----------------- JWT 生成逻辑 -----------------
-fn token_jwt_generate(mut ctx Context, req LoginByAccountReq) string {
+fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) string {
 	secret := ctx.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{
 		iss:       'v-admin'
-		sub:       req.user_id
+		sub:       user_id
 		exp:       time.now().add_days(30).unix()
 		nbf:       time.now().unix()
 		iat:       time.now().unix()
