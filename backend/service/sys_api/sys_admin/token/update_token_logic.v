@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/token/update'; post]
-pub fn token_update_handler(app &Token, mut ctx Context) veb.Result {
+pub fn(app &Token)token_update_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateTokenReq](ctx.req.data) or {

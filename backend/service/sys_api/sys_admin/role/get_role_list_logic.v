@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/role/list'; post]
-pub fn role_list_handler(app &Role, mut ctx Context) veb.Result {
+pub fn(app &Role)role_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetRoleListReq](ctx.req.data) or {

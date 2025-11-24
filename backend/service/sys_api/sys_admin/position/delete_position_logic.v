@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/position/delete'; post]
-pub fn position_delete_handler(app &Position, mut ctx Context) veb.Result {
+pub fn(app &Position)position_delete_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeletePositionReq](ctx.req.data) or {

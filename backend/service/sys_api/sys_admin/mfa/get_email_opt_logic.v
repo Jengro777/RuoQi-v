@@ -10,7 +10,7 @@ import common.opt
 
 // ----------------- Handler 层 -----------------
 @['/login_by_email'; post]
-pub fn mfa_email_handler(app &MFA, mut ctx Context) veb.Result {
+pub fn (app &MFA) mfa_email_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[EmailLoginReq](ctx.req.data) or {

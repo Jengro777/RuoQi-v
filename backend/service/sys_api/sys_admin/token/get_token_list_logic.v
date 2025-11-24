@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/token/list'; post]
-pub fn token_list_handler(app &Token, mut ctx Context) veb.Result {
+pub fn(app &Token)token_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[TokenListReq](ctx.req.data) or {

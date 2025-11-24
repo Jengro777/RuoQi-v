@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/dictionary/list'; post]
-pub fn dictionary_list_handler(app &Dictionary, mut ctx Context) veb.Result {
+pub fn(app &Dictionary)dictionary_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetDictionaryListReq](ctx.req.data) or {

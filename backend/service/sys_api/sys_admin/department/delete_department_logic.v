@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/department/delete'; post]
-pub fn delete_department_handler(app &Department, mut ctx Context) veb.Result {
+pub fn(app &Department)delete_department_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteDepartmentReq](ctx.req.data) or {

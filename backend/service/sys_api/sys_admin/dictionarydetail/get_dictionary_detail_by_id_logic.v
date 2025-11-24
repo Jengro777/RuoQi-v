@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/dictionarydetail/id'; post]
-pub fn dictionarydetail_by_id_handler(app &DictionaryDetail, mut ctx Context) veb.Result {
+pub fn(app &DictionaryDetail)dictionarydetail_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DictionaryDetailByIdReq](ctx.req.data) or {

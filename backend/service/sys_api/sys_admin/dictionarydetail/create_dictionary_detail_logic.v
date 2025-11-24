@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/dictionarydetail/create'; post]
-pub fn dictionarydetail_create_handler(app &DictionaryDetail, mut ctx Context) veb.Result {
+pub fn(app &DictionaryDetail)dictionarydetail_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateDictionaryDetailReq](ctx.req.data) or {

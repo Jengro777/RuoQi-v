@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/position/list'; post]
-pub fn position_list_handler(app &Position, mut ctx Context) veb.Result {
+pub fn(app &Position)position_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetPositionListReq](ctx.req.data) or {

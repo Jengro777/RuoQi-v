@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/profile'; get]
-pub fn user_profile_handler(app &User, mut ctx Context) veb.Result {
+pub fn(app &User)user_profile_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserProfileReq](ctx.req.data) or {
