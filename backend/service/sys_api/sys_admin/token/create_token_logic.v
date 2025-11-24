@@ -13,7 +13,7 @@ import common.jwt
 
 // ----------------- Handler 层 -----------------
 @['/token/create'; post]
-pub fn token_create_handler(app &Token, mut ctx Context) veb.Result {
+pub fn(app &Token)token_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateTokenReq](ctx.req.data) or {

@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/role/create'; post]
-pub fn role_create_handler(app &Role, mut ctx Context) veb.Result {
+pub fn(app &Role)role_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateRoleReq](ctx.req.data) or {

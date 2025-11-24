@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/dictionarydetail/delete'; post]
-pub fn dictionarydetail_delete_handler(app &DictionaryDetail, mut ctx Context) veb.Result {
+pub fn(app &DictionaryDetail)dictionarydetail_delete_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteDictionaryDetailReq](ctx.req.data) or {

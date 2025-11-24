@@ -9,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/menu_list'; post]
-pub fn role_menu_list_handler(app &RolePermission, mut ctx Context) veb.Result {
+pub fn(app &RolePermission)role_menu_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetRoleMenuListReq](ctx.req.data) or {

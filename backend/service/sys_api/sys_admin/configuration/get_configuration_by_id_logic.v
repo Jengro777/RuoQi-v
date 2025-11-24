@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/configuration/get_by_id'; post]
-pub fn configuration_by_id_handler(app &Configuration, mut ctx Context) veb.Result {
+pub fn(app &Configuration)configuration_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetConfigurationByIdReq](ctx.req.data) or {

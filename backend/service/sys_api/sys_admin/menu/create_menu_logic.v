@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/menu/create'; post]
-pub fn menu_create_handler(app &Menu, mut ctx Context) veb.Result {
+pub fn(app &Menu)menu_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateMenuReq](ctx.req.data) or {

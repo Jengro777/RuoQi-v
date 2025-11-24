@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/position/id'; post]
-pub fn position_by_id_handler(app &Position, mut ctx Context) veb.Result {
+pub fn(app &Position)position_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetPositionByIdReq](ctx.req.data) or {

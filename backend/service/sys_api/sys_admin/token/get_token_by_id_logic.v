@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/token/id'; post]
-pub fn token_by_id_handler(app &Token, mut ctx Context) veb.Result {
+pub fn(app &Token)token_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[TokenByIdReq](ctx.req.data) or {

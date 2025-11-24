@@ -20,7 +20,7 @@ import common.captcha
 
 // ----------------- Handler 层 -----------------
 @['/captcha'; get; post]
-pub fn get_captcha_handler(app &MFA, mut ctx Context) veb.Result {
+pub fn (app &MFA) get_captcha_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	result := get_captcha_usecase(mut ctx) or {

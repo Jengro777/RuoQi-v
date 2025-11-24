@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/configuration/update'; post]
-pub fn configuration_update_handler(app &Configuration, mut ctx Context) veb.Result {
+pub fn(app &Configuration)configuration_update_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateConfigurationReq](ctx.req.data) or {

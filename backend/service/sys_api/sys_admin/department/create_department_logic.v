@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/department/create'; post]
-pub fn department_create_handler(app &Department, mut ctx Context) veb.Result {
+pub fn(app &Department)department_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateDepartmentReq](ctx.req.data) or {
