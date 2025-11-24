@@ -14,8 +14,8 @@ import common.captcha
 import common.encrypt
 
 // ----------------- Handler 层 -----------------
-@['/auth/login_by_account'; post]
-pub fn(app &Authentication)login_by_account_handler(mut ctx Context) veb.Result {
+@['/login_by_account'; post]
+pub fn (app &Authentication) login_by_account_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[LoginByAccountReq](ctx.req.data) or {

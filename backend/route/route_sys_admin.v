@@ -25,7 +25,7 @@ fn (mut app AliasApp) routes_sys_admin(mut ctx Context) {
 	app.register_routes_no_auth[user_ddd.User, Context](mut &user_ddd.User{}, '/sys_admin/ddd/user', mut
 		ctx)
 	// 不需要token_jwt 认证
-	app.register_routes_no_auth[Authentication, Context](mut &Authentication{}, '/sys_admin/authentication', mut
+	app.register_routes_no_auth[Authentication, Context](mut &Authentication{}, '/sys_admin/auth', mut
 		ctx)
 	app.register_routes_no_auth[MFA, Context](mut &MFA{}, '/sys_admin/mfa', mut ctx)
 
