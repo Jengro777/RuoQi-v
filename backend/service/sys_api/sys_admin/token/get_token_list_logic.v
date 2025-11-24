@@ -10,8 +10,8 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/token/list'; post]
-pub fn(app &Token)token_list_handler(mut ctx Context) veb.Result {
+@['/list'; post]
+pub fn (app &Token) token_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[TokenListReq](ctx.req.data) or {
@@ -44,20 +44,23 @@ fn token_list_domain(req TokenListReq) ! {
 // ----------------- DTO 层 -----------------
 pub struct TokenListReq {
 	page      int    @[json: 'page']
-	page_size int    @[json: 'page_size']
+	page_size int    @[json: 'pageSize']
 	username  string @[json: 'username']
+	email     string @[json: 'email']
+	nickname  string @[json: 'nickname']
+	user_id   string @[json: 'uuid']
 }
 
 pub struct TokenListItem {
-	id         string @[json: 'id']
-	username   string @[json: 'username']
-	token      string @[json: 'token']
-	source     string @[json: 'source']
-	expired_at string @[json: 'expired_at']
-	status     int    @[json: 'status']
-	created_at string @[json: 'created_at']
-	updated_at string @[json: 'updated_at']
-	deleted_at string @[json: 'deleted_at']
+	id         string  @[json: 'uuid']
+	username   string  @[json: 'username']
+	token      string  @[json: 'token']
+	source     string  @[json: 'source']
+	expired_at string  @[json: 'expiredAt']
+	status     int     @[json: 'status']
+	created_at string  @[json: 'createdAt']
+	updated_at string  @[json: 'updatedAt']
+	deleted_at ?string @[json: 'deletedAt']
 }
 
 pub struct TokenListResp {
@@ -85,13 +88,22 @@ fn token_list(mut ctx Context, req TokenListReq) !TokenListResp {
 	if req.username != '' {
 		query = query.where('username = ?', req.username)!
 	}
+	if req.email != '' {
+		query = query.where('email = ?', req.email)!
+	}
+	if req.nickname != '' {
+		query = query.where('nickname = ?', req.nickname)!
+	}
+	if req.user_id != '' {
+		query = query.where('user_id = ?', req.user_id)!
+	}
 
 	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
 
 	mut datalist := []TokenListItem{}
 	for row in result {
 		datalist << TokenListItem{
-			id:         row.id
+			id:         row.user_id
 			username:   row.username
 			token:      row.token
 			source:     row.source

@@ -34,7 +34,7 @@ fn (mut app AliasApp) routes_sys_admin(mut ctx Context) {
 	app.register_routes_sys[User, Context](mut &User{}, '/sys_admin/user', mut ctx)
 	app.register_routes_sys[Token, Context](mut &Token{}, '/sys_admin/token', mut ctx)
 	app.register_routes_sys[Role, Context](mut &Role{}, '/sys_admin/role', mut ctx)
-	app.register_routes_sys[RolePermission, Context](mut &RolePermission{}, '/sys_admin/role_permission', mut
+	app.register_routes_sys[RolePermission, Context](mut &RolePermission{}, '/sys_admin/authority', mut
 		ctx)
 	app.register_routes_sys[Position, Context](mut &Position{}, '/sys_admin/position', mut
 		ctx)
