@@ -53,6 +53,10 @@ fn login_by_account_domain(mut ctx Context, req LoginByAccountReq) ! {
 	if !captcha.captcha_verify(req.captcha_id, req.captcha_text) {
 		return error('Captcha error')
 	}
+	// 检查SHA256 hex格式
+	if !encrypt.is_sha256(req.password) {
+		return error('Invalid password format')
+	}
 }
 
 // ----------------- DTO 层 -----------------
