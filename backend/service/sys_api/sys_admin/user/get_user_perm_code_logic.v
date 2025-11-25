@@ -48,12 +48,12 @@ fn perm_by_id(mut ctx Context) ![]string {
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
-
+	log.debug(ctx.user_id)
 	result := sql db {
 		select from SysUserRole where user_id == ctx.user_id
 	} or { return error('Failed to query user role') }
-	dump(ctx.user_id)
-	dump(result)
+
+	log.debug(result.str())
 	if result.len == 0 {
 		return error('Role Permission not found')
 	}
