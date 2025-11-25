@@ -53,10 +53,10 @@ fn login_by_account_domain(mut ctx Context, req LoginByAccountReq) ! {
 	if !captcha.captcha_verify(req.captcha_id, req.captcha_text) {
 		return error('Captcha error')
 	}
-	// 检查SHA256 hex格式
-	if !encrypt.is_sha256(req.password) {
-		return error('Invalid password format')
-	}
+	// // 检查SHA256 hex格式
+	// if !encrypt.is_sha256(req.password) {
+	// 	return error('Invalid password format')
+	// }
 }
 
 // ----------------- DTO 层 -----------------
@@ -94,7 +94,10 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 		return error('UserName not exist')
 	}
 
-	if !encrypt.bcrypt_verify(req.password, user_info[0].password) {
+	// 先生成 SHA256 hex（加盐）
+	client_sha := encrypt.sha256_hex(encrypt.client_salt + req.password)
+	// bcrypt 验证
+	if !encrypt.bcrypt_verify(client_sha, user_info[0].password) {
 		return error('UserName or Password error')
 	}
 
