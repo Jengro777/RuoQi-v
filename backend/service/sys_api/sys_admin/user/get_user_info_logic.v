@@ -3,7 +3,7 @@ module user
 import veb
 import log
 import orm
-import x.json2 as json
+// import x.json2 as json
 import structs.schema_sys { SysUser }
 import common.api
 import structs { Context }

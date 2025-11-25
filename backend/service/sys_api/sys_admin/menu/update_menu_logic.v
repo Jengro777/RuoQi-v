@@ -10,7 +10,7 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/menu/update'; post]
+@['/update'; post]
 pub fn(app &Menu)update_menu_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

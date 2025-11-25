@@ -11,8 +11,8 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/menu/create'; post]
-pub fn(app &Menu)menu_create_handler(mut ctx Context) veb.Result {
+@['/create'; post]
+pub fn (app &Menu) menu_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateMenuReq](ctx.req.data) or {

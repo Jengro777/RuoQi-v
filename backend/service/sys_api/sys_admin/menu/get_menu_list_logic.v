@@ -10,8 +10,8 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/menu/list'; post]
-pub fn(app &Menu)menu_list_handler(mut ctx Context) veb.Result {
+@['/list'; post]
+pub fn (app &Menu) menu_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[MenuListReq](ctx.req.data) or {
