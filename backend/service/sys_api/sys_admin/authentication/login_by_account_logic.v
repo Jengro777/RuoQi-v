@@ -53,25 +53,27 @@ fn login_by_account_domain(mut ctx Context, req LoginByAccountReq) ! {
 	if !captcha.captcha_verify(req.captcha_id, req.captcha_text) {
 		return error('Captcha error')
 	}
+	// // 检查SHA256 hex格式
+	// if !encrypt.is_sha256(req.password) {
+	// 	return error('Invalid password format')
+	// }
 }
 
 // ----------------- DTO 层 -----------------
 pub struct LoginByAccountReq {
 	username     string  @[json: 'username']
 	password     string  @[json: 'password']
-	captcha_text string  @[json: 'captcha_text']
-	captcha_id   string  @[json: 'captcha_id']
-	status       u8      @[json: 'status']
-	user_id      string  @[json: 'user_id']
-	source       string  @[json: 'source']
+	captcha_text string  @[json: 'captcha']
+	captcha_id   string  @[json: 'captchaId']
+	source       ?string @[json: 'source']
 	login_ip     ?string @[json: 'login_ip']
 	device_id    ?string @[json: 'device_id']
 }
 
 pub struct LoginByAccountResp {
-	expired_at string @[json: 'expired_at']
-	user_id    string @[json: 'user_id']
-	token_jwt  string @[json: 'token_jwt']
+	expired_at i64    @[json: 'expire']
+	user_id    string @[json: 'userId']
+	token_jwt  string @[json: 'token']
 }
 
 // ----------------- Repository 层 -----------------
@@ -92,22 +94,27 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 		return error('UserName not exist')
 	}
 
-	if !encrypt.bcrypt_verify(req.password, user_info[0].password) {
+	// 先生成 SHA256 hex（加盐）
+	client_sha := encrypt.sha256_hex(encrypt.client_salt + req.password)
+	// bcrypt 验证
+	if !encrypt.bcrypt_verify(client_sha, user_info[0].password) {
 		return error('UserName or Password error')
 	}
 
 	// 生成 token
 	expired_at := time.now().add_days(30)
-	token_jwt := token_jwt_generate(mut ctx, req)
+	token_jwt := token_jwt_generate(mut ctx, req, user_info[0].id) or {
+		return error('Failed to generate token')
+	}
 
 	// 保存 token 到数据库
 	tokens := SysToken{
 		id:         rand.uuid_v7()
-		status:     req.status
-		user_id:    req.user_id
-		username:   req.username
+		status:     0
+		user_id:    user_info[0].id
+		username:   user_info[0].username
 		token:      token_jwt
-		source:     req.source
+		source:     'sys'
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -117,24 +124,47 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 	q_token.insert(tokens)!
 
 	return LoginByAccountResp{
-		expired_at: expired_at.str()
-		user_id:    req.user_id
+		expired_at: expired_at.unix()
+		user_id:    user_info[0].id
 		token_jwt:  token_jwt
 	}
 }
 
+fn find_user_roleids(mut ctx Context, user_id string) ![]string {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	// step3: 查询用户角色（一个用户可对应多个角色）
+	sys_user_role := sql db {
+		select from schema_sys.SysUserRole where user_id == user_id
+	}!
+	if sys_user_role.len < 1 {
+		return error('User role not found')
+	}
+	mut user_role_id_list := sys_user_role.map(it.role_id)
+	log.debug('role_id: ${user_role_id_list}')
+
+	return user_role_id_list
+}
+
 // ----------------- JWT 生成逻辑 -----------------
-fn token_jwt_generate(mut ctx Context, req LoginByAccountReq) string {
+fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) !string {
 	secret := ctx.get_custom_header('secret') or { '' }
+
+	user_role_ids := find_user_roleids(mut ctx, user_id) or {
+		return error('Failed to find user role ids')
+	}
 
 	mut payload := jwt.JwtPayload{
 		iss:       'v-admin'
-		sub:       req.user_id
+		sub:       user_id
 		exp:       time.now().add_days(30).unix()
 		nbf:       time.now().unix()
 		iat:       time.now().unix()
 		jti:       rand.uuid_v4()
-		roles:     ['admin', 'editor']
+		roles:     user_role_ids
 		client_ip: req.login_ip or { '' }
 		device_id: req.device_id or { '' }
 	}

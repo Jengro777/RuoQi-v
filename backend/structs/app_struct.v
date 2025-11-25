@@ -12,6 +12,7 @@ pub mut:
 	dbpool      &dbpool.DatabasePool
 	config      &config.GlobalConfig
 	jwt_payload ?JwtPayload
+	user_id     string
 
 	i18n       &i18n.I18nStore   = unsafe { nil }
 	extra_i18n map[string]string = map[string]string{}
