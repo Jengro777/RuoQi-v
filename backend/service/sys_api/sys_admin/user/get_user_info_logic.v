@@ -13,36 +13,31 @@ import structs { Context }
 pub fn (app &User) user_info_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[GetUserInfoReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
-	}
-
-	result := get_user_info_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
-	}
+	result := get_user_info_usecase(mut ctx) or { return ctx.json(api.json_error_500(err.msg())) }
 
 	return ctx.json(api.json_success_200(result))
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn get_user_info_usecase(mut ctx Context, req GetUserInfoReq) !GetUserInfoResp {
+pub fn get_user_info_usecase(mut ctx Context) !GetUserInfoResp {
 	// 调用 Domain 层校验
-	get_user_info_domain(req)!
+	get_user_info_domain()!
 
+	user_id := find_userid_by_token(mut ctx)!
 	// 调用 Repository 层获取用户信息
-	return get_user_info(mut ctx, req.user_id)!
+	return get_user_info(mut ctx, user_id)!
 }
 
 // ----------------- Domain 层 -----------------
-fn get_user_info_domain(req GetUserInfoReq) ! {
-	if req.user_id == '' {
-		return error('user_id cannot be empty')
-	}
+fn get_user_info_domain() ! {
+	// if req.user_id == '' {
+	// 	return error('user_id cannot be empty')
+	// }
 }
 
 // ----------------- DTO 层 | 请求/返回结构 -----------------
 pub struct GetUserInfoReq {
-	user_id string @[json: 'user_id']
+	user_id ?string @[json: 'id']
 }
 
 pub struct GetUserInfoResp {
@@ -57,6 +52,7 @@ pub struct GetUserInfoResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
+
 fn get_user_info(mut ctx Context, user_id string) !GetUserInfoResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
@@ -115,4 +111,32 @@ fn get_user_info(mut ctx Context, user_id string) !GetUserInfoResp {
 		department_info: department_info
 		role_names:      user_role_names
 	}
+}
+
+fn find_userid_by_token(mut ctx Context) !string {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	// 从标准 Header 中获取 Authorization: Bearer <token>
+	auth_header := ctx.get_header(.authorization) or { '' }
+	log.debug(auth_header)
+
+	// 去掉前缀 "Bearer" 并去除多余空格，得到 token 内容
+	req_token := auth_header.all_after('Bearer').trim_space()
+	log.debug(req_token)
+
+	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
+	sys_token := sql db {
+		select from schema_sys.SysToken where token == req_token limit 1
+	}!
+	if sys_token.len != 1 {
+		return error('Token not found')
+	}
+	log.debug('user_id: ${sys_token[0].user_id}')
+
+	user_id := sys_token[0].user_id
+
+	return user_id
 }
