@@ -9,7 +9,7 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/menu/delete'; post]
+@['/delete'; post]
 pub fn(app &Menu)delete_menu_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
