@@ -22,7 +22,7 @@ fn (mut app AliasApp) register_routes_no_auth[T, U](mut ctrl T, url_path string,
 
 fn (mut app AliasApp) register_routes_sys[T, U](mut ctrl T, url_path string, mut ctx Context) {
 	app.common_middleware[T, U](mut ctrl, mut ctx)
-	// ctrl.route_use('${url_path}/*', middleware.authority_middleware())
+	ctrl.route_use('${url_path}/*', middleware.authority_middleware_sys())
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 }
 

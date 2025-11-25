@@ -103,7 +103,9 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 
 	// 生成 token
 	expired_at := time.now().add_days(30)
-	token_jwt := token_jwt_generate(mut ctx, req, user_info[0].id)
+	token_jwt := token_jwt_generate(mut ctx, req, user_info[0].id) or {
+		return error('Failed to generate token')
+	}
 
 	// 保存 token 到数据库
 	tokens := SysToken{
@@ -128,9 +130,32 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 	}
 }
 
+fn find_user_roleids(mut ctx Context, user_id string) ![]string {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	// step3: 查询用户角色（一个用户可对应多个角色）
+	sys_user_role := sql db {
+		select from schema_sys.SysUserRole where user_id == user_id
+	}!
+	if sys_user_role.len < 1 {
+		return error('User role not found')
+	}
+	mut user_role_id_list := sys_user_role.map(it.role_id)
+	log.debug('role_id: ${user_role_id_list}')
+
+	return user_role_id_list
+}
+
 // ----------------- JWT 生成逻辑 -----------------
-fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) string {
+fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) !string {
 	secret := ctx.get_custom_header('secret') or { '' }
+
+	user_role_ids := find_user_roleids(mut ctx, user_id) or {
+		return error('Failed to find user role ids')
+	}
 
 	mut payload := jwt.JwtPayload{
 		iss:       'v-admin'
@@ -139,7 +164,7 @@ fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) st
 		nbf:       time.now().unix()
 		iat:       time.now().unix()
 		jti:       rand.uuid_v4()
-		roles:     ['admin', 'editor']
+		roles:     user_role_ids
 		client_ip: req.login_ip or { '' }
 		device_id: req.device_id or { '' }
 	}

@@ -104,6 +104,9 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	}
 	log.debug('user_id: ${sys_token[0].user_id}')
 
+	// 传递 user_id 到全局 Context
+	ctx.user_id = sys_token[0].user_id
+
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
 	sys_user := sql db {
 		select from schema_sys.SysUser where id == sys_token[0].user_id limit 1
@@ -161,7 +164,7 @@ handler：中间件处理函数
 after：是否在路由处理后执行（false 表示在请求前执行）
 =============================================
 */
-pub fn authority_middleware() veb.MiddlewareOptions[Context] {
+pub fn authority_middleware_sys() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: authority_jwt_verify // 指定认证函数
 		after:   false                // 在请求处理前执行
