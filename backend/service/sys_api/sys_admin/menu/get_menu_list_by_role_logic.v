@@ -55,8 +55,8 @@ pub struct MenuMeta {
 
 pub struct MenuDataList {
 	id           string   @[json: 'id']
-	parent_id    string   @[json: 'parent_id']
-	menu_level   string   @[json: 'menu_level']
+	parent_id    string   @[json: 'parentId']
+	menu_level   string   @[json: 'level']
 	menu_type    string   @[json: 'menuType']
 	meta         MenuMeta @[json: 'meta']
 	path         string   @[json: 'path']
