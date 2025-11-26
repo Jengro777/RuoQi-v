@@ -14,7 +14,7 @@ pub:
 pub struct ApiErrorResponse {
 pub:
 	code       int
-	status     bool
+	status     int
 	request_id string
 	error      string
 	details    ?[]ValidationError //暂时未使用，待未来扩展
@@ -24,7 +24,7 @@ pub:
 pub struct ApiSuccessResponse[T] {
 pub:
 	code       int
-	status     bool
+	status     int
 	request_id string
 	data       T
 	msg        ?string
@@ -34,7 +34,7 @@ pub fn json_success[T](input ApiSuccessResponse[T]) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
 		code:       input.code
-		status:     true
+		status:     input.status
 		request_id: uuid
 		data:       input.data
 		msg:        input.msg
@@ -46,7 +46,7 @@ pub fn json_error(input ApiErrorResponse) ApiErrorResponse {
 	mut uuid := rand.uuid_v7()
 	response := ApiErrorResponse{
 		code:       input.code
-		status:     false
+		status:     input.status
 		request_id: uuid
 		error:      input.error
 	}
