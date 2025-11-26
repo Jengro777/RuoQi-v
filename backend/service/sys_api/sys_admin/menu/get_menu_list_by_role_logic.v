@@ -38,17 +38,33 @@ pub struct RoleMenuListReq {
 	// role_id string @[json: 'role_id']
 }
 
+pub struct MenuMeta {
+	affix                 bool   @[json: 'affix']              // Affix tab | 是否固定标签
+	carry_param           bool   @[json: 'carryParam']         // The route carries parameters or not | 如果该路由会携带参数，且需要在tab页上面显示。则需要设置为true
+	dynamic_level         u32    @[json: 'dynamicLevel']       // The maximum number of pages the router can open | 动态路由可打开Tab页数
+	frame_src             string @[json: 'frameSrc']           // Iframe path | 内嵌iframe的地址
+	hide_breadcrumb       bool   @[json: 'hideBreadcrumb']     // If hide the breadcrumb | 隐藏面包屑
+	hide_children_in_menu bool   @[json: 'hideChildrenInMenu'] // Hide children menu or not | 隐藏所有子菜单
+	hide_menu             bool   @[json: 'hideMenu']           // Hide menu | 隐藏菜单
+	hide_tab              bool   @[json: 'hideTab']            // Hide the tab header | 当前路由不在标签页显示
+	icon                  string @[json: 'icon']               // Menu Icon | 菜单图标 <= 50 字符
+	ignore_keep_alive     bool   @[json: 'ignoreKeepAlive']    // Do not keep alive the tab | 不缓存Tab
+	real_path             string @[json: 'realPath']           // The real path of the route without dynamic part | 动态路由的实际Path, 即去除路由的动态部分
+	title                 string @[json: 'title']
+}
+
 pub struct MenuDataList {
 	id                    string  @[json: 'id']
 	parent_id             string  @[json: 'parent_id']
 	menu_level            string  @[json: 'menu_level']
-	menu_type             string  @[json: 'menu_type']
+	menu_type             string  @[json: 'menuType']
 	path                  string  @[json: 'path']
 	name                  string  @[json: 'name']
+	trans                 string  @[json: 'trans']
 	redirect              string  @[json: 'redirect']
 	component             string  @[json: 'component']
 	disabled              int     @[json: 'disabled']
-	service_name          string  @[json: 'service_name']
+	service_name          string  @[json: 'serviceName']
 	permission            string  @[json: 'permission']
 	title                 string  @[json: 'title']
 	icon                  string  @[json: 'icon']
@@ -126,6 +142,7 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 			menu_type:             row.menu_type.str()
 			path:                  row.path or { '' }
 			name:                  row.name.str()
+			trans:                 row.name.str()
 			redirect:              row.redirect or { '' }
 			component:             row.component or { '' }
 			disabled:              int(row.disabled or { 0 })
