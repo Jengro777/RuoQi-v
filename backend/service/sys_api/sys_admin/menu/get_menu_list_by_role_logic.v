@@ -67,22 +67,10 @@ pub struct MenuDataList {
 	disabled     int      @[json: 'disabled']
 	service_name string   @[json: 'serviceName']
 	permission   string   @[json: 'permission']
-	// title                 string   @[json: 'title']
-	// icon                  string   @[json: 'icon']
-	// hide_menu             int      @[json: 'hide_menu']
-	// hide_breadcrumb       int      @[json: 'hide_breadcrumb']
-	// ignore_keep_alive     int      @[json: 'ignore_keep_alive']
-	// hide_tab              int      @[json: 'hide_tab']
-	// frame_src             string   @[json: 'frame_src']
-	// carry_param           int      @[json: 'carry_param']
-	// hide_children_in_menu int      @[json: 'hide_children_in_menu']
-	// affix                 int      @[json: 'affix']
-	// dynamic_level         int      @[json: 'dynamic_level']
-	// real_path             string   @[json: 'real_path']
-	sort       int     @[json: 'sort']
-	created_at string  @[json: 'createdAt']
-	updated_at string  @[json: 'updatedAt']
-	deleted_at ?string @[json: 'deletedAt']
+	sort         int      @[json: 'sort']
+	created_at   string   @[json: 'createdAt']
+	updated_at   string   @[json: 'updatedAt']
+	deleted_at   ?string  @[json: 'deletedAt']
 }
 
 pub struct RoleMenuListResp {
@@ -142,14 +130,14 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 			menu_level:   row.menu_level.str()
 			menu_type:    row.menu_type.str()
 			meta:         MenuMeta{
-				affix:                 (row.affix or { 0 }) == 0
-				carry_param:           (row.carry_param or { 0 }) == 0
+				affix:                 (row.affix or { 1 }) == 0
+				carry_param:           (row.carry_param or { 1 }) == 0
 				dynamic_level:         row.dynamic_level or { 0 }
 				frame_src:             row.frame_src or { '' }
-				hide_breadcrumb:       (row.hide_breadcrumb or { 0 }) == 0
-				hide_children_in_menu: (row.hide_children_in_menu or { 0 }) == 0
-				hide_menu:             (row.hide_menu or { 0 }) == 0
-				hide_tab:              (row.hide_tab or { 0 }) == 0
+				hide_breadcrumb:       (row.hide_breadcrumb or { 1 }) == 0
+				hide_children_in_menu: (row.hide_children_in_menu or { 1 }) == 0
+				hide_menu:             (row.hide_menu or { 1 }) == 0
+				hide_tab:              (row.hide_tab or { 1 }) == 0
 				icon:                  row.icon
 				ignore_keep_alive:     true
 				real_path:             row.real_path or { '' }
@@ -163,22 +151,10 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 			disabled:     int(row.disabled or { 0 })
 			service_name: row.service_name or { '' }
 			permission:   row.permission or { '' }
-			// title:                 row.title.str()
-			// icon:                  row.icon.str()
-			// hide_menu:             int(row.hide_menu or { 0 })
-			// hide_breadcrumb:       int(row.hide_breadcrumb or { 0 })
-			// ignore_keep_alive:     int(row.ignore_keep_alive or { 0 })
-			// hide_tab:              int(row.hide_tab or { 0 })
-			// frame_src:             row.frame_src or { '' }
-			// carry_param:           int(row.carry_param or { 0 })
-			// hide_children_in_menu: int(row.hide_children_in_menu or { 0 })
-			// affix:                 int(row.affix or { 0 })
-			// dynamic_level:         int(row.dynamic_level or { 20 })
-			// real_path:             row.real_path or { '' }
-			sort:       int(row.sort)
-			created_at: row.created_at.format_ss()
-			updated_at: row.updated_at.format_ss()
-			deleted_at: row.deleted_at or { time.Time{} }.format_ss()
+			sort:         int(row.sort)
+			created_at:   row.created_at.format_ss()
+			updated_at:   row.updated_at.format_ss()
+			deleted_at:   row.deleted_at or { time.Time{} }.format_ss()
 		}
 	}
 
