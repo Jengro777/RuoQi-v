@@ -91,7 +91,12 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 	mut q_role_menu := orm.new_query[SysRoleMenu](db)
 	mut query_menus := q_role_menu.select('menu_id')!
 
-	query_menus = query_menus.where('role_id IN ${role_ids}')!
+	// 使用 ORM 安全占位符构造 IN 查询
+	mut args := []orm.Primitive{}
+	for role_id in role_ids {
+		args << role_id
+	}
+	query_menus = query_menus.where('role_id IN ?', args)!
 
 	menu_id_arr := query_menus.query()!
 	if menu_id_arr.len == 0 {
@@ -101,9 +106,14 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 		}
 	}
 
+	mut menu_ids := []orm.Primitive{}
+	for item in menu_id_arr {
+		menu_ids << item.menu_id
+	}
+
 	// ------------------- 查询菜单信息 -------------------
 	mut q_menu := orm.new_query[SysMenu](db)
-	query := q_menu.select()!.where('id IN ${menu_id_arr}')!
+	query := q_menu.select()!.where('id IN ?', menu_ids)!
 	total_count := query.count()!
 	result := query.query()!
 
