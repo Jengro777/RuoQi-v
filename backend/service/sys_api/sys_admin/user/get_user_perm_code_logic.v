@@ -25,7 +25,7 @@ pub fn perm_by_id_usecase(mut ctx Context) ![]string {
 	perm_by_id_domain()!
 
 	// Repository 获取数据
-	return perm_by_id(mut ctx, ctx.user_id)
+	return perm_by_id(mut ctx, ctx.svc_ctx.user_id)
 }
 
 // ----------------- Domain 层 -----------------
@@ -49,7 +49,6 @@ fn perm_by_id(mut ctx Context, user_id string) ![]string {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	log.debug(ctx.user_id)
 	result := sql db {
 		select from SysUserRole where user_id == user_id
 	} or { return error('Failed to query user role') }

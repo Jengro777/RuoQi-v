@@ -54,7 +54,7 @@ fn login_by_account_domain(mut ctx Context, req LoginByAccountReq) ! {
 		return error('Captcha error')
 	}
 
-	// // 检查SHA256 hex格式
+	// // 检查SHA256 hex格式,前端不传输明文密码的时候使用
 	// if !encrypt.is_sha256(req.password) {
 	// 	return error('Invalid password format')
 	// }
@@ -148,4 +148,27 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 	log.debug('role_id: ${user_role_id_list}')
 
 	return user_role_id_list
+}
+
+// ----------------- JWT 生成逻辑 -----------------
+fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) !string {
+	secret := ctx.get_custom_header('secret') or { '' }
+
+	user_role_ids := find_user_roleids(mut ctx, user_id) or {
+		return error('Failed to find user role ids')
+	}
+
+	mut payload := jwt.JwtPayload{
+		iss:       'v-admin'
+		sub:       user_id
+		exp:       time.now().add_days(30).unix()
+		nbf:       time.now().unix()
+		iat:       time.now().unix()
+		jti:       rand.uuid_v4()
+		roles:     user_role_ids
+		client_ip: req.login_ip or { '' }
+		device_id: req.device_id or { '' }
+	}
+
+	return jwt.jwt_generate(secret, payload)
 }

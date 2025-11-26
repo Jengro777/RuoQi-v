@@ -25,7 +25,7 @@ pub fn get_user_profile_usecase(mut ctx Context) !UserProfileResp {
 	get_user_profile_domain()!
 
 	// 调用 Repository 层获取用户信息
-	return get_user_profile(mut ctx, ctx.user_id)!
+	return get_user_profile(mut ctx, ctx.svc_ctx.user_id)!
 }
 
 // ----------------- Domain 层 -----------------

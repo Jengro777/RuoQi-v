@@ -5,6 +5,7 @@ import structs { Context }
 import structs.schema_sys
 import common.jwt
 import log
+import db.mysql
 
 /* =============================================
 JWT 权限认证中间件
@@ -95,22 +96,11 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 		}
 	}
 
-	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
-	sys_token := sql db {
-		select from schema_sys.SysToken where token == req_token limit 1
-	}!
-	if sys_token.len != 1 {
-		return error('Token not found')
-	}
-	log.debug('user_id: ${sys_token[0].user_id}')
-
-	// 传递 user_id 到全局 Context
-	ctx.user_id = sys_token[0].user_id
-	dump(ctx.user_id)
+	user_id := find_user_id_by_token(mut ctx, db, req_token)!
 
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
 	sys_user := sql db {
-		select from schema_sys.SysUser where id == sys_token[0].user_id limit 1
+		select from schema_sys.SysUser where id == user_id limit 1
 	}!
 	if sys_user.len != 1 {
 		return error('User not found')
@@ -155,6 +145,24 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	log.debug('api_list: ${user_api_list}')
 
 	return user_api_list
+}
+
+// 根据token_jwt 获取用户ID
+fn find_user_id_by_token(mut ctx Context,db mysql.DB, req_token string) !string {
+	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
+	sys_token := sql db {
+		select from schema_sys.SysToken where token == req_token limit 1
+	}!
+	if sys_token.len != 1 {
+		return error('Token not found')
+	}
+	log.debug('user_id: ${sys_token[0].user_id}')
+
+	// 传递 user_id 到全局 Context
+	ctx.svc_ctx.user_id = sys_token[0].user_id
+	dump(ctx.svc_ctx.user_id)
+
+	return sys_token[0].user_id
 }
 
 /* =============================================
