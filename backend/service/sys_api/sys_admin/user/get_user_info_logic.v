@@ -46,9 +46,9 @@ pub struct GetUserInfoResp {
 	nickname        string   @[json: 'nickname']
 	avatar          string   @[json: 'avatar']
 	desc            string   @[json: 'desc']
-	home_path       string   @[json: 'home_path']
-	department_info string   @[json: 'department_info']
-	role_names      []string @[json: 'role_names']
+	home_path       string   @[json: 'homePath']
+	department_info string   @[json: 'departmentName']
+	role_names      []string @[json: 'roleName']
 }
 
 // ----------------- AdapterRepository 层 -----------------

@@ -26,7 +26,7 @@ pub:
 	frame_src             ?string @[comment: 'Show iframe | 内嵌 iframe'; omitempty; sql_type: 'VARCHAR(255)']
 	carry_param           ?u8     @[comment: 'The route carries parameters or not | 携带参数'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	hide_children_in_menu ?u8     @[comment: 'Hide children menu or not | 隐藏所有子菜单'; default: 0; omitempty; sql_type: 'tinyint(1)']
-	affix                 ?u8     @[comment: 'Affix tab | Tab 固定'; default: 0; omitempty; sql_type: 'tinyint(1)']
+	affix                 ?u8     @[comment: 'Affix tab | Tab 固定 ; 0 固定,1 不固定'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	dynamic_level         ?u32    @[comment: 'The maximum number of pages the router can open | 能打开的子TAB数'; default: 20; omitempty; sql_type: 'int']
 	real_path             ?string @[comment: 'The real path of the route without dynamic part | 菜单路由不包含参数部分'; omitempty; sql_type: 'VARCHAR(255)']
 	sort                  u32     @[comment: 'Sort Number | 排序编号'; default: 0; omitempty; sql_type: 'int']
