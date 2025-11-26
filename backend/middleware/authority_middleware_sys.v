@@ -21,12 +21,13 @@ fn authority_jwt_verify(mut ctx Context) bool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 从自定义 Header 获取 secret（JWT 验证密钥）
-	secret := ctx.get_custom_header('secret') or { '' }
-	log.debug(secret)
+	// secret := ctx.get_custom_header('secret') or { '' }
+	// log.debug(secret)
 
+	secret := 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
 	// 从标准 Header 中获取 Authorization: Bearer <token>
 	auth_header := ctx.get_header(.authorization) or { '' }
-	log.debug(auth_header)
+	// log.debug('auth_header:${auth_header}')
 
 	// 检查 Authorization 格式是否正确
 	if auth_header.len == 0 || !auth_header.starts_with('Bearer ') {
@@ -37,7 +38,7 @@ fn authority_jwt_verify(mut ctx Context) bool {
 
 	// 去掉前缀 "Bearer" 并去除多余空格，得到 token 内容
 	req_token := auth_header.all_after('Bearer').trim_space()
-	log.debug(req_token)
+	log.debug('req_token: ${req_token}')
 
 	// 使用 common.jwt 模块验证 token 签名有效性
 	verify := jwt.jwt_verify(secret, req_token)
@@ -151,7 +152,7 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 }
 
 // 根据token_jwt 获取用户ID
-fn find_user_id_by_token(mut ctx Context,db mysql.DB, req_token string) !string {
+fn find_user_id_by_token(mut ctx Context, db mysql.DB, req_token string) !string {
 	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
 	sys_token := sql db {
 		select from schema_sys.SysToken where token == req_token limit 1
@@ -163,7 +164,6 @@ fn find_user_id_by_token(mut ctx Context,db mysql.DB, req_token string) !string 
 
 	// 传递 user_id 到全局 Context
 	ctx.svc_ctx.user_id = sys_token[0].user_id
-	dump(ctx.svc_ctx.user_id)
 
 	return sys_token[0].user_id
 }
