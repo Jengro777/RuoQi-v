@@ -7,6 +7,7 @@ import orm
 import structs.schema_sys { SysMenu, SysRoleMenu }
 import common.api
 import structs { Context }
+import common.jwt
 
 // ----------------- Handler 层 -----------------
 @['/role/list'; get]
@@ -23,7 +24,9 @@ pub fn (app &Menu) role_menu_list_handler(mut ctx Context) veb.Result {
 // ----------------- Usecase 层 -----------------
 pub fn role_menu_list_usecase(mut ctx Context) !RoleMenuListResp {
 	role_menu_list_domain()!
-	return role_menu_list_repo(mut ctx)
+
+	payload := jwt.jwt_decode(ctx.svc_ctx.token_jwt)!
+	return role_menu_list_repo(mut ctx, payload.roles)
 }
 
 // ----------------- Domain 层 -----------------
@@ -71,31 +74,49 @@ pub struct RoleMenuListResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn role_menu_list_repo(mut ctx Context) !RoleMenuListResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
-	}
-
-	mut q_role_menu := orm.new_query[SysRoleMenu](db)
-	mut query_menus := q_role_menu.select('menu_id')!
-	query_menus = query_menus.where('role_id = ?', '00000000-0000-0000-0000-000000000001')!
-
-	menu_id_arr := query_menus.query()!
-
-	mut menu_ids := []orm.Primitive{}
-	for item in menu_id_arr {
-		menu_ids << item.menu_id
-	}
-	if menu_ids.len == 0 {
+fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
+	if role_ids.len == 0 {
 		return RoleMenuListResp{
 			total: 0
 			data:  []
 		}
 	}
 
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
+	}
+
+	// ------------------- 查询角色菜单关系 -------------------
+	mut q_role_menu := orm.new_query[SysRoleMenu](db)
+	mut query_menus := q_role_menu.select('menu_id')!
+
+	// 使用 ORM 安全占位符构造 IN 查询
+	mut placeholders := []string{}
+	mut args := []orm.Primitive{}
+	for role_id in role_ids {
+		placeholders << '?'
+		args << role_id
+	}
+	query_str := 'role_id IN (${placeholders.join(', ')})'
+	query_menus = query_menus.where(query_str, ...args)!
+
+	menu_id_arr := query_menus.query()!
+	if menu_id_arr.len == 0 {
+		return RoleMenuListResp{
+			total: 0
+			data:  []
+		}
+	}
+
+	mut menu_ids := []orm.Primitive{}
+	for item in menu_id_arr {
+		menu_ids << item.menu_id
+	}
+
+	// ------------------- 查询菜单信息 -------------------
 	mut q_menu := orm.new_query[SysMenu](db)
-	query := q_menu.select()!.where('id IN ?', menu_ids)!
+	query := q_menu.select()!.where('id IN (${menu_ids.map(it.str()).join(",")})')!
 	total_count := query.count()!
 	result := query.query()!
 

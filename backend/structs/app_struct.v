@@ -30,4 +30,5 @@ pub struct ServiceContext {
 pub mut:
 	user_id   string
 	tenant_id string
+	token_jwt string
 }

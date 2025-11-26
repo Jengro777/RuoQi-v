@@ -48,6 +48,9 @@ fn authority_jwt_verify(mut ctx Context) bool {
 		return false
 	}
 
+	// token放入全局
+	ctx.svc_ctx.token_jwt = req_token
+
 	// >>>>> 权限验证阶段 >>>>>
 	// 根据 token 获取用户所拥有的 API 路径列表
 	user_api_list := get_userapilist_from_token(mut ctx, req_token) or { return false }
