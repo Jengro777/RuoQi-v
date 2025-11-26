@@ -5,6 +5,7 @@ import structs { Context }
 import structs.schema_sys
 import common.jwt
 import log
+import db.mysql
 
 /* =============================================
 JWT 权限认证中间件
@@ -20,12 +21,13 @@ fn authority_jwt_verify(mut ctx Context) bool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 从自定义 Header 获取 secret（JWT 验证密钥）
-	secret := ctx.get_custom_header('secret') or { '' }
-	log.debug(secret)
+	// secret := ctx.get_custom_header('secret') or { '' }
+	// log.debug(secret)
 
+	secret := 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
 	// 从标准 Header 中获取 Authorization: Bearer <token>
 	auth_header := ctx.get_header(.authorization) or { '' }
-	log.debug(auth_header)
+	// log.debug('auth_header:${auth_header}')
 
 	// 检查 Authorization 格式是否正确
 	if auth_header.len == 0 || !auth_header.starts_with('Bearer ') {
@@ -36,16 +38,19 @@ fn authority_jwt_verify(mut ctx Context) bool {
 
 	// 去掉前缀 "Bearer" 并去除多余空格，得到 token 内容
 	req_token := auth_header.all_after('Bearer').trim_space()
-	log.debug(req_token)
+	log.debug('req_token: ${req_token}')
 
 	// 使用 common.jwt 模块验证 token 签名有效性
 	verify := jwt.jwt_verify(secret, req_token)
 	if verify == false {
 		ctx.res.status_code = 401
-		ctx.request_error('Authorization error')
+		ctx.request_error('Authorization request error ')
 		log.warn('Authorization error')
 		return false
 	}
+
+	// token放入全局
+	ctx.svc_ctx.token_jwt = req_token
 
 	// >>>>> 权限验证阶段 >>>>>
 	// 根据 token 获取用户所拥有的 API 路径列表
@@ -95,22 +100,11 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 		}
 	}
 
-	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
-	sys_token := sql db {
-		select from schema_sys.SysToken where token == req_token limit 1
-	}!
-	if sys_token.len != 1 {
-		return error('Token not found')
-	}
-	log.debug('user_id: ${sys_token[0].user_id}')
-
-	// 传递 user_id 到全局 Context
-	ctx.user_id = sys_token[0].user_id
-	dump(ctx.user_id)
+	user_id := find_user_id_by_token(mut ctx, db, req_token)!
 
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
 	sys_user := sql db {
-		select from schema_sys.SysUser where id == sys_token[0].user_id limit 1
+		select from schema_sys.SysUser where id == user_id limit 1
 	}!
 	if sys_user.len != 1 {
 		return error('User not found')
@@ -155,6 +149,23 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	log.debug('api_list: ${user_api_list}')
 
 	return user_api_list
+}
+
+// 根据token_jwt 获取用户ID
+fn find_user_id_by_token(mut ctx Context, db mysql.DB, req_token string) !string {
+	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
+	sys_token := sql db {
+		select from schema_sys.SysToken where token == req_token limit 1
+	}!
+	if sys_token.len != 1 {
+		return error('Token not found')
+	}
+	log.debug('user_id: ${sys_token[0].user_id}')
+
+	// 传递 user_id 到全局 Context
+	ctx.svc_ctx.user_id = sys_token[0].user_id
+
+	return sys_token[0].user_id
 }
 
 /* =============================================

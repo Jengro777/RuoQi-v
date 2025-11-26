@@ -53,7 +53,8 @@ fn login_by_account_domain(mut ctx Context, req LoginByAccountReq) ! {
 	if !captcha.captcha_verify(req.captcha_id, req.captcha_text) {
 		return error('Captcha error')
 	}
-	// // 检查SHA256 hex格式
+
+	// // 检查SHA256 hex格式,前端不传输明文密码的时候使用
 	// if !encrypt.is_sha256(req.password) {
 	// 	return error('Invalid password format')
 	// }
@@ -151,7 +152,7 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 
 // ----------------- JWT 生成逻辑 -----------------
 fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) !string {
-	secret := ctx.get_custom_header('secret') or { '' }
+	secret := 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
 
 	user_role_ids := find_user_roleids(mut ctx, user_id) or {
 		return error('Failed to find user role ids')
