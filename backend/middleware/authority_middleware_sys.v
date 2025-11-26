@@ -106,6 +106,7 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 
 	// 传递 user_id 到全局 Context
 	ctx.user_id = sys_token[0].user_id
+	dump(ctx.user_id)
 
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
 	sys_user := sql db {

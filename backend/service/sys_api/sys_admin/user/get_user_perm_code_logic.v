@@ -24,9 +24,9 @@ pub fn perm_by_id_usecase(mut ctx Context) ![]string {
 	// Domain 校验
 	perm_by_id_domain()!
 
-	user_id := find_userid_by_token2(mut ctx)!
+	// user_id := find_userid_by_token2(mut ctx)!
 	// Repository 获取数据
-	return perm_by_id(mut ctx, user_id)
+	return perm_by_id(mut ctx, ctx.user_id)
 }
 
 // ----------------- Domain 层 -----------------
