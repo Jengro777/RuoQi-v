@@ -3,21 +3,16 @@ module user
 import veb
 import log
 import orm
-import x.json2 as json
 import structs.schema_sys { SysUser }
 import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/profile'; get]
-pub fn(app &User)user_profile_handler(mut ctx Context) veb.Result {
+pub fn (app &User) user_profile_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[UserProfileReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
-	}
-
-	result := get_user_profile_usecase(mut ctx, req) or {
+	result := get_user_profile_usecase(mut ctx) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
@@ -25,19 +20,19 @@ pub fn(app &User)user_profile_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn get_user_profile_usecase(mut ctx Context, req UserProfileReq) !UserProfileResp {
+pub fn get_user_profile_usecase(mut ctx Context) !UserProfileResp {
 	// 调用 Domain 层参数校验
-	get_user_profile_domain(req)!
+	get_user_profile_domain()!
 
 	// 调用 Repository 层获取用户信息
-	return get_user_profile(mut ctx, req.user_id)!
+	return get_user_profile(mut ctx, ctx.user_id)!
 }
 
 // ----------------- Domain 层 -----------------
-fn get_user_profile_domain(req UserProfileReq) ! {
-	if req.user_id == '' {
-		return error('user_id cannot be empty')
-	}
+fn get_user_profile_domain() ! {
+	// if req.user_id == '' {
+	// 	return error('user_id cannot be empty')
+	// }
 }
 
 // ----------------- DTO 层 | 请求/返回结构 -----------------
