@@ -56,21 +56,20 @@ pub struct MenuMeta {
 pub struct MenuDataList {
 	id           string   @[json: 'id']
 	parent_id    string   @[json: 'parentId']
-	menu_level   string   @[json: 'level']
-	menu_type    string   @[json: 'menuType']
+	menu_level   u64      @[json: 'level']
+	menu_type    u64    @[json: 'menuType']
 	meta         MenuMeta @[json: 'meta']
 	path         string   @[json: 'path']
 	name         string   @[json: 'name']
 	trans        string   @[json: 'trans']
 	redirect     string   @[json: 'redirect']
 	component    string   @[json: 'component']
-	disabled     int      @[json: 'disabled']
+	disabled     bool     @[json: 'disabled']
 	service_name string   @[json: 'serviceName']
 	permission   string   @[json: 'permission']
-	sort         int      @[json: 'sort']
-	created_at   string   @[json: 'createdAt']
-	updated_at   string   @[json: 'updatedAt']
-	deleted_at   ?string  @[json: 'deletedAt']
+	sort         u32      @[json: 'sort']
+	created_at   int   @[json: 'createdAt']
+	updated_at   int   @[json: 'updatedAt']
 }
 
 pub struct RoleMenuListResp {
@@ -127,17 +126,17 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 		datalist << MenuDataList{
 			id:           row.id
 			parent_id:    row.parent_id or { '' }
-			menu_level:   row.menu_level.str()
-			menu_type:    row.menu_type.str()
+			menu_level:   row.menu_level
+			menu_type:    row.menu_type
 			meta:         MenuMeta{
-				affix:                 (row.affix or { 1 }) == 0
-				carry_param:           (row.carry_param or { 1 }) == 0
+				affix:                 (row.affix or { 1 }) == 1
+				carry_param:           (row.carry_param or { 1 }) == 1
 				dynamic_level:         row.dynamic_level or { 0 }
 				frame_src:             row.frame_src or { '' }
-				hide_breadcrumb:       (row.hide_breadcrumb or { 1 }) == 0
-				hide_children_in_menu: (row.hide_children_in_menu or { 1 }) == 0
-				hide_menu:             (row.hide_menu or { 1 }) == 0
-				hide_tab:              (row.hide_tab or { 1 }) == 0
+				hide_breadcrumb:       (row.hide_breadcrumb or { 1 }) == 1
+				hide_children_in_menu: (row.hide_children_in_menu or { 1 }) == 1
+				hide_menu:             (row.hide_menu or { 1 }) == 1
+				hide_tab:              (row.hide_tab or { 1 }) == 1
 				icon:                  row.icon
 				ignore_keep_alive:     true
 				real_path:             row.real_path or { '' }
@@ -148,13 +147,12 @@ fn role_menu_list_repo(mut ctx Context, role_ids []string) !RoleMenuListResp {
 			trans:        row.name.str()
 			redirect:     row.redirect or { '' }
 			component:    row.component or { '' }
-			disabled:     int(row.disabled or { 0 })
+			disabled:     (row.disabled or { 0 }) == 1
 			service_name: row.service_name or { '' }
 			permission:   row.permission or { '' }
-			sort:         int(row.sort)
-			created_at:   row.created_at.format_ss()
-			updated_at:   row.updated_at.format_ss()
-			deleted_at:   row.deleted_at or { time.Time{} }.format_ss()
+			sort:         u32(row.sort)
+			created_at:   row.created_at.format_ss().int()
+			updated_at:   row.updated_at.format_ss().int()
 		}
 	}
 
