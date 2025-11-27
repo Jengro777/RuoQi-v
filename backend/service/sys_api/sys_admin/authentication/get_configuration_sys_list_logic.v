@@ -53,7 +53,7 @@ pub struct ConfigurationSystemData {
 
 pub struct GetConfigurationSystemListResp {
 	total int
-	data  []ConfigurationSystemData
+	data  ?[]ConfigurationSystemData @[default: null; json: 'data']
 }
 
 // ----------------- Repository 层 -----------------

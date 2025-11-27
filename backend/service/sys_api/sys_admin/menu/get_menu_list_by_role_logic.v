@@ -2,7 +2,6 @@ module menu
 
 import veb
 import log
-import time
 import orm
 import structs.schema_sys { SysMenu, SysRoleMenu }
 import common.api
@@ -16,6 +15,11 @@ pub fn (app &Menu) role_menu_list_handler(mut ctx Context) veb.Result {
 
 	result := role_menu_list_usecase(mut ctx) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+	}
+
+	ctx.res.header.add_custom('Content-Type', 'application/json; charset=utf-8') or {
+		// 处理错误
+		log.error('Failed to set header: ${err}')
 	}
 
 	return ctx.json(api.json_success_200(result))
@@ -57,7 +61,7 @@ pub struct MenuDataList {
 	id           string   @[json: 'id']
 	parent_id    string   @[json: 'parentId']
 	menu_level   u64      @[json: 'level']
-	menu_type    u64    @[json: 'menuType']
+	menu_type    u64      @[json: 'menuType']
 	meta         MenuMeta @[json: 'meta']
 	path         string   @[json: 'path']
 	name         string   @[json: 'name']
@@ -68,8 +72,8 @@ pub struct MenuDataList {
 	service_name string   @[json: 'serviceName']
 	permission   string   @[json: 'permission']
 	sort         u32      @[json: 'sort']
-	created_at   int   @[json: 'createdAt']
-	updated_at   int   @[json: 'updatedAt']
+	created_at   int      @[json: 'createdAt']
+	updated_at   int      @[json: 'updatedAt']
 }
 
 pub struct RoleMenuListResp {
