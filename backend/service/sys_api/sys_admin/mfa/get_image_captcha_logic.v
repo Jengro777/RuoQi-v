@@ -27,7 +27,7 @@ pub fn (app &MFA) get_captcha_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(code: 200,status: 200, data: result, msg: 'captcha success'))
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
