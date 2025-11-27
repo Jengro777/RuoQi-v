@@ -39,21 +39,21 @@ pub struct GetConfigurationSystemListReq {
 }
 
 pub struct ConfigurationSystemData {
-	category   string @[json: 'category'] // Configuration category | 配置的分类
-	id         string @[json: 'id']
-	status     bool   @[json: 'status']    // tate true: normal false: ban | 状态 true 正常 false 禁用
-	name       string @[json: 'name']      // Configurarion name | 配置名称
-	key        string @[json: 'key']       // Configuration key | 配置的键名
-	value      string @[json: 'value']     // Configuraion value | 配置的值
-	remark     string @[json: 'remark']    // Remark | 备注
-	sort       u32    @[json: 'sort']      // Sort Number | 排序编号
-	created_at u32    @[json: 'createdAt'] // Create date | 创建日期
-	updated_at u32    @[json: 'updatedAt'] // Update date | 更新日期
+	category   string  @[json: 'category'] // Configuration category | 配置的分类
+	id         string  @[json: 'id']
+	status     bool    @[json: 'status']    // tate true: normal false: ban | 状态 true 正常 false 禁用
+	name       string  @[json: 'name']      // Configurarion name | 配置名称
+	key        string  @[json: 'key']       // Configuration key | 配置的键名
+	value      string  @[json: 'value']     // Configuraion value | 配置的值
+	remark     ?string @[json: 'remark']    // Remark | 备注
+	sort       u32     @[json: 'sort']      // Sort Number | 排序编号
+	created_at u32     @[json: 'createdAt'] // Create date | 创建日期
+	updated_at u32     @[json: 'updatedAt'] // Update date | 更新日期
 }
 
 pub struct GetConfigurationSystemListResp {
 	total int
-	data  ?[]ConfigurationSystemData @[default: null; json: 'data']
+	data  ?[]ConfigurationSystemData @[json: 'data']
 }
 
 // ----------------- Repository 层 -----------------
@@ -82,7 +82,7 @@ fn get_configuration_system_list_repo(mut ctx Context) !GetConfigurationSystemLi
 			key:        row.key
 			value:      row.value
 			category:   row.category
-			remark:     row.remark or { '' }
+			remark:     row.remark
 			sort:       row.sort
 			created_at: row.created_at.format_ss().u32()
 			updated_at: row.updated_at.format_ss().u32()
@@ -91,6 +91,6 @@ fn get_configuration_system_list_repo(mut ctx Context) !GetConfigurationSystemLi
 
 	return GetConfigurationSystemListResp{
 		total: count
-		data:  datalist
+		data:  if datalist.len > 0 { datalist } else { none }
 	}
 }
