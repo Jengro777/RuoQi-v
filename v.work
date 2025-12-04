@@ -1,0 +1,15 @@
+v 0.5.0
+
+use (
+	./base_api //  语言 行政地区资料
+	./croe_api // 租户 tenant服务
+	./job_api  // 定时任务
+	./file_api // oss  文件上传 文件下载
+	./msg_api  // 站内信 短信 邮件
+	./pay_api  // 支付服务
+	./db_api    // 数据库服务
+	./tenant_api   // 租户服务
+	./customer_api // 客户服务
+	./courier_api  // 快递员服务
+	./driver_api   // 司机服务
+)

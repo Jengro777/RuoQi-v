@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  ruoqi-v:
+    image: avey777/ruoqi-v:latest
+    container_name: ruoqi-v
+    restart: unless-stopped
+    # 关键修改，使容器共享宿主机网络
+    network_mode: host
+
+    # 由于使用了 host 网络模式，ports 映射被注释掉
+    # ports:
+    #   - "9900:9009"
+
+    volumes:
+      - ~/.config/ruoqi-v/config.toml:/app/etc/config.toml

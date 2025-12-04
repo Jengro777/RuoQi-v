@@ -1,0 +1,40 @@
+[
+  {
+    "label": "Debug v build -cc clang（GDB）",
+    "adapter": "GDB",
+    //  - launch: Zed will launch the program if specified or shows a debug terminal with the right configuration
+    //  - attach: Zed will attach to a running program to debug it or when the process_id is not specified we will show a process picker (only supported for node currently)
+    "request": "launch",
+    "program": "main",
+    "args": ["-f", "etc/config_dev.toml"],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "subProcess": true,
+    "redirectOutpot": true,
+    "stop_on_entry": false,
+    "initialize_args": {
+      "console": "integratedTerminal"
+      // "stopAtBeginningOfMainSubprogram": true
+    },
+    // "build": "v build -cc clang -g" // 从tasks.json添加构建任务
+    "build": {
+      "command": "v -cc clang -g -no-parallel  -o main .",
+      "args": [],
+      "cwd": "$ZED_WORKTREE_ROOT/backend"
+    }
+  },
+  {
+    "label": "Debug v run -cc clang（GDB）",
+    "adapter": "GDB",
+    "request": "launch",
+    "program": "main",
+    "args": ["-f", "etc/config_dev.toml"],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "subProcess": true,
+    "redirectOutpot": true,
+    "stop_on_entry": false,
+    "initialize_args": {
+      "console": "integratedTerminal"
+      // "stopAtBeginningOfMainSubprogram": true
+    }
+  }
+]

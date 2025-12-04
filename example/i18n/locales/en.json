@@ -1,0 +1,10 @@
+{
+  "hello": "Hello",
+  "welcome": "Welcome to our service",
+  "common": {
+    "success": "Successfully",
+    "msg": {
+      "Failed": "Failed"
+    }
+  }
+}

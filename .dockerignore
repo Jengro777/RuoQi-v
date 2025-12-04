@@ -1,0 +1,12 @@
+/node_modules
+.output
+.nuxt
+/dist
+# 忽略 .git 目录
+.git/
+# 其他可选忽略项（如日志、临时文件等）
+*.log
+tmp/
+*.md
+.zed/
+.v-analyzer/

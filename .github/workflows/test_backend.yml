@@ -1,0 +1,56 @@
+name: Forgejo Actions v-workspace
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    container:
+      image: thevlang/vlang:alpine-dev
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check V version
+        run: v version
+      - name: Install dependencies
+        run: |
+          apk add --no-cache mariadb-connector-c-dev
+          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
+
+      - name: Format check
+        run: v -stats fmt -verify . && echo "✅ Format check passed!"
+
+      - name: Run tests
+        working-directory: backend
+        run: v -stats test .
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    container:
+      image: thevlang/vlang:alpine-dev
+    steps:
+      - uses: actions/checkout@v5
+      # - name: update v
+      #   run: v up
+      - name: Install dependencies
+        run: |
+          apk add --no-cache mariadb-connector-c-dev
+          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
+      - name: Build application
+        working-directory: backend
+        run: v -stats -cc gcc -o ruoqi-v ./main
+
+  notification:
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Pipeline status
+        run: echo "🍏 This job's status is ${{ job.status }}."

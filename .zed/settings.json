@@ -1,0 +1,8 @@
+{
+  "file_types": {
+    "Dockerfile": ["Dockerfile*", "Containerfile*"],
+    "Git Ignore": ["dockerignore"],
+    "Dart": ["api"]
+  },
+  "format_on_save": "on"
+}

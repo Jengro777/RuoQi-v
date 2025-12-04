@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>服务异常 - RuoQi-v</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/index" class="logo">RuoQi-v</a>
+                <ul class="nav-links">
+                    <li><a href="/index">首页</a></li>
+                    <li><a href="/sys_api/admin/">后台</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <body>
+        <main class="error-section">
+            <div class="container">
+                <div class="error-content">
+                    <div class="error-icon">⚠️</div>
+                    <h1 class="error-title">服务暂时异常</h1>
+                    <p class="error-message">
+                        抱歉，服务暂时遇到了一些问题。<br />
+                        我们的技术团队正在努力解决，请稍后再试。
+                    </p>
+                    <div class="error-code">错误代码: 500</div>
+
+                    <div class="action-buttons">
+                        <a href="/index" class="btn btn-primary">返回首页</a>
+                        <a
+                            href="javascript:history.back()"
+                            class="btn btn-secondary"
+                            >返回上页</a
+                        >
+                    </div>
+
+                    <div class="suggestions">
+                        <h3>您可以尝试</h3>
+                        <ul>
+                            <li>• 刷新页面重新访问</li>
+                            <li>• 稍后几分钟再试</li>
+                            <li>• 检查网络连接是否正常</li>
+                            <li>• 联系技术支持获取帮助</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+    <footer class="footer">
+        <a
+            href="http://127.0.0.1:9009/sys_api/admin/login"
+            style="color: white; text-decoration: none"
+            >Powered by RuoQi-v</a
+        >
+    </footer>
+</html>
