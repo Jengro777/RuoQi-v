@@ -4,7 +4,7 @@
     "label": "v run",
     "tags": ["v-main"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
-    "command": "v wipe-cache && v -d veb_livereload watch -o app run ./main",
+    "command": "v wipe-cache && v -d new_veb -d veb_livereload watch -o app run ./main",
     "args": ["-f", "etc/config_dev.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
@@ -27,7 +27,7 @@
     // 在终端中运行任务时使用的shell
     "shell": "system",
     // 是否在生成的任务输出中显示任务摘要行，默认为`true`
-    "show_summary": true
+    "show_summary": true,
   },
   {
     "label": "v run -cc clang -g",
@@ -35,7 +35,7 @@
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
     "command": "v wipe-cache && v -cc clang -g -d veb_livereload watch -o app run run ./main",
     "args": ["-f", "etc/config_dev.toml"],
-    "cwd": "$ZED_WORKTREE_ROOT/backend"
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
   },
 
   /* v 构建命令 */
@@ -46,7 +46,7 @@
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
-    "reveal": "always"
+    "reveal": "always",
   },
   {
     "label": "v build -cc gcc -g",
@@ -55,7 +55,7 @@
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
-    "reveal": "always"
+    "reveal": "always",
   },
   {
     "label": "v build -prod",
@@ -64,7 +64,7 @@
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
-    "reveal": "always"
+    "reveal": "always",
   },
 
   /* v 测试命令 */
@@ -75,6 +75,6 @@
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
-    "reveal": "always"
-  }
+    "reveal": "always",
+  },
 ]
