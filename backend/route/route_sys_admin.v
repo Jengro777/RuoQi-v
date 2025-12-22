@@ -3,20 +3,20 @@ module route
 import log
 import structs { Context }
 import handler.rest.sys_admin as user_ddd
-import service.sys_api.sys_admin { Admin } // 必须是路由模块内部声明的结构体
-import service.sys_api.sys_admin.user { User }
-import service.sys_api.sys_admin.token { Token }
-import service.sys_api.sys_admin.role { Role }
-import service.sys_api.sys_admin.role_permission { RolePermission }
-import service.sys_api.sys_admin.position { Position }
-import service.sys_api.sys_admin.menu { Menu }
-import service.sys_api.sys_admin.mfa { MFA }
-import service.sys_api.sys_admin.dictionary { Dictionary }
-import service.sys_api.sys_admin.dictionarydetail { DictionaryDetail }
-import service.sys_api.sys_admin.department { Department }
-import service.sys_api.sys_admin.configuration { Configuration }
-import service.sys_api.sys_admin.authentication { Authentication }
-import service.sys_api.sys_admin.api { Api }
+import service.sys_admin_api { Admin } // 必须是路由模块内部声明的结构体
+import service.sys_admin_api.user { User }
+import service.sys_admin_api.token { Token }
+import service.sys_admin_api.role { Role }
+import service.sys_admin_api.role_permission { RolePermission }
+import service.sys_admin_api.position { Position }
+import service.sys_admin_api.menu { Menu }
+import service.sys_admin_api.mfa { MFA }
+import service.sys_admin_api.dictionary { Dictionary }
+import service.sys_admin_api.dictionarydetail { DictionaryDetail }
+import service.sys_admin_api.department { Department }
+import service.sys_admin_api.configuration { Configuration }
+import service.sys_admin_api.authentication { Authentication }
+import service.sys_admin_api.api { Api }
 
 fn (mut app AliasApp) routes_sys_admin(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
