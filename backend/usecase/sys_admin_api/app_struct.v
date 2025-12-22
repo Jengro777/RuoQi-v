@@ -1,4 +1,4 @@
-module sys_admin
+module sys_admin_api
 
 import structs { App }
 
