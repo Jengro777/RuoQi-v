@@ -13,7 +13,7 @@ import log
 import x.json2 as json
 import structs { App, Context }
 import dto.sys_admin.user { UserByIdReq }
-import usecase.sys_api.sys_admin.user as usecase
+import usecase.sys_admin_api.user as usecase
 import common.api
 
 pub struct User {
