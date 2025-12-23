@@ -1,7 +1,9 @@
 Module{
 	name:         'RuoQi-v'
-	description:  'vprod descrition'
+	description:  'vprod description'
 	version:      '0.5.0'
 	license:      'MIT'
-	dependencies: []
+	dependencies: [
+		ui: 0.1,
+	]
 }
