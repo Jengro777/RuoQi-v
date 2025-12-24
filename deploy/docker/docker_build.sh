@@ -4,8 +4,18 @@ set -e
 
 IMAGE_NAME="avey777/ruoqi-v"
 CONTAINER_NAME="ruoqi-v"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # 脚本所在目录
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"  # deploy 的父目录，即项目根目录
+
+# 验证关键文件存在
+if [ ! -f "$SCRIPT_DIR/Dockerfile" ]; then
+    echo "错误: 在 $SCRIPT_DIR 目录中未找到 Dockerfile"
+    exit 1
+fi
 
 echo "=== 开始深度清理 ==="
+echo "脚本目录: $SCRIPT_DIR"
+echo "项目根目录: $PROJECT_ROOT"
 
 # 1. 停止并删除容器
 echo "1. 清理容器..."
@@ -14,7 +24,7 @@ docker rm "$CONTAINER_NAME" 2>/dev/null || echo "容器不存在"
 
 # 2. 删除镜像
 echo "2. 清理镜像..."
-docker rmi "$IMAGE_NAME" 2>/dev/null || echo "镜像不存在"
+docker rmi "$IMAGE_NAME:latest" 2>/dev/null || echo "镜像不存在"
 
 # 3. 清理所有悬空资源
 echo "3. 清理悬空资源..."
@@ -32,15 +42,26 @@ docker network prune -f 2>/dev/null || echo "没有未使用网络"
 
 echo "=== 开始构建 ruoqi-v 镜像 ==="
 
+# 切换到项目根目录进行构建
+cd "$PROJECT_ROOT" || {
+    echo "无法切换到项目根目录: $PROJECT_ROOT"
+    exit 1
+}
+
+echo "构建上下文: $(pwd)"
+echo "使用Dockerfile: $SCRIPT_DIR/Dockerfile"
+
 # 构建镜像
 docker buildx build \
     --no-cache \
     --network=host \
     --rm=true \
     --progress=plain \
-    -f Dockerfile \
+    -f "$SCRIPT_DIR/Dockerfile" \
     -t "$IMAGE_NAME:latest" . || {
-    echo "构建失败！"
+    echo "构建失败！执行清理..."
+    docker image prune -af
+    docker buildx prune -af
     exit 1
     }
 

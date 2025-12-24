@@ -17,14 +17,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          ./docker_build.sh
+          ./deploy/docker/docker_build.sh
 
       - name: docker images
         run: docker images
 
       - name: Push Docker image
         run: |
-          ./docker_push.sh
+          ./deploy/docker/docker_push.sh
 
   notification:
     if: startsWith(github.server_url, 'https://github.com')
