@@ -3,7 +3,9 @@
 set -e
 
 IMAGE_NAME="avey777/ruoqi-v"
-CONTAINER_NAME="ruoqi-v"  # 根据实际情况修改容器名
+CONTAINER_NAME="ruoqi-v"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # 脚本所在目录
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"  # deploy 的父目录，即项目根目录
 
 echo "=== 开始安全清理 ==="
 
@@ -27,13 +29,22 @@ rm -rf /run/user/1000/containers/* 2>/dev/null || echo "没有容器运行时文
 
 echo "=== 开始构建 ==="
 
+# 切换到项目根目录进行构建
+cd "$PROJECT_ROOT" || {
+    echo "无法切换到项目根目录: $PROJECT_ROOT"
+    exit 1
+}
+
+echo "构建上下文: $(pwd)"
+echo "使用Containerfile: $SCRIPT_DIR/Containerfile"
+
 # 构建镜像
 podman build \
     --no-cache \
     --network=host \
     --rm=true \
     --tmpdir=/tmp/podman-tmp \
-    -f Containerfile \
+    -f "$SCRIPT_DIR/Containerfile" \
     -t "$IMAGE_NAME" . || {
     echo "构建失败，执行清理..."
     podman image prune -af

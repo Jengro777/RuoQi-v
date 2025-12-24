@@ -21,19 +21,19 @@ jobs:
 
       - name: Set script permissions
         run: |
-          chmod +x ./podman_build.sh
-          chmod +x ./podman_push.sh
+          chmod +x ./deploy/podman/podman_build.sh
+          chmod +x ./deploy/podman/podman_push.sh
 
       - name: Build Podman image
         run: |
-          ./podman_build.sh
+          ./deploy/podman/podman_build.sh
 
       - name: podman images
         run: podman images
 
       - name: Push Docker image
         run: |
-          ./podman_push.sh
+          ./deploy/podman/podman_push.sh
 
   notification:
     if: startsWith(github.server_url, 'https://github.com')
