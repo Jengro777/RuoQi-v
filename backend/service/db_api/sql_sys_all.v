@@ -6,8 +6,7 @@ REPLACE INTO `sys_user` (`id`, `username`, `password`, `nickname`, `description`
 "
 
 pub const sys_token = r"
-REPLACE INTO `sys_token` (`id`, `user_id`, `username`, `token`, `source`, `expired_at`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
-  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'admin', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IiJ9.eyJpc3MiOiJ2cHJvZC13b3Jrc3Bhc2UiLCJzdWIiOiIwMTk2YjczNi1mODA3LTczZjAtODczMS03YTA4YzBlZDc1ZWEiLCJhdWQiOlsiYXBpLXNlcnZpY2UiLCJ3ZWJhcHAiXSwibmJmIjoxNzQ4OTQ1Mjc4LCJleHAiOjIwMDgxNDUyNzgsImlhdCI6MTc0ODk0NTI3OCwianRpIjoiNTkwN2FmM2EtM2Y1YS00MDg2LWFhZWItNjhlY2EyODNkOGQyIiwicm9sZXMiOlsiYWRtaW4iLCJlZGl0b3IiXSwidGVhbV9pZCI6IiIsImFwcF9pZCI6IiIsInBvcnRhbF9pZCI6IiIsImNsaWVudF9pcCI6IjE5Mi4xNjguMS4xMDAiLCJkZXZpY2VfaWQiOiJkZXZpY2UteHl6In0.6vJKEZi-oKmX0LPx63Y80Fph6MJZnywK2Q98Ioq4clA', 'sys', '2035-12-31 00:54:47', 0, NULL, '2025-12-31 00:54:47', NULL, '2025-12-31 00:54:47', 0, NULL);
+REPLACE INTO `vcore`.`sys_token` (`id`, `user_id`, `username`, `token`, `source`, `expired_at`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'admin', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IiJ9.eyJpc3MiOiJydW9xaS12Iiwic3ViIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwiYXVkIjpbXSwibmJmIjoxNzY2NTU4MTI2LCJleHAiOjE3NjkxNTAxMjYsImlhdCI6MTc2NjU1ODEyNiwianRpIjoiN2JjYzAxZjYtZDU1Yi00Y2RkLTg1ZjktYzE0Y2Y4ZmIwYzljIiwicm9sZV9pZHMiOlsiKiJdLCJjbGllbnRfaXAiOiIiLCJkZXZpY2VfaWQiOiIifQ.fY5HRFf3LOESq20wuE3X4YOfSG6Pu2Er3FAZkuPTBys', 'sys', '2034-03-12 14:35:26', 0, NULL, '2025-12-24 14:35:26', NULL, '2025-12-24 14:35:26', 0, NULL);
 "
 
 pub const sys_department = r"
