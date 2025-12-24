@@ -80,7 +80,9 @@ v_admin/
 │   │   ├── mysql_pool.v            # 实现mysql连接池
 │   │   ├── pg_pool.v
 │   │   └── tidb_pool.v
-│   ├── cache/                      # Redis 缓存适配器
+│   ├── redis/                      # Redis 缓存适配器
+│   │   └── redis.v
+│   ├── cache/                      # 缓存共有业务
 │   │   └── tenant_cache.v
 │   ├── http/                       # 外部 HTTP 服务适配器
 │   │   └── external_api.v
