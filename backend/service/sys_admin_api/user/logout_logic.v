@@ -8,7 +8,7 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
-@['/login_out'; post]
+@['/logout'; get; post]
 pub fn (app &User) logout_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
