@@ -106,8 +106,8 @@ fn update_menu(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	}(), affix = fn [req] () u8 {
 		return if req.affix or { false } { u8(1) } else { u8(0) }
 	}(), dynamic_level = req.dynamic_level, real_path = req.real_path, sort = req.sort,
-		updated_at = req.updated_at or { time.now() }.format_ss() where id == req.id
-	} or { return error('Failed to update menu') }
+		updated_at = time.now().format_ss() where id == req.id
+	} or { return error('Failed to update menu ${err}') }
 
 	return UpdateMenuResp{
 		msg: 'Menu updated successfully'
