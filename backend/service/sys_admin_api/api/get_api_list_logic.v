@@ -107,7 +107,7 @@ fn get_api_list(mut ctx Context, req ApiListPageReq) !ApiListPageResp {
 	for row in result {
 		datalist << ApiListData{
 			id:           row.id
-			trans:        row.service_name
+			trans:        row.description or { '' }
 			path:         row.path
 			description:  row.description or { '' }
 			api_group:    row.api_group

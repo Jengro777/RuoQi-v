@@ -47,15 +47,14 @@ fn update_api_domain(req UpdateApiReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct UpdateApiReq {
-	id           string     @[json: 'id']
-	path         string     @[json: 'path']
-	description  string     @[json: 'description']
-	api_group    string     @[json: 'group']
-	service_name string     @[json: 'service_name']
-	trans        string     @[json: 'trans']
-	method       string     @[json: 'method']
-	is_required  u8         @[json: 'isRequired']
-	updated_at   ?time.Time @[json: 'updatedAt']
+	id           string @[json: 'id']
+	path         string @[json: 'path']
+	description  string @[json: 'description']
+	api_group    string @[json: 'group']
+	service_name string @[json: 'service_name']
+	trans        string @[json: 'trans']
+	method       string @[json: 'method']
+	is_required  bool   @[json: 'isRequired']
 }
 
 pub struct UpdateApiResp {
@@ -76,8 +75,8 @@ fn update_api(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 		.set('api_group = ?', req.api_group)!
 		.set('service_name = ?', req.service_name)!
 		.set('method = ?', req.method)!
-		.set('is_required = ?', req.is_required)!
-		.set('updated_at = ?', req.updated_at or { time.now() })!
+		.set('is_required = ?', if req.is_required { 1 } else { 0 })! // true: 1 false: 0
+		.set('updated_at = ?', time.now().format_ss())!
 		.where('id = ?', req.id)!
 		.update()!
 
