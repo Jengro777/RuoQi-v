@@ -94,9 +94,7 @@ fn get_api_list(mut ctx Context, req ApiListPageReq) !ApiListPageResp {
 	if req.service_name != '' {
 		q = q.where('service_name = ?', req.service_name)!
 	}
-	if req.is_required in [0, 1] {
-		q = q.where('is_required = ?', req.is_required)!
-	}
+
 	if req.method != '' {
 		q = q.where('method = ?', req.method)!
 	}
@@ -112,7 +110,7 @@ fn get_api_list(mut ctx Context, req ApiListPageReq) !ApiListPageResp {
 			description:  row.description or { '' }
 			api_group:    row.api_group
 			method:       row.method
-			is_required:  (row.is_required) == 0
+			is_required:  if row.is_required == 1 { true } else { false } // true: 1 false: 0
 			service_name: row.service_name
 			created_at:   row.created_at.format_ss()
 			updated_at:   row.updated_at.format_ss()
