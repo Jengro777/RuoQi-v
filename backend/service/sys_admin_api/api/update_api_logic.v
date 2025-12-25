@@ -75,14 +75,16 @@ fn update_api(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 		.set('api_group = ?', req.api_group)!
 		.set('service_name = ?', req.service_name)!
 		.set('method = ?', req.method)!
-		.set('is_required = ?', u8(if req.is_required { 1 } else { 0 }))! // true: 1 false: 0
+		.set('is_required = ?', u8(if req.is_required { 0 } else { 1 }))! // true: 1 false: 0
 		.set('updated_at = ?', time.now().format_ss())!
 		.where('id = ?', req.id)!
 		.update()!
 
 	// sql db {
 	// 	update SysApi set path = req.path, description = req.description, api_group = req.api_group,
-	// 	service_name = req.service_name, method = req.method, is_required = 1 where id == req.id
+	// 	service_name = req.service_name, method = req.method, is_required = fn [req] () u8 {
+	// 	return if req.is_required { u8(0) } else { u8(1) }
+	// }() where id == req.id
 	// }!
 
 	return UpdateApiResp{
