@@ -56,7 +56,7 @@ fn main() {
 		.update()!
 
 	result1 := qb.select('id', 'name', 'nickname')!
-		// .where('name IN ?', ['Dev'])!
+		.where('id = ?', '2')!
 		.query()!
 	// qb.where('id != ?','000')!
 	dump(result1)
