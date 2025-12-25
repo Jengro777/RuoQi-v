@@ -46,6 +46,7 @@ pub struct MenuData {
 	service_name          string @[json: 'serviceName']
 	permission            string @[json: 'permission']
 	title                 string @[json: 'title']
+	trans                 string @[json: 'trans']
 	icon                  string @[json: 'icon']
 	hide_menu             int    @[json: 'hideMenu']
 	hide_breadcrumb       int    @[json: 'hideBreadcrumb']
@@ -95,6 +96,7 @@ fn get_menu_list(mut ctx Context) !MenuListResp {
 			service_name:          row.service_name or { '' }
 			permission:            row.permission or { '' }
 			title:                 row.title.str()
+			trans:                 ctx.i18n.t(row.title.str())
 			icon:                  row.icon.str()
 			hide_menu:             int(row.hide_menu or { 0 })
 			hide_breadcrumb:       int(row.hide_breadcrumb or { 0 })

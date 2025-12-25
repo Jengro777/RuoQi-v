@@ -18,14 +18,8 @@ pub fn i18n_middleware(i18n_app &i18n.I18nStore) veb.MiddlewareOptions[Context] 
 			// 解析并标准化语言代码（如 en-US -> en）
 			mut lang := parse_accept_language(lang_header, ctx.i18n)
 
-			// 尝试从缓存中获取语言
-			lang = if lang in ctx.i18n.lang_cache {
-				ctx.i18n.lang_cache[lang]
-			} else {
-				// 如果缓存中没有该语言，更新缓存并返回语言
-				ctx.i18n.lang_cache[lang] = lang
-				lang
-			}
+			// 实际设置语言
+			ctx.i18n.set_language(lang)
 
 			// 设置语言到 extra_i18n 中
 			ctx.extra_i18n['lang'] = lang
