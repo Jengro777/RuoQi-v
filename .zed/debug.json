@@ -12,15 +12,15 @@
     "redirectOutpot": true,
     "stop_on_entry": false,
     "initialize_args": {
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
       // "stopAtBeginningOfMainSubprogram": true
     },
     // "build": "v build -cc clang -g" // 从tasks.json添加构建任务
     "build": {
       "command": "v -cc clang -g -no-parallel  -o main .",
       "args": [],
-      "cwd": "$ZED_WORKTREE_ROOT/backend"
-    }
+      "cwd": "$ZED_WORKTREE_ROOT/backend",
+    },
   },
   {
     "label": "Debug v run -cc clang（GDB）",
@@ -33,8 +33,8 @@
     "redirectOutpot": true,
     "stop_on_entry": false,
     "initialize_args": {
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
       // "stopAtBeginningOfMainSubprogram": true
-    }
-  }
+    },
+  },
 ]
