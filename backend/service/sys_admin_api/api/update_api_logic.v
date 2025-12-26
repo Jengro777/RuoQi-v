@@ -75,7 +75,7 @@ fn update_api(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 		.set('api_group = ?', req.api_group)!
 		.set('service_name = ?', req.service_name)!
 		.set('method = ?', req.method)!
-		.set('is_required = ?', u8(if req.is_required { 0 } else { 1 }))! // true: 1 false: 0
+		.set('is_required = ?', u8(if req.is_required { 1 } else { 0 }))! // true: 1 false: 0
 		.set('updated_at = ?', time.now().format_ss())!
 		.where('id = ?', req.id)!
 		.update()!
