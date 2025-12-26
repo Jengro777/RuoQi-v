@@ -37,6 +37,9 @@ fn main() {
 	defer { db.close() or {} }
 	// 插入数据
 	insert_users(mut db) or { panic(err) }
+	// 更改用户数据
+	update_users(mut db) or { panic(err) }
+
 	// 查询所有用户
 	users := query_users(mut db) or { panic(err) }
 	dump(users)
@@ -81,5 +84,19 @@ fn insert_users(mut db sqlite.DB) ! {
 	sql db {
 		insert users1 into User
 		insert users2 into User
+	}!
+}
+
+// 插入用户数据
+fn update_users(mut db sqlite.DB) ! {
+	user1 := User{
+		name:     'Jengro888'
+		nickname: 'Woo888'
+		mobile:   '535770088-888'
+		email:    'admin@admin.com888'
+	}
+
+	sql db {
+		update User set user1 where id == '1'
 	}!
 }

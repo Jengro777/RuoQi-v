@@ -83,7 +83,7 @@ fn update_api(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 	// sql db {
 	// 	update SysApi set path = req.path, description = req.description, api_group = req.api_group,
 	// 	service_name = req.service_name, method = req.method, is_required = fn [req] () u8 {
-	// 	return if req.is_required { u8(0) } else { u8(1) }
+	// 	return if req.is_required { u8(1) } else { u8(0) }
 	// }() where id == req.id
 	// }!
 

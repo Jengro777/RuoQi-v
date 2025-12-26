@@ -2,7 +2,7 @@
   "file_types": {
     "Dockerfile": ["Dockerfile*", "Containerfile*"],
     "Git Ignore": ["dockerignore"],
-    "Dart": ["api"]
+    "Dart": ["api"],
   },
-  "format_on_save": "on"
+  "format_on_save": "on",
 }
