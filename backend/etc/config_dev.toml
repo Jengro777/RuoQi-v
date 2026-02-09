@@ -1,0 +1,102 @@
+[web]
+port = 9009
+timeout = 30
+
+[logging]
+log_level = 'debug' # 默认info [debug info warn error fatal]
+
+[i18nconf]
+Dir = './internal/i18n'
+
+[dbconf]
+type = 'mysql'            # mysql  tidb
+host = '127.0.0.1'
+port = '3306'
+username = 'root'
+password = 'mysql_123456'
+dbname = 'vcore'
+ssl_verify = false        #设置为false 时，不验证ssl证书
+# 连接池配置
+max_conns = 50     # 默认 100 个
+min_idle_conns = 5 # 默认 10 个
+max_lifetime = 60  # 默认 60 minute
+idle_timeout = 30  # 默认 30 minute
+get_timeout = 5    # 默认 3 second
+
+# [dbconf]
+# type = 'mysql'                # mysql  tidb
+# host = 'mysql2.sqlpub.com'
+# port = '3307'
+# username = 'vcore_test'
+# password = 'wfo8wS7CylT0qIMg'
+# dbname = 'vcore_test'
+# ssl_verify = false            #设置为false 时，不验证ssl证书
+# # 连接池配置
+# max_conns = 50     # 默认 100 个
+# min_idle_conns = 5 # 默认 10 个
+# max_lifetime = 60  # 默认 60 minute
+# idle_timeout = 30  # 默认 30 minute
+# get_timeout = 5    # 默认 3 second
+
+
+# [dbconf]
+# type = 'tidb'
+# host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
+# port = '4000'
+# username = 'xfQRtLXKTtPHsUi.root'
+# password = 'GkFU6Q3uvt0O9F0A'
+# dbname = 'vcore'
+# ssl_verify = true                                        #设置为true时，验证ssl证书
+# ssl_key = ''
+# ssl_cert = ''
+# ssl_ca = './etc/client-cert.pem'
+# ssl_capath = ''
+# ssl_cipher = ''
+
+[redisconf]
+host = '127.0.0.1'
+port = 6379
+password = ''
+get_timeout = 3
+
+[Prometheus]
+Host = '0.0.0.0'
+Port = 4001
+Path = '/metrics'
+
+[log]
+ServiceName = 'coreRpcLogger'
+Mode = 'console'                  # file 是生产环境的配置，console 是开发环境的配置
+Path = '/home/data/logs/core/rpc'
+Encoding = 'plain'                # plain 是开发环境的配置，json 是生产环境的配置
+Level = 'info'                    # info debug warn error fatal panic
+Compress = false
+KeepDays = 7
+StackCoolDownMillis = 100
+
+
+## TODO 请修改为自己的支付回调地址
+[PayProperties]
+OrderNotifyUrl = ''
+RefundNotifyUrl = ''
+OrderNoPrefix = 'P'
+RefundNoPrefix = 'R'
+
+## TODO 请修改为自己的支付宝配置
+[AliPayConfig]
+Status = false
+AppId = ''
+SignType = 'RSA2'
+PrivateKey = ''
+AppPublicContentPath = '/cert/alipay/appPublicCert.crt'
+AlipayPublicContentRSA2Path = '/cert/alipay/alipayPublicCert.crt'
+AlipayRootContentPath = '/cert/alipay/alipayRootCert.crt'
+
+## TODO 请修改为自己的微信支付配置
+[WxPayConfig]
+Status = false
+AppId = ''
+MchId = ''
+SerialNumber = ''
+ApiV3Key = ''
+PrivateKeyContentPath = '/cert/wechat/apiclient_key.pem'

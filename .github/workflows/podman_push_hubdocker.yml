@@ -1,0 +1,43 @@
+name: Podman Push to Docker Hub
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  podman_push:
+    if: startsWith(github.server_url, 'https://github.com')
+    name: Build and Push Application with Podman
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Podman
+        run: |
+          sudo apt install -y podman
+
+      - name: Set script permissions
+        run: |
+          chmod +x ./deploy/podman/podman_build.sh
+          chmod +x ./deploy/podman/podman_push.sh
+
+      - name: Build Podman image
+        run: |
+          ./deploy/podman/podman_build.sh
+
+      - name: podman images
+        run: podman images
+
+      - name: Push Docker image
+        run: |
+          ./deploy/podman/podman_push.sh
+
+  notification:
+    if: startsWith(github.server_url, 'https://github.com')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pipeline status
+        run: echo "🍏 This job's status is ${{ job.status }}."

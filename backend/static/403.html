@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>链接已禁用 - RuoQi-v</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/index" class="logo">RuoQi-v</a>
+                <ul class="nav-links">
+                    <li><a href="/index">首页</a></li>
+                    <li><a href="/sys_api/admin/">后台</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <body>
+        <main class="error-section">
+            <div class="container">
+                <div class="error-content">
+                    <div class="error-icon">🚫</div>
+                    <h1 class="error-title">已禁用</h1>
+                    <p class="error-message">
+                        抱歉，您访问的链接已被管理员禁用。<br />
+                        该链接可能因为违规或其他原因被暂停访问。
+                    </p>
+                    <div class="error-code">错误代码: 403</div>
+
+                    <div class="action-buttons">
+                        <a href="/index" class="btn btn-primary">返回首页</a>
+                        <a
+                            href="javascript:history.back()"
+                            class="btn btn-secondary"
+                            >返回上页</a
+                        >
+                    </div>
+
+                    <div class="suggestions">
+                        <h3>可能的原因</h3>
+                        <ul>
+                            <li>• 内容违反了使用条款</li>
+                            <li>• 被举报并经核实违规</li>
+                            <li>• 存在安全风险</li>
+                            <li>• 创建者主动禁用了访问</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+    <footer class="footer">
+        <a
+            href="http://127.0.0.1:9009/sys_api/admin/login"
+            style="color: white; text-decoration: none"
+            >Powered by RuoQi-v</a
+        >
+    </footer>
+</html>

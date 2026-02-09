@@ -1,0 +1,7 @@
+services:
+  app:
+    image: avey777/v_wasi:latest
+    platform: wasi/wasm32
+    runtime: io.containerd.wasmtime.v1
+    ports: -9900:9009
+    name: avey777/v_wasi

@@ -1,0 +1,34 @@
+name: Docker Push to Docker Hub
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  docker_push:
+    if: startsWith(github.server_url, 'https://github.com')
+    name: Build and Push Application with Docker
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: |
+          ./deploy/docker/docker_build.sh
+
+      - name: docker images
+        run: docker images
+
+      - name: Push Docker image
+        run: |
+          ./deploy/docker/docker_push.sh
+
+  notification:
+    if: startsWith(github.server_url, 'https://github.com')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pipeline status
+        run: echo "🍏 This job's status is ${{ job.status }}."
