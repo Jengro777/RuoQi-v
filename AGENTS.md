@@ -509,7 +509,7 @@ deploy/docker/*.log
 deploy/podman/*.log
 ```
 
-**需要特别忽略的文件夹：不要修改和使用这些文件夹以及内容**
+**需要特别忽略的文件夹：一定不要修改和使用这些文件夹以及内容，也不需要分析**
 
 - `backend/adapter/repository/` - 仓储实现，通常不需要提交
 - `backend/handler/` - 处理器层，属于基础设施层
