@@ -5,14 +5,14 @@ import time
 fn test_cache_config() {
 	// 测试缓存配置结构体
 	mut config := CacheConfig{
-		host:        'localhost'
-		port:        6379
-		password:    ''
+		host:        'redis-10644.c60.us-west-1-2.ec2.cloud.redislabs.com'
+		port:        10644
+		password:    'LAIBbVhs5PoXHKlUbRMdjSRwY1CSsghn'
 		get_timeout: 3 * time.second
 	}
 
-	assert config.host == 'localhost'
-	assert config.port == 6379
+	assert config.host == 'redis-10644.c60.us-west-1-2.ec2.cloud.redislabs.com'
+	assert config.port == 10644
 	assert config.get_timeout == 3 * time.second
 
 	println('CacheConfig test passed!')
@@ -21,8 +21,9 @@ fn test_cache_config() {
 fn test_cache_connection() {
 	// 测试缓存连接
 	config := CacheConfig{
-		host: 'localhost'
-		port: 6379
+		host:     'redis-10644.c60.us-west-1-2.ec2.cloud.redislabs.com'
+		port:     10644
+		password: 'LAIBbVhs5PoXHKlUbRMdjSRwY1CSsghn'
 	}
 
 	// 尝试连接，如果失败则跳过测试
@@ -42,8 +43,9 @@ fn test_cache_connection() {
 fn test_cache_basic_operations() {
 	// 测试基本的缓存操作
 	config := CacheConfig{
-		host: 'localhost'
-		port: 6379
+		host:     'redis-10644.c60.us-west-1-2.ec2.cloud.redislabs.com'
+		port:     10644
+		password: 'LAIBbVhs5PoXHKlUbRMdjSRwY1CSsghn'
 	}
 
 	mut db := new_cache_pool(config) or {
