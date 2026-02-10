@@ -87,7 +87,7 @@ pub fn parse_data() !GlobalConfig {
 	// 解析 redis 配置节
 	redis_config := RedisConf{
 		host:        doc.value('redisconf.host').string()
-		port:        doc.value('redisconf.port').string()
+		port:        doc.value('redisconf.port').int()
 		password:    doc.value('redisconf.password').string()
 		get_timeout: doc.value('redisconf.get_timeout').int()
 	}

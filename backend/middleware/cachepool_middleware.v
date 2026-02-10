@@ -22,7 +22,7 @@ pub fn init_cache_pool(doc &config.GlobalConfig) !&cache_pool.CachePool {
 
 	mut config_redis := cache_pool.CacheConfig{
 		host:     doc.redis.host
-		port:     doc.redis.port.u16()
+		port:     u16(doc.redis.port)
 		password: doc.redis.password
 	}
 
