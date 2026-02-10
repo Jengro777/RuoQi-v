@@ -1,6 +1,5 @@
 module cache_pool
 
-import db.redis
 import time
 
 fn test_cache_config() {
@@ -27,14 +26,14 @@ fn test_cache_connection() {
 	}
 
 	// 尝试连接，如果失败则跳过测试
-	mut db := new_cache(config) or {
+	mut db := new_cache_pool(config) or {
 		println('Cache server not available, skipping connection test')
 		return
 	}
 
 	// 手动关闭连接
-	defer{
-	  db.close() or { }
+	defer {
+		db.close() or {}
 	}
 
 	println('Cache connection test passed!')
@@ -47,14 +46,14 @@ fn test_cache_basic_operations() {
 		port: 6379
 	}
 
-	mut db := new_cache(config) or {
+	mut db := new_cache_pool(config) or {
 		println('Cache server not available, skipping basic operations test')
 		return
 	}
 
 	// 手动关闭连接
 	defer {
-		db.close() or { }
+		db.close() or {}
 	}
 
 	// 测试设置和获取字符串
