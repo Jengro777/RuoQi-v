@@ -18,7 +18,6 @@ import log
 */
 
 // 根据req_token获取用户API列表,完成用户Api鉴权
-
 pub fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
