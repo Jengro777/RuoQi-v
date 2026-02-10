@@ -22,14 +22,22 @@ pub fn new_app() {
 
 	//*******init_db_pool********/
 	log.debug('init_db_pool()')
-	mut conn := middleware.init_db_pool(doc) or {
+	mut conn_db := middleware.init_db_pool(doc) or {
 		log.warn('db_pool 初始化失败: ${err}')
 		return
 	}
 	defer {
-		conn.close()
+		conn_db.close()
 	}
 	//*******init_db_pool********/
+
+	//*******init_cache_pool********/
+	log.debug('init_cache_pool()')
+	mut conn_cache := middleware.init_cache_pool(doc) or {
+		log.warn('cache_pool 初始化失败: ${err}')
+		return
+	}
+	//*******init_cache_pool********/
 
 	mut app := &AliasApp{
 		started: chan bool{cap: 1} // 关键：正确初始化通道
@@ -37,15 +45,17 @@ pub fn new_app() {
 
 	// 全局 Context
 	mut ctx := &Context{
-		dbpool: conn
-		config: doc
-		i18n:   i18n_app
+		cache_pool: conn_cache
+		dbpool:     conn_db
+		config:     doc
+		i18n:       i18n_app
 	}
 
 	// 路由控制器,仅作用于非子路由(必须,不然会报错)
 	app.use(middleware.cores_middleware_generic()) // 跨域中间件
 	app.use(middleware.logger_middleware_generic())
 	app.use(middleware.config_middle(ctx.config))
+	// app.use(middleware.db_middleware(ctx.cache_pool))
 	app.use(middleware.db_middleware(ctx.dbpool))
 	app.use(middleware.i18n_middleware(ctx.i18n))
 	app.use(veb.encode_gzip[Context]())

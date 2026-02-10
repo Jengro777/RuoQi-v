@@ -3,6 +3,7 @@ module structs
 import veb
 import common.jwt { JwtPayload }
 import adapter.dbpool
+import adapter.cache_pool
 import config
 import i18n
 
@@ -18,6 +19,7 @@ pub struct Context {
 	veb.Context
 pub mut:
 	dbpool      &dbpool.DatabasePool
+	cache_pool  &cache_pool.CachePool
 	config      &config.GlobalConfig
 	jwt_payload ?JwtPayload
 	i18n        &i18n.I18nStore
