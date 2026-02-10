@@ -43,3 +43,9 @@ host = '127.0.0.1'
 port = 6379
 password = ''
 get_timeout = 3
+
+# [redisconf]
+# host = 'redis-10644.c60.us-west-1-2.ec2.cloud.redislabs.com'
+# port = 10644
+# password = 'LAIBbVhs5PoXHKlUbRMdjSRwY1CSsghn'
+# get_timeout = 3
