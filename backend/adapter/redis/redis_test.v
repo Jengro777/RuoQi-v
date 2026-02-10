@@ -33,8 +33,8 @@ fn test_redis_connection() {
 	}
 
 	// 手动关闭连接
-	defer{
-	  db.close() or { }
+	defer {
+		db.close() or {}
 	}
 
 	println('Redis connection test passed!')
@@ -54,7 +54,7 @@ fn test_redis_basic_operations() {
 
 	// 手动关闭连接
 	defer {
-		db.close() or { }
+		db.close() or {}
 	}
 
 	// 测试设置和获取字符串
