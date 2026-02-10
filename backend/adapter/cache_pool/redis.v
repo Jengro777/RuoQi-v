@@ -12,6 +12,7 @@ pub mut:
 	get_timeout time.Duration = 3 * time.second
 }
 
+@[heap]
 pub struct CachePool {
 	redis.DB
 }

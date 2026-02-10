@@ -10,7 +10,7 @@ import config
 pub fn cache_middleware(conn &cache_pool.CachePool) veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: fn [conn] (mut ctx Context) bool {
-			ctx.cache_pool = unsafe { conn }
+			ctx.cache_pool = conn
 			return true // 返回 true 表示继续处理请求
 		}
 	}
