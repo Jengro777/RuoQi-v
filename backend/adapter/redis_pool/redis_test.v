@@ -1,4 +1,4 @@
-module redis
+module redis_pool
 
 import db.redis
 import time
