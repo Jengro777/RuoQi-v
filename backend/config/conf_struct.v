@@ -49,7 +49,7 @@ pub:
 pub struct RedisConf {
 pub:
 	host        string
-	port        string
+	port        i64 = 6379
 	password    string
 	get_timeout i64 = 3
 }
