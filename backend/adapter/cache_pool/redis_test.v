@@ -1,11 +1,11 @@
-module redis_pool
+module cache_pool
 
 import db.redis
 import time
 
-fn test_redis_config() {
-	// 测试 Redis 配置结构体
-	mut config := RedisConfig{
+fn test_cache_config() {
+	// 测试缓存配置结构体
+	mut config := CacheConfig{
 		host:        'localhost'
 		port:        6379
 		password:    ''
@@ -16,19 +16,19 @@ fn test_redis_config() {
 	assert config.port == 6379
 	assert config.get_timeout == 3 * time.second
 
-	println('RedisConfig test passed!')
+	println('CacheConfig test passed!')
 }
 
-fn test_redis_connection() {
-	// 测试 Redis 连接
-	config := RedisConfig{
+fn test_cache_connection() {
+	// 测试缓存连接
+	config := CacheConfig{
 		host: 'localhost'
 		port: 6379
 	}
 
 	// 尝试连接，如果失败则跳过测试
-	mut db := new_redis(config) or {
-		println('Redis server not available, skipping connection test')
+	mut db := new_cache(config) or {
+		println('Cache server not available, skipping connection test')
 		return
 	}
 
@@ -37,18 +37,18 @@ fn test_redis_connection() {
 	  db.close() or { }
 	}
 
-	println('Redis connection test passed!')
+	println('Cache connection test passed!')
 }
 
-fn test_redis_basic_operations() {
-	// 测试基本的 Redis 操作
-	config := RedisConfig{
+fn test_cache_basic_operations() {
+	// 测试基本的缓存操作
+	config := CacheConfig{
 		host: 'localhost'
 		port: 6379
 	}
 
-	mut db := new_redis(config) or {
-		println('Redis server not available, skipping basic operations test')
+	mut db := new_cache(config) or {
+		println('Cache server not available, skipping basic operations test')
 		return
 	}
 

@@ -1,10 +1,10 @@
-module redis_pool
+module cache_pool
 
 import db.redis
 import time
 
-// Redis 连接配置
-pub struct RedisConfig {
+// 缓存连接配置
+pub struct CacheConfig {
 pub mut:
 	host        string
 	port        u16
@@ -12,8 +12,12 @@ pub mut:
 	get_timeout time.Duration = 3 * time.second
 }
 
-// 初始化 Redis 连接
-pub fn new_redis(config RedisConfig) !&redis.DB {
+pub struct CachePool {
+	redis.DB
+}
+
+// 初始化缓存连接
+pub fn new_cache(config CacheConfig) !&redis.DB {
 	mut db := redis.connect(redis.Config{
 		host:     config.host
 		password: config.password
