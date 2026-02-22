@@ -54,6 +54,7 @@ get_timeout = 5    # 默认 3 second
 # ssl_cipher = ''
 
 # [dbconf]
+# type = 'pgsql'
 # host = 'ep-wandering-king-akw206lc-pooler.c-3.us-west-2.aws.neon.tech'
 # port = 5432
 # username = 'neondb_owner'
