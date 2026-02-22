@@ -15,7 +15,7 @@ pub fn new_app() {
 	log.debug('init_config_loader()')
 	mut loader := config.new_config_loader()
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
-	log.debug('${doc}')
+	// log.debug('${doc}')
 	//********init_config_loader*******/
 
 	i18n_app := i18n.new_i18n('./etc/locales', 'zh') or { return }

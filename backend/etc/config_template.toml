@@ -45,6 +45,7 @@ password = ''
 get_timeout = 3
 
 # [dbconf]
+# type = 'pgsql'
 # host = 'ep-wandering-king-akw206lc-pooler.c-3.us-west-2.aws.neon.tech'
 # port = 5432
 # username = 'neondb_owner'
