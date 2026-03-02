@@ -3,7 +3,6 @@ module dbpool
 import db.mysql
 import pool
 
-
 // 创建新连接池
 pub fn new_db_pool(config DatabaseConfig) !&DatabasePool {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
