@@ -14,12 +14,11 @@ pub mut:
 	password   string
 	dbname     string
 	ssl_verify bool @[default: false] // #设置为true时，验证ssl证书
-	// flag       pg.ConnectionFlag
-	// ssl_key    string
-	// ssl_cert   string
-	// ssl_ca     string
-	// ssl_capath string
-	// ssl_cipher string
+	ssl_key    string
+	ssl_cert   string
+	ssl_ca     string
+	ssl_capath string
+	ssl_cipher string
 
 	//*pool 配置*/
 	// 最大连接数：连接池允许同时打开的最大数据库连接数

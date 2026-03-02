@@ -9,7 +9,7 @@ const config = DatabaseConfig{
 }
 
 fn test_new_db_pool() {
-	mut db_pool := new_db_pool(config)!
+	mut db_pool := new_db_pool_with_conninfo(config)!
 	defer { db_pool.close() }
 	// dump(db_pool)
 	assert typeof(db_pool).name == '&pgsql_pool.DatabasePool'
@@ -17,7 +17,7 @@ fn test_new_db_pool() {
 }
 
 fn test_acquire() {
-	mut db_pool := new_db_pool(config) or { panic(err) }
+	mut db_pool := new_db_pool_with_conninfo(config) or { panic(err) }
 	// 通过具体实现类型使用连接池
 	mut db, conn := db_pool.acquire() or { panic(err) }
 

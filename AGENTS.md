@@ -448,27 +448,28 @@ v test ./backend/service/xxx_api/
   - 测试用例：`test_xxx()` - 例如 `test_new_redis_pool()`
   - 辅助测试：`test_xxx_helper()` - 例如 `test_connection_helper()`
 
+- **测试目录组织**：
+  - 测试文件与被测试文件放在同一目录
+  - 示例：`backend/adapter/redis_pool/redis_pool_test.v`
+  - 示例：`backend/service/sys_admin_api/sys_admin_api_test.v`
+
 - **测试文件结构**：
 
   ```v
-  module xxx_test  // 注意是 xxx_test，不是 xxx
-
-  import xxx  // 导入被测试的模块
+  module xxx
 
   fn test_xxx() {
       // 测试代码
   }
 
-  fn main() {
-      // 运行所有测试
-      test_xxx()
-  }
   ```
 
-- **测试目录组织**：
-  - 测试文件与被测试文件放在同一目录
-  - 示例：`backend/adapter/redis_pool/redis_pool_test.v`
-  - 示例：`backend/service/sys_admin_api/sys_admin_api_test.v`
+- **测试命令**：
+
+  ```v
+  v -stats test . //运行当前目录以及子目录下的测试文件
+  v -stats test xx.v //运行指定测试文件
+  ```
 
 ### Git 忽略配置
 
