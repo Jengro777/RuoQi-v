@@ -16,11 +16,11 @@
     "show_summary": true,
   },
   {
-    "label": "v run",
-    "tags": ["run_default"],
+    "label": "v run uat",
+    "tags": ["run_uat"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d log_debug -d veb_livereload watch  -o app run ./main",
     "command": "v wipe-cache && v -d autofree -d new_veb -d trace_orm -d veb_livereload watch -o app  run ./main",
-    "args": ["-f", "etc/config_dev.toml"],
+    "args": ["-f", "etc/config.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
     // 运行命令的工作目录，默认为当前项目根目录
