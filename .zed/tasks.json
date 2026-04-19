@@ -1,8 +1,23 @@
 // Static tasks configuration.
 [
   {
+    "label": "v run dev",
+    "tags": ["run_dev"],
+    // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d log_debug -d veb_livereload watch  -o app run ./main",
+    "command": "v wipe-cache && v -d autofree -d new_veb -d trace_orm -d veb_livereload watch -o app  run ./main",
+    "args": ["-f", "etc/config_dev.toml"],
+    "env": {},
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never",
+    "shell": "system",
+    "show_summary": true,
+  },
+  {
     "label": "v run",
-    "tags": ["v-main"],
+    "tags": ["run_default"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d log_debug -d veb_livereload watch  -o app run ./main",
     "command": "v wipe-cache && v -d autofree -d new_veb -d trace_orm -d veb_livereload watch -o app  run ./main",
     "args": ["-f", "etc/config_dev.toml"],
@@ -31,7 +46,7 @@
   },
   {
     "label": "v run -cc clang -g",
-    "tags": ["v-main"],
+    "tags": ["run_dev_clang"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
     "command": "v wipe-cache && v -d autofree -cc clang -g -d veb_livereload watch -o app run ./main",
     "args": ["-f", "etc/config_dev.toml"],
@@ -41,7 +56,7 @@
   /* v 构建命令 */
   {
     "label": "v build -cc clang -g",
-    "tags": ["v-main"],
+    "tags": ["build_clang"],
     "command": "v -d autofree -cc clang -g -no-parallel  -o app ./main",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
@@ -50,7 +65,7 @@
   },
   {
     "label": "v build -cc gcc -g",
-    "tags": ["v-main"],
+    "tags": ["build_gcc"],
     "command": "v -d autofree -cc gcc -g -no-parallel  -o app ./main",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
@@ -59,7 +74,7 @@
   },
   {
     "label": "v build -prod",
-    "tags": ["v-main"],
+    "tags": ["build_prod"],
     "command": "v -d autofree -prod -o app ./main",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
@@ -70,7 +85,7 @@
   /* v 测试命令 */
   {
     "label": "v test",
-    "tags": ["v-test"],
+    "tags": ["test_globals"],
     "command": "v -stats -enable-globals test .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
