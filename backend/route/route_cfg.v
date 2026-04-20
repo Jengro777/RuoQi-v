@@ -12,7 +12,7 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	}
 	$if core ? {
 		log.warn('routes_ifdef - Core')
-		app.routes_core_admin(conn, doc_conf)
+		app.routes_core_tenant(mut ctx)
 	}
 	$if job ? {
 		log.warn('routes_ifdef - Job')
@@ -25,7 +25,8 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	}
 	$if sys ? {
 		log.warn('routes_ifdef - Sys')
-		app.routes_sys_admin()
+		app.routes_sys_admin(mut ctx)
+		app.routes_core_admin(mut ctx)
 	} $else {
 		log.warn('routes_ifdef - All')
 		app.routes_db(mut ctx)
