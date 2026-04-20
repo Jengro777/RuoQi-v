@@ -17,7 +17,7 @@ pub fn (app &MFA) sms_login_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := sms_login_usecase(mut ctx, req) or {
+	result := sms_login_usecase(req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -25,12 +25,12 @@ pub fn (app &MFA) sms_login_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn sms_login_usecase(mut ctx Context, req SmsLoginReq) !SmsLoginResp {
+pub fn sms_login_usecase(req SmsLoginReq) !SmsLoginResp {
 	// Domain 校验
 	sms_login_domain(req)!
 
 	// Repository / 核心逻辑
-	return sms_login(mut ctx, req)
+	return sms_login()
 }
 
 // ----------------- Domain 层 -----------------
@@ -61,7 +61,7 @@ const phone_re = regex.regex_opt(r'^\+?[0-9]{1,4}?[-\s]?\(?[0-9]{1,4}\)?[-\s]?[0
 	panic('Invalid phone regex pattern')
 }
 
-fn sms_login(mut ctx Context, req SmsLoginReq) !SmsLoginResp {
+fn sms_login() !SmsLoginResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	token_opt, opt_num := opt.opt_generate()

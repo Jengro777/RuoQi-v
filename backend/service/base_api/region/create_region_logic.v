@@ -27,22 +27,22 @@ pub fn (app &Region) create_region_handler(mut ctx Context) veb.Result {
 
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_region_usecase(mut ctx Context, req CreateRegionReq) !CreateRegionResp {
-	create_region_domain(req)!
+	// create_region_domain(req)!
 	return create_region(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_region_domain(req CreateRegionReq) ! {
-	// if req.path == '' {
-	// 	return error('path is required')
-	// }
-	// if req.method == '' {
-	// 	return error('method is required')
-	// }
-	// if req.service_name == '' {
-	// 	return error('service_name is required')
-	// }
-}
+// fn create_region_domain(req CreateRegionReq) ! {
+// if req.path == '' {
+// 	return error('path is required')
+// }
+// if req.method == '' {
+// 	return error('method is required')
+// }
+// if req.service_name == '' {
+// 	return error('service_name is required')
+// }
+// }
 
 // ----------------- DTO 层 -----------------
 pub struct CreateRegionReq {

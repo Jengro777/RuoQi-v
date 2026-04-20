@@ -27,22 +27,22 @@ pub fn (app &Language) create_language_handler(mut ctx Context) veb.Result {
 
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_language_usecase(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
-	create_language_domain(req)!
+	// create_language_domain(req)!
 	return create_language(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_language_domain(req CreateLanguageReq) ! {
-	// if req.path == '' {
-	// 	return error('path is required')
-	// }
-	// if req.method == '' {
-	// 	return error('method is required')
-	// }
-	// if req.service_name == '' {
-	// 	return error('service_name is required')
-	// }
-}
+// fn create_language_domain(req CreateLanguageReq) ! {
+// if req.path == '' {
+// 	return error('path is required')
+// }
+// if req.method == '' {
+// 	return error('method is required')
+// }
+// if req.service_name == '' {
+// 	return error('service_name is required')
+// }
+// }
 
 // ----------------- DTO 层 -----------------
 pub struct CreateLanguageReq {

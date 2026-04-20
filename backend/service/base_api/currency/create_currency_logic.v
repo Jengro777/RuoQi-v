@@ -27,22 +27,22 @@ pub fn (app &Currency) create_currency_handler(mut ctx Context) veb.Result {
 
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_currency_usecase(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
-	create_currency_domain(req)!
+	// create_currency_domain(req)!
 	return create_currency(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_currency_domain(req CreateCurrencyReq) ! {
-	// if req.path == '' {
-	// 	return error('path is required')
-	// }
-	// if req.method == '' {
-	// 	return error('method is required')
-	// }
-	// if req.service_name == '' {
-	// 	return error('service_name is required')
-	// }
-}
+// fn create_currency_domain(req CreateCurrencyReq) ! {
+// if req.path == '' {
+// 	return error('path is required')
+// }
+// if req.method == '' {
+// 	return error('method is required')
+// }
+// if req.service_name == '' {
+// 	return error('service_name is required')
+// }
+// }
 
 // ----------------- DTO 层 -----------------
 pub struct CreateCurrencyReq {

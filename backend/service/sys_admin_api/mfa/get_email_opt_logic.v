@@ -17,7 +17,7 @@ pub fn (app &MFA) mfa_email_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := email_login_usecase(mut ctx, req) or {
+	result := email_login_usecase(req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -25,12 +25,12 @@ pub fn (app &MFA) mfa_email_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Usecase 层 -----------------
-pub fn email_login_usecase(mut ctx Context, req EmailLoginReq) !EmailLoginResp {
+pub fn email_login_usecase(req EmailLoginReq) !EmailLoginResp {
 	// Domain 参数校验
 	email_login_domain(req)!
 
 	// Repository 层生成 OTP
-	return email_login(mut ctx, req)
+	return email_login()
 }
 
 // ----------------- Domain 层 -----------------
@@ -59,7 +59,7 @@ const email_re = regex.regex_opt(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2
 	panic('Invalid email regex pattern')
 }
 
-fn email_login(mut ctx Context, req EmailLoginReq) !EmailLoginResp {
+fn email_login() !EmailLoginResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	token_opt, opt_num := opt.opt_generate()

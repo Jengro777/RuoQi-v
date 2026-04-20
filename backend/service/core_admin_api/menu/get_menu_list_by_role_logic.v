@@ -27,16 +27,16 @@ pub fn role_menu_list_handler(app &Menu, mut ctx Context) veb.Result {
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn get_menu_list_by_role_usecase(mut ctx Context, req GetMenuListByRoleReq) !GetMenuListByRoleResp {
 	// Domain 参数校验
-	get_menu_list_by_role_domain(req)!
+	// get_menu_list_by_role_domain(req)!
 
 	// Repository 查询
 	return get_menu_list_by_role_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn get_menu_list_by_role_domain(req GetMenuListByRoleReq) ! {
-	//
-}
+// fn get_menu_list_by_role_domain(req GetMenuListByRoleReq) ! {
+// 	//
+// }
 
 // ----------------- DTO 层 -----------------
 pub struct GetMenuListByRoleReq {
