@@ -27,22 +27,22 @@ pub fn (app &Utc) create_utc_handler(mut ctx Context) veb.Result {
 
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_utc_usecase(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
-	create_utc_domain(req)!
+	// create_utc_domain(req)!
 	return create_utc(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_utc_domain(req CreateUtcReq) ! {
-	// if req.path == '' {
-	// 	return error('path is required')
-	// }
-	// if req.method == '' {
-	// 	return error('method is required')
-	// }
-	// if req.service_name == '' {
-	// 	return error('service_name is required')
-	// }
-}
+// fn create_utc_domain(req CreateUtcReq) ! {
+// if req.path == '' {
+// 	return error('path is required')
+// }
+// if req.method == '' {
+// 	return error('method is required')
+// }
+// if req.service_name == '' {
+// 	return error('service_name is required')
+// }
+// }
 
 // ----------------- DTO 层 -----------------
 pub struct CreateUtcReq {

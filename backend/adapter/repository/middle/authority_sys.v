@@ -46,7 +46,7 @@ pub fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	// Step 2:3
 	role_id_list := find_roleids_by_userid(mut ctx, db, user_id)!
 	// Step 4:5
-	user_api_list := find_apiids_by_roleids(mut ctx, db, role_id_list)!
+	user_api_list := find_apiids_by_roleids(db, role_id_list)!
 
 	return user_api_list
 }
@@ -109,7 +109,7 @@ fn find_roleids_by_userid(mut ctx Context, db mysql.DB, user_id string) ![]strin
 }
 
 // 4:5: 查询角色关联的 API ID
-fn find_apiids_by_roleids(mut ctx Context, db mysql.DB, role_id_list []string) ![]string {
+fn find_apiids_by_roleids(db mysql.DB, role_id_list []string) ![]string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut sys_api := []SysApi{}

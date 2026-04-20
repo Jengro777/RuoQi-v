@@ -32,7 +32,7 @@ pub fn (app &User) access_token_handler(mut ctx Context) veb.Result {
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn access_token_usecase(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 	// 1️⃣ 调用 Domain 层生成 token
-	generate_access_token_domain(mut ctx, req)!
+	generate_access_token_domain(req)!
 
 	// 2️⃣ 写入数据库 (Repository)
 	new_token := create_token(mut ctx, req)!
@@ -41,7 +41,7 @@ pub fn access_token_usecase(mut ctx Context, req AccessTokenReq) !AccessTokenRes
 }
 
 // ----------------- Domain 层 -----------------
-fn generate_access_token_domain(mut ctx Context, req AccessTokenReq) ! {
+fn generate_access_token_domain(req AccessTokenReq) ! {
 	if req.user_id == '' {
 		return error('user_id cannot be empty')
 	}

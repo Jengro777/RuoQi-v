@@ -93,7 +93,7 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 
 	// 生成 token
 	expired_at := time.now().add_days(30)
-	token_jwt := generate_email_jwt(mut ctx, req, user_info[0].username)
+	token_jwt := generate_email_jwt(mut ctx, req)
 
 	// 插入 token
 	tokens := CoreToken{
@@ -119,7 +119,7 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 }
 
 // ----------------- JWT 生成逻辑 -----------------
-fn generate_email_jwt(mut ctx Context, req LoginByEmailReq, username string) string {
+fn generate_email_jwt(mut ctx Context, req LoginByEmailReq) string {
 	secret := ctx.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{

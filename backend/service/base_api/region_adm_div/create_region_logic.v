@@ -27,22 +27,22 @@ pub fn (app &RegionAdmDiv) create_adm_handler(mut ctx Context) veb.Result {
 
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_adm_usecase(mut ctx Context, req CreateAdmReq) !CreateAdmResp {
-	create_adm_domain(req)!
+	// create_adm_domain(req)!
 	return create_adm(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_adm_domain(req CreateAdmReq) ! {
-	// if req.path == '' {
-	// 	return error('path is required')
-	// }
-	// if req.method == '' {
-	// 	return error('method is required')
-	// }
-	// if req.service_name == '' {
-	// 	return error('service_name is required')
-	// }
-}
+// fn create_adm_domain(req CreateAdmReq) ! {
+// if req.path == '' {
+// 	return error('path is required')
+// }
+// if req.method == '' {
+// 	return error('method is required')
+// }
+// if req.service_name == '' {
+// 	return error('service_name is required')
+// }
+// }
 
 // ----------------- DTO 层 -----------------
 pub struct CreateAdmReq {

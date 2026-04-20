@@ -23,7 +23,7 @@ import common.captcha
 pub fn (app &MFA) get_captcha_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	result := get_captcha_usecase(mut ctx) or {
+	result := get_captcha_usecase() or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -31,12 +31,12 @@ pub fn (app &MFA) get_captcha_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn get_captcha_usecase(mut ctx Context) !GetCaptchaResp {
+pub fn get_captcha_usecase() !GetCaptchaResp {
 	// Domain 层校验（这里可以扩展）
 	get_captcha_domain()!
 
 	// 调用 Repository / Adapter 层生成验证码
-	return get_captcha(mut ctx)
+	return get_captcha()
 }
 
 // ----------------- Domain 层 -----------------
@@ -51,7 +51,7 @@ pub struct GetCaptchaResp {
 }
 
 // ----------------- Repository / Adapter 层 -----------------
-fn get_captcha(mut ctx Context) !GetCaptchaResp {
+fn get_captcha() !GetCaptchaResp {
 	captcha_token, captcha_image, captcha_text := captcha.captcha_generate() or {
 		return error('Failed to generate captcha')
 	}
