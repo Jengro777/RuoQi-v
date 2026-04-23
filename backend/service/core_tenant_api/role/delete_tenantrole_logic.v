@@ -2,7 +2,6 @@ module role
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_core { CoreRole }
 import common.api
@@ -56,8 +55,12 @@ fn delete_role_repo(mut ctx Context, req DeleteTenantRoleReq) !DeleteTenantRoleR
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[CoreRole](db)
-	q.set('del_flag = ?', 1)!.where('id = ?', req.role_id)!.update()!
+	update_expr := {
+				del_flag == 1
+		}
+	sql db {
+		dynamic update CoreRole set update_expr where id == req.role_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return DeleteTenantRoleResp{
 		msg: 'Delete Tenant Role Successfully'

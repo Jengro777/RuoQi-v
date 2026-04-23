@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_core { CoreToken }
 import common.api
@@ -56,8 +55,11 @@ fn logout_repo(mut ctx Context, req LogoutReq) !LogoutResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[CoreToken](db)
-	q.set('status = ?', '1')!.where('id = ?', req.user_id)!.update()!
+	sql db {
+		dynamic update CoreToken set {
+				status == '1'
+		} where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return LogoutResp{
 		logout: 'Logout successful'

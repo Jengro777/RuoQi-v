@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_core { CoreRole, CoreRoleTenantMember, CoreUser }
 import common.api
@@ -10,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/info'; get]
-pub fn (app &User)user_info_handler(mut ctx Context) veb.Result {
+pub fn (app &User) user_info_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetUserInfoReq](ctx.req.data) or {
@@ -63,8 +62,10 @@ fn get_user_info_repo(mut ctx Context, req GetUserInfoReq) !GetUserInfoResp {
 	}
 
 	// 查询用户
-	mut q_user := orm.new_query[CoreUser](db)
-	users := q_user.select()!.where('id = ?', req.user_id)!.query()!
+	users := sql db {
+		select from CoreUser where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
+
 	if users.len == 0 {
 		return error('User not found')
 	}

@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_core { CoreRoleTenantMember, CoreUser }
@@ -74,20 +73,20 @@ fn update_user_repo(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 	}
 
 	// 更新用户基础信息
-	mut sys_user := orm.new_query[CoreUser](db)
-
-	sys_user.set('avatar = ?', req.avatar)!
-		.set('email = ?', req.email)!
-		.set('mobile = ?', req.mobile)!
-		.set('nickname = ?', req.nickname)!
-		.set('description = ?', req.description)!
-		.set('home_path = ?', req.home_path)!
-		.set('password = ?', req.password)!
-		.set('status = ?', req.status)!
-		.set('username = ?', req.username)!
-		.set('updated_at = ?', req.updated_at)!
-		.where('id = ?', req.user_id)!
-		.update()!
+	sql db {
+		dynamic update CoreUser set {
+				avatar == req.avatar,
+				email == req.email,
+				phone == req.mobile,
+				nickname == req.nickname,
+				description == req.description,
+				home_path == req.home_path,
+				password == req.password,
+				status == req.status,
+				username == req.username,
+				updated_at == req.updated_at
+		} where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 更新用户角色
 	mut user_roles := []CoreRoleTenantMember{cap: req.role_ids.len}
@@ -97,10 +96,17 @@ fn update_user_repo(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 			role_id:   role_id
 		}
 	}
-	mut user_role := orm.new_query[CoreRoleTenantMember](db)
+	// 先删除用户的所有角色
+	sql db {
+		delete from CoreRoleTenantMember where member_id == req.user_id
+	} or { return error('Failed to delete user roles: ${err}') }
 
-	user_role.delete()!.where('user_id = ?', req.user_id)!
-		.insert_many(user_roles)!
+	// 再批量插入新角色
+	for user_role in user_roles {
+		sql db {
+			insert user_role into CoreRoleTenantMember
+		} or { return error('Failed to insert user roles: ${err}') }
+	}
 
 	return UpdateUserResp{
 		msg: 'User updated successfully'

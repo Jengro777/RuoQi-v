@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_core { CoreRole, CoreRoleTenantMember, CoreUser }
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/user/id'; post]
-pub fn (app &User)user_by_id_handler(mut ctx Context) veb.Result {
+pub fn (app &User) user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserByIdReq](ctx.req.data) or {
@@ -78,8 +77,9 @@ fn user_by_id_repo(mut ctx Context, req UserByIdReq) !UserByIdResp {
 		}
 	}
 
-	mut q_user := orm.new_query[CoreUser](db)
-	result := q_user.select()!.where('id = ?', req.user_id)!.query()!
+	result := sql db {
+		select from CoreUser where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if result.len == 0 {
 		return error('User not found')

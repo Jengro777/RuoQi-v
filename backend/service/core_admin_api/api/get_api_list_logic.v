@@ -3,7 +3,6 @@ module api
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_core { CoreApi }
 import common.api
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/api/list'; post]
-pub fn (app &Api)api_list_handler(mut ctx Context) veb.Result {
+pub fn (app &Api) api_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetCoreApiByListReq](ctx.req.data) or {
@@ -85,28 +84,19 @@ fn find_core_api_list_repo(mut ctx Context, req GetCoreApiByListReq) !GetCoreApi
 	}!
 
 	offset_num := (req.page - 1) * req.page_size
+	// vfmt off
+  where_expr := {
+      if req.path != '' { path == req.path },
+      if req.api_group != '' { api_group == req.api_group },
+      if req.service_name != '' { service_name == req.service_name },
+      if req.is_required in [0, 1] { is_required == req.is_required },
+      if req.method != '' { method == req.method }
+  }
+	// vfmt on
 
-	mut q_api := orm.new_query[CoreApi](db)
-	mut query := q_api.select()!
-
-	// 条件过滤
-	if req.path != '' {
-		query = query.where('path = ?', req.path)!
-	}
-	if req.api_group != '' {
-		query = query.where('api_group = ?', req.api_group)!
-	}
-	if req.service_name != '' {
-		query = query.where('service_name = ?', req.service_name)!
-	}
-	if req.is_required in [0, 1] {
-		query = query.where('is_required = ?', req.is_required)!
-	}
-	if req.method != '' {
-		query = query.where('method = ?', req.method)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	result := sql db {
+		dynamic select from CoreApi where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	mut datalist := []GetCoreApiByList{}
 	for row in result {

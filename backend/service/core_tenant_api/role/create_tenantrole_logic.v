@@ -2,7 +2,6 @@ module role
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import rand
@@ -78,8 +77,6 @@ fn create_tenant_role_repo(mut ctx Context, req CreateTenantRoleReq) !CreateTena
 
 	time_now := time.now()
 
-	mut q_role := orm.new_query[CoreRole](db)
-
 	role := CoreRole{
 		id:             rand.uuid_v7()
 		tenant_id:      req.tenant_id
@@ -95,7 +92,9 @@ fn create_tenant_role_repo(mut ctx Context, req CreateTenantRoleReq) !CreateTena
 		created_at:     time_now
 	}
 
-	q_role.insert(role)!
+	sql db {
+		upsert role into CoreRole
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return CreateTenantRoleResp{
 		msg: 'Tenant role created successfully'

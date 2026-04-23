@@ -3,7 +3,6 @@ module user
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_core { CoreRoleTenantMember, CoreUser }
 import common.api
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/user/list'; post]
-pub fn (app &User)user_list_handler(mut ctx Context) veb.Result {
+pub fn (app &User) user_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetUserListReq](ctx.req.data) or {
@@ -83,31 +82,23 @@ fn find_user_list_repo(mut ctx Context, req GetUserListReq) !GetUserListResp {
 		select count from CoreUser
 	}!
 
-	mut core_user := orm.new_query[CoreUser](db)
-	mut core_user_role := orm.new_query[CoreRoleTenantMember](db)
-
-	mut query := core_user.select()!
-	if req.username != '' {
-		query = query.where('username = ?', req.username)!
-	}
-	if req.nickname != '' {
-		query = query.where('nickname = ?', req.nickname)!
-	}
-	if req.position_id != 0 {
-		query = query.where('position_id = ?', req.position_id)!
-	}
-	if req.mobile != '' {
-		query = query.where('mobile = ?', req.mobile)!
-	}
-	if req.email != '' {
-		query = query.where('email = ?', req.email)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	// vfmt off
+  where_expr := {
+      if req.username != '' { username == req.username },
+      if req.nickname != '' { nickname == req.nickname },
+      if req.email != '' { email == req.email }
+  }
+	// vfmt on
+	result := sql db {
+		dynamic select from CoreUser where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	mut datalist := []GetUserList{}
 	for row in result {
-		user_roles := core_user_role.select()!.where('user_id = ?', row.id)!.query()!
+		user_roles := sql db {
+			select from CoreRoleTenantMember where member_id == row.id
+		} or { return error('Failed to execute SQL query: ${err}') }
+
 		mut role_ids := []string{}
 		for user_role in user_roles {
 			role_ids << user_role.role_id

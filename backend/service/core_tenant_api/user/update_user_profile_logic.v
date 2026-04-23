@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_sys { SysUser }
 import common.api
@@ -60,14 +59,14 @@ fn update_user_profile_repo(mut ctx Context, req UpdateUserProfileReq) !UpdateUs
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysUser](db)
-
-	q.set('avatar = ?', req.avatar)!
-		.set('email = ?', req.email)!
-		.set('mobile = ?', req.mobile)!
-		.set('nickname = ?', req.nickname)!
-		.where('id = ?', req.user_id)!
-		.update()!
+	sql db {
+		dynamic update SysUser set {
+				avatar == req.avatar,
+				email == req.email,
+				mobile == req.mobile,
+				nickname == req.nickname
+		} where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateUserProfileResp{
 		msg: 'User profile updated successfully'

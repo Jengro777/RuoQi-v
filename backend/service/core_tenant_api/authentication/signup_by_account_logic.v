@@ -2,7 +2,6 @@ module authentication
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import rand
@@ -79,7 +78,6 @@ fn create_user_repo(mut ctx Context, req CreateUserReq) !CreateUserResp {
 		return error('Failed to hash password: ${err}')
 	}
 
-	mut q := orm.new_query[CoreUser](db)
 	user := CoreUser{
 		id:          user_id
 		avatar:      req.avatar
@@ -94,7 +92,9 @@ fn create_user_repo(mut ctx Context, req CreateUserReq) !CreateUserResp {
 		updated_at:  req.updated_at or { time.now() }
 	}
 
-	q.insert(user)!
+	sql db {
+		upsert user into CoreUser
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return CreateUserResp{
 		msg: 'User created successfully'

@@ -3,7 +3,6 @@ module project
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_core { CoreProject }
 import common.api
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/list'; post]
-pub fn (app &Project)project_list_handler(mut ctx Context) veb.Result {
+pub fn (app &Project) project_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetCoreProjectByListReq](ctx.req.data) or {
@@ -72,9 +71,6 @@ fn project_list_repo(mut ctx Context, req GetCoreProjectByListReq) !GetCoreProje
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	// ORM 查询
-	mut q := orm.new_query[CoreProject](db)
-
 	// 总数统计
 	mut count := sql db {
 		select count from CoreProject
@@ -82,15 +78,15 @@ fn project_list_repo(mut ctx Context, req GetCoreProjectByListReq) !GetCoreProje
 
 	offset_num := (req.page - 1) * req.page_size
 
-	mut query := q.select()!
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
-	}
-	if req.display_name != '' {
-		query = query.where('api_group = ?', req.display_name)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	// vfmt off
+  where_expr := {
+      if req.name != '' { name == req.name },
+      if req.display_name != '' { display_name == req.display_name }
+  }
+	// vfmt on
+	result := sql db {
+		dynamic select from CoreProject where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 组装返回数据
 	mut datalist := []GetCoreProjectByList{}

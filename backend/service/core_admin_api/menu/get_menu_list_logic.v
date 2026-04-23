@@ -3,7 +3,6 @@ module menu
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_core { CoreMenu }
 import common.api
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/menu/list'; post]
-pub fn (app &Menu)menu_list_handler(mut ctx Context) veb.Result {
+pub fn (app &Menu) menu_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetMenuListReq](ctx.req.data) or {
@@ -94,14 +93,15 @@ fn find_menu_list_repo(mut ctx Context, req GetMenuListReq) !GetMenuListResp {
 
 	offset_num := (req.page - 1) * req.page_size
 
-	mut q := orm.new_query[CoreMenu](db)
-	mut query := q.select()!
+	// vfmt off
+  where_expr := {
+      if req.name != '' { name == req.name }
+  }
+	// vfmt on
 
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	result := sql db {
+		dynamic select from CoreMenu where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 总数统计
 	mut count := sql db {

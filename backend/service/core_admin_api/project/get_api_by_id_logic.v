@@ -3,7 +3,6 @@ module project
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_core { CoreProject }
 import common.api
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/id'; post]
-pub fn (app &Project)project_by_id_handler(mut ctx Context) veb.Result {
+pub fn (app &Project) project_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetCoreProjectByIDReq](ctx.req.data) or {
@@ -64,11 +63,10 @@ fn project_by_id_repo(mut ctx Context, req GetCoreProjectByIDReq) ![]GetCoreProj
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[CoreProject](db)
-	mut query := q.select()!
-	query = query.where('id = ?', req.id)!.limit(1)!
+	result := sql db {
+		select from CoreProject where id == req.id limit 1
+	} or { return error('Failed to execute SQL query: ${err}') }
 
-	result := query.query()!
 	if result.len == 0 {
 		return error('Project not found')
 	}

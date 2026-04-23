@@ -3,7 +3,6 @@ module role
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysRole }
 import common.api
@@ -70,12 +69,14 @@ fn get_tenant_role_repo(mut ctx Context, req GetTenantRoleByIdReq) ![]GetCoreApi
 		}
 	}
 
-	mut q_role := orm.new_query[SysRole](db)
-	mut query := q_role.select()!
-	if req.role_id != '' {
-		query = query.where('id = ?', req.role_id)!
-	}
-	result := query.query()!
+	// vfmt off
+  where_expr := {
+      if req.role_id != '' { id == req.role_id }
+  }
+	// vfmt on
+	result := sql db {
+		dynamic select from SysRole where where_expr
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	mut datalist := []GetCoreApiByListResp{}
 	for row in result {

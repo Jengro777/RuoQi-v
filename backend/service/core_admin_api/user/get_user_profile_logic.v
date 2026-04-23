@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_core { CoreUser }
 import common.api
@@ -10,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/profile'; get]
-pub fn (app &User)user_profile_handler(mut ctx Context) veb.Result {
+pub fn (app &User) user_profile_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserProfileReq](ctx.req.data) or {
@@ -58,8 +57,9 @@ fn user_profile_repo(mut ctx Context, req UserProfileReq) !UserProfileResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut core_user := orm.new_query[CoreUser](db)
-	result := core_user.select('id = ?', req.user_id)!.query()!
+	result := sql db {
+		select from CoreUser where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if result.len == 0 {
 		return error('User not found')
