@@ -3,7 +3,6 @@ module region
 import veb
 import log
 import time
-import orm
 import structs.schema_base { BaseRegion }
 import common.api
 import structs { Context }
@@ -104,71 +103,35 @@ fn get_region_list(mut ctx Context, req RegionListReq) !RegionListResp {
 	// 总数统计
 	mut count := sql db {
 		select count from BaseRegion
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	offset_num := (req.page - 1) * req.page_size
-
-	mut q := orm.new_query[BaseRegion](db).select()!
-
-	if req.sys_region_code != '' {
-		q = q.where('sys_region_code = ?', req.sys_region_code)!
-	}
-	if req.sys_region_name != '' {
-		q = q.where('sys_region_name = ?', req.sys_region_name)!
-	}
-	if req.name_local != '' {
-		q = q.where('name_local = ?', req.name_local)!
-	}
-	if req.langcode_local != '' {
-		q = q.where('langcode_local = ?', req.langcode_local)!
-	}
-	if req.govt_code != '' {
-		q = q.where('govt_code = ?', req.govt_code)!
-	}
-	if req.gid_zero != '' {
-		q = q.where('gid_zero = ?', req.gid_zero)!
-	}
-	if req.hasc != '' {
-		q = q.where('hasc = ?', req.hasc)!
-	}
-	if req.iso_two != '' {
-		q = q.where('iso_two = ?', req.iso_two)!
-	}
-	if req.iso_three != '' {
-		q = q.where('iso_three = ?', req.iso_three)!
-	}
-	if req.numeric != '' {
-		q = q.where('numeric = ?', req.numeric)!
-	}
-	if req.international_prefix != '' {
-		q = q.where('international_prefix = ?', req.international_prefix)!
-	}
-	if req.phone_area_code != '' {
-		q = q.where('phone_area_code = ?', req.phone_area_code)!
-	}
-	if req.postal_code != '' {
-		q = q.where('postal_code = ?', req.postal_code)!
-	}
-	if req.domain_name != '' {
-		q = q.where('domain_name = ?', req.domain_name)!
-	}
-	if req.continent_code != '' {
-		q = q.where('continent_code = ?', req.continent_code)!
-	}
-	if req.coord_bounds != '' {
-		q = q.where('coord_bounds = ?', req.coord_bounds)!
-	}
-	if req.status.len > 0 {
-		q = q.where('status in ?', req.status.map(orm.Primitive(it)))!
-	}
-	if req.name_en != '' {
-		q = q.where('name_en = ?', req.name_en)!
-	}
-	if req.name_zh != '' {
-		q = q.where('name_zh = ?', req.name_zh)!
-	}
-
-	result := q.order(.asc, 'sort')!.limit(req.page_size)!.offset(offset_num)!.query()!
+	// vfmt off
+	where_expr := {
+				if req.sys_region_code != '' {sys_region_code == req.sys_region_code},
+				if req.sys_region_name != '' {sys_region_name == req.sys_region_name},
+				if req.name_local != '' {name_local == req.name_local},
+				if req.langcode_local != '' {langcode_local == req.langcode_local},
+				if req.govt_code != '' {govt_code == req.govt_code},
+				if req.gid_zero != '' {gid_zero == req.gid_zero},
+				if req.hasc != '' {hasc == req.hasc},
+				if req.iso_two != '' {iso_two == req.iso_two},
+				if req.iso_three != '' {iso_three == req.iso_three},
+				if req.numeric != '' {numeric == req.numeric},
+				if req.international_prefix != '' {international_prefix == req.international_prefix},
+				if req.phone_area_code != '' {phone_area_code == req.phone_area_code},
+				if req.postal_code != '' {postal_code == req.postal_code},
+				if req.domain_name != '' {domain_name == req.domain_name},
+				if req.continent_code != '' {continent_code == req.continent_code},
+				if req.coord_bounds != '' {coord_bounds == req.coord_bounds},
+				if req.status.len > 0 {status in req.status},
+				if req.name_en != '' {name_en == req.name_en},
+				if req.name_zh != '' {name_zh == req.name_zh}
+		}
+	// vfmt on
+	result := sql db {
+		dynamic select from BaseRegion where where_expr order by sort limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 构造返回数据
 	mut datalist := []RegionData{}
