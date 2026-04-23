@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/api/id'; post]
-pub fn api_by_id_handler(app &Api, mut ctx Context) veb.Result {
+pub fn (app &Api)api_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetCoreApiByIDReq](ctx.req.data) or {

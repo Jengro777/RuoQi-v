@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/user/list'; post]
-pub fn user_list_handler(app &User, mut ctx Context) veb.Result {
+pub fn (app &User)user_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetUserListReq](ctx.req.data) or {

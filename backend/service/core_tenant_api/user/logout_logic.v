@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/login_out'; post]
-pub fn logout_handler(app &User, mut ctx Context) veb.Result {
+pub fn (app &User) logout_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[LogoutReq](ctx.req.data) or {

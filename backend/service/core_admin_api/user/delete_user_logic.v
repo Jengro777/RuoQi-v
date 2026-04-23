@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/user/delete'; post]
-pub fn delete_user_handler(app &User, mut ctx Context) veb.Result {
+pub fn (app &User)delete_user_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteUserReq](ctx.req.data) or {
