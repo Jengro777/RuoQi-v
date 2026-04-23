@@ -13,7 +13,7 @@ import common.jwt
 
 // ----------------- Handler 层 -----------------
 @['/access_token'; post]
-pub fn access_token_handler(app &User, mut ctx Context) veb.Result {
+pub fn (app &User) access_token_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[AccessTokenReq](ctx.req.data) or {
@@ -78,7 +78,8 @@ fn access_token_repo(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 
 	// 查询 username
 	mut core_user := orm.new_query[CoreUser](db)
-	mut username_rows := core_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
+	mut username_rows :=
+		core_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
 	if username_rows.len == 0 {
 		return error('User not found')
 	}

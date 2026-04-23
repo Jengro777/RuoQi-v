@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/tenant_role_permission/apt_list'; post]
-pub fn role_api_permission_handler(app &RolePermission, mut ctx Context) veb.Result {
+pub fn (app &RolePermission) role_api_permission_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetRoleApiListReq](ctx.req.data) or {

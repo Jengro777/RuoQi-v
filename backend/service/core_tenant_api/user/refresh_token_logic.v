@@ -13,7 +13,7 @@ import common.jwt
 
 // ----------------- Handler 层 -----------------
 @['/token/refresh'; post]
-pub fn refresh_token_handler(app &User, mut ctx Context) veb.Result {
+pub fn (app &User) refresh_token_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[RefreshTokenReq](ctx.req.data) or {

@@ -14,7 +14,7 @@ import common.opt
 
 // ----------------- Handler 层 -----------------
 @['/login_by_sms'; post]
-pub fn login_by_sms_handler(app &Authentication, mut ctx Context) veb.Result {
+pub fn (app &Authentication) login_by_sms_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[LoginBySMSReq](ctx.req.data) or {

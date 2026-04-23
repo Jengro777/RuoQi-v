@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/tenant_role/update'; post]
-pub fn tenant_role_update_handler(app &Role, mut ctx Context) veb.Result {
+pub fn (app &Role) tenant_role_update_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateTenantRoleReq](ctx.req.data) or {

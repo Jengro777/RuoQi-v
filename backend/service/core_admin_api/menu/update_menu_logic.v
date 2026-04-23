@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/menu/update'; post]
-pub fn menu_update_handler(app &Menu, mut ctx Context) veb.Result {
+pub fn (app &Menu)menu_update_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateMenuReq](ctx.req.data) or {

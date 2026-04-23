@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/tenant_role_permission/update_api'; post]
-pub fn update_api_permission_handler(app &RolePermission, mut ctx Context) veb.Result {
+pub fn (app &RolePermission) update_api_permission_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateApiReq](ctx.req.data) or {

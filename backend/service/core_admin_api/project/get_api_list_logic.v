@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/list'; post]
-pub fn project_list_handler(app &Project, mut ctx Context) veb.Result {
+pub fn (app &Project)project_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetCoreProjectByListReq](ctx.req.data) or {

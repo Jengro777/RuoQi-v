@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/update_user'; post]
-pub fn update_user_handler(app &User, mut ctx Context) veb.Result {
+pub fn (app &User) update_user_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateUserReq](ctx.req.data) or {

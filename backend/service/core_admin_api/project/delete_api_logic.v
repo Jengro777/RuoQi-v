@@ -9,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/delete'; post]
-pub fn project_delete_handler(app &Project, mut ctx Context) veb.Result {
+pub fn (app &Project)project_delete_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteProjectReq](ctx.req.data) or {
