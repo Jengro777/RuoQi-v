@@ -2,7 +2,6 @@ module api
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysApi }
@@ -68,17 +67,19 @@ fn update_api(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysApi](db)
-
-	q.set('path = ?', req.path)!
-		.set('description = ?', req.description)!
-		.set('api_group = ?', req.api_group)!
-		.set('service_name = ?', req.service_name)!
-		.set('method = ?', req.method)!
-		.set('is_required = ?', u8(if req.is_required { 1 } else { 0 }))! // true: 1 false: 0
-		.set('updated_at = ?', time.now().format_ss())!
-		.where('id = ?', req.id)!
-		.update()!
+	is_required_u8 := u8(if req.is_required { 1 } else { 0 })
+	update_expr := {
+				path == req.path,
+				description == req.description,
+				api_group == req.api_group,
+				service_name == req.service_name,
+				method == req.method,
+				is_required == is_required_u8,
+				updated_at == time.now()
+		}
+	sql db {
+		dynamic update SysApi set update_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// sql db {
 	// 	update SysApi set path = req.path, description = req.description, api_group = req.api_group,

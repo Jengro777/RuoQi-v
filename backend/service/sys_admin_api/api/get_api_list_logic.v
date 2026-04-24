@@ -3,7 +3,6 @@ module api
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysApi }
 import common.api
@@ -83,23 +82,18 @@ fn get_api_list(mut ctx Context, req ApiListPageReq) !ApiListPageResp {
 	}!
 
 	offset_num := (req.page - 1) * req.page_size
-	mut q := orm.new_query[SysApi](db).select()!
 
-	if req.path != '' {
-		q = q.where('path = ?', req.path)!
-	}
-	if req.api_group != '' {
-		q = q.where('api_group = ?', req.api_group)!
-	}
-	if req.service_name != '' {
-		q = q.where('service_name = ?', req.service_name)!
-	}
-
-	if req.method != '' {
-		q = q.where('method = ?', req.method)!
-	}
-
-	result := q.limit(req.page_size)!.offset(offset_num)!.query()!
+	// vfmt off
+  where_expr := {
+      if req.path != '' { path == req.path },
+      if req.api_group != '' { api_group == req.api_group },
+      if req.service_name != '' { service_name == req.service_name },
+      if req.method != '' { method == req.method }
+  }
+	// vfmt on
+	result := sql db {
+		dynamic select from SysApi where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	mut datalist := []ApiListData{}
 	for row in result {
