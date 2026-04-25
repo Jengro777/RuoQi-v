@@ -36,7 +36,7 @@ max_conns = 100     # 默认 100 个
 min_idle_conns = 10 # 默认 10 个
 max_lifetime = 60   # 默认 60 minute
 idle_timeout = 30   # 默认 30 minute
-get_timeout = 3     # 默认 3 second
+get_timeout = 5     # 默认 3 second
 
 # [dbconf]
 # type = 'tidb'
@@ -74,6 +74,7 @@ get_timeout = 3     # 默认 3 second
 
 [redisconf]
 host = 'mutual-mako-84612.upstash.io'
-port = 6380
+port = 6379
 password = 'gQAAAAAAAUqEAAIgcDJlZDQ0NzkxOGIyYzc0ODRkOTEwYTBmYTllMmQxODEzZQ'
-get_timeout = 10
+get_timeout = 5
+tls = true
