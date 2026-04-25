@@ -3,7 +3,6 @@ module role
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_core { CoreRole }
 import common.api
@@ -73,24 +72,22 @@ fn find_tenant_role_list_repo(mut ctx Context, req GetTenantRoleListReq) !GetTen
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut core_role := orm.new_query[CoreRole](db)
-
 	// 总数统计
 	mut count := sql db {
 		select count from CoreRole
 	}!
 
 	offset_num := (req.page - 1) * req.page_size
+	// vfmt off
+  where_expr := {
+      if req.tenant_id != '' { tenant_id == req.tenant_id },
+      if req.name != '' { name == req.name }
+  }
+	// vfmt on
 
-	mut query := core_role.select()!
-	if req.tenant_id != '' {
-		query = query.where('tenant_id = ?', req.tenant_id)!
-	}
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	result := sql db {
+		dynamic select from CoreRole where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	mut datalist := []GetTenantRoleList{}
 	for row in result {

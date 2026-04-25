@@ -3,7 +3,6 @@ module language
 import veb
 import log
 import time
-import orm
 import structs.schema_base { BaseLanguage }
 import common.api
 import structs { Context }
@@ -80,35 +79,22 @@ fn get_language_list(mut ctx Context, req LanguageListReq) !LanguageListResp {
 	// 总数统计
 	mut count := sql db {
 		select count from BaseLanguage
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	offset_num := (req.page - 1) * req.page_size
-
-	mut q := orm.new_query[BaseLanguage](db).select()!
-
-	if req.language_self_proclaimed != '' {
-		q = q.where('language_self_proclaimed = ?', req.language_self_proclaimed)!
-	}
-	if req.language_code != '' {
-		q = q.where('language_code = ?', req.language_code)!
-	}
-	if req.two_letter_code != '' {
-		q = q.where('two_letter_code = ?', req.two_letter_code)!
-	}
-	if req.three_letter_code != '' {
-		q = q.where('three_letter_code = ?', req.three_letter_code)!
-	}
-	if req.utf8_encoding != '' {
-		q = q.where('utf8_encoding = ?', req.utf8_encoding)!
-	}
-	if req.status.len > 0 {
-		q = q.where('status in ?', req.status.map(orm.Primitive(it)))!
-	}
-	if req.is_basic != 0 {
-		q = q.where('is_basic = ?', req.is_basic)!
-	}
-
-	result := q.order(.asc, 'sort')!.limit(req.page_size)!.offset(offset_num)!.query()!
+	// vfmt off
+	where_expr := {
+				if req.language_self_proclaimed != '' {language_self_proclaimed == req.language_self_proclaimed},
+				if req.language_code != '' {language_code == req.language_code},
+				if req.two_letter_code != '' {two_letter_code == req.two_letter_code},
+				if req.three_letter_code != '' {three_letter_code == req.three_letter_code},
+				if req.utf8_encoding != '' {utf8_encoding == req.utf8_encoding},
+				if req.is_basic.str() != '' {is_basic == req.is_basic}
+		}
+	// vfmt on
+	mut result := sql db {
+		dynamic select from BaseLanguage where where_expr order by sort limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 构造返回数据
 	mut datalist := []LanguageData{}

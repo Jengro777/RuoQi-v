@@ -3,7 +3,6 @@ module api
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysApi }
 import common.api
@@ -65,9 +64,9 @@ fn find_api_by_id(mut ctx Context, req FindApiByIdReq) !FindApiByIdResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysApi](db)
-	mut query := q.select()!.where('id = ?', req.id)!
-	result := query.query()!
+	result := sql db {
+		select from SysApi where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if result.len == 0 {
 		return error('API with id=${req.id} not found')

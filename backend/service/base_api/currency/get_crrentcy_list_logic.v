@@ -3,7 +3,6 @@ module currency
 import veb
 import log
 import time
-import orm
 import structs.schema_base { BaseCurrency }
 import common.api
 import structs { Context }
@@ -78,23 +77,19 @@ fn get_currency_list(mut ctx Context, req CurrencyListReq) !CurrencyListResp {
 	// 总数统计
 	mut count := sql db {
 		select count from BaseCurrency
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	offset_num := (req.page - 1) * req.page_size
-
-	mut q := orm.new_query[BaseCurrency](db).select()!
-
-	if req.english_name != '' {
-		q = q.where('english_name = ?', req.english_name)!
+	// vfmt off
+	where_expr := {
+			if req.english_name != '' {english_name == req.english_name},
+			if req.currency_code != '' {currency_code == req.currency_code},
+			if req.status.len > 0 {status in req.status}
 	}
-	if req.currency_code != '' {
-		q = q.where('currency_code = ?', req.currency_code)!
-	}
-	if req.status.len > 0 {
-		q = q.where('status IN ?', req.status.map(orm.Primitive(it)))!
-	}
-
-	result := q.limit(req.page_size)!.offset(offset_num)!.query()!
+	// vfmt on
+	result := sql db {
+		dynamic select from BaseCurrency where where_expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 构造返回数据
 	mut datalist := []CurrencyData{}

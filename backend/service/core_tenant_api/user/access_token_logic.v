@@ -77,9 +77,10 @@ fn access_token_repo(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 	expired_at := time_now.add_days(30).unix()
 
 	// 查询 username
-	mut core_user := orm.new_query[CoreUser](db)
-	mut username_rows :=
-		core_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
+	username_rows := sql db {
+		select from CoreUser where id == req.user_id limit 1
+	} or { return error('Failed to execute SQL query: ${err}') }
+
 	if username_rows.len == 0 {
 		return error('User not found')
 	}

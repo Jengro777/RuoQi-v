@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -71,12 +70,16 @@ fn refresh_token_repo(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	expired_at_unix := time_now.add_days(30).unix()
 
 	// 禁用当前用户所有 token
-	mut q_token := orm.new_query[CoreToken](db)
-	q_token.set('status=?', 1)!.where('user_id=?', req.user_id)!.update()!
+	sql db {
+		dynamic update CoreToken set {
+				status == 1
+		} where user_id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 获取用户名
-	mut q_user := orm.new_query[CoreUser](db)
-	username_rows := q_user.select('username')!.where('id=?', req.user_id)!.limit(1)!.query()!
+	username_rows := sql db {
+		select from CoreUser where id == req.user_id limit 1
+	} or { return error('Failed to execute SQL query: ${err}') }
 	username := if username_rows.len > 0 { username_rows[0].str() } else { '' }
 
 	// 生成新的 JWT
@@ -94,7 +97,10 @@ fn refresh_token_repo(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 		created_at: time_now
 		updated_at: time_now
 	}
-	q_token.insert(new_token)!
+
+	sql db {
+		upsert new_token into CoreToken
+	}!
 
 	return RefreshTokenResp{
 		expired_at: time.unix(expired_at_unix)

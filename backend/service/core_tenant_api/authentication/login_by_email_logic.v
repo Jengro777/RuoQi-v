@@ -2,7 +2,6 @@ module authentication
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -81,11 +80,9 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 	}
 
 	// 查询用户
-	mut q_user := orm.new_query[CoreUser](db)
-	user_info := q_user.select('id', 'username', 'email', 'status')!
-		.where('email = ?', req.email)!
-		.limit(1)!
-		.query()!
+	user_info := sql db {
+		select from CoreUser where email == req.email limit 1
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if user_info.len == 0 {
 		return error('email not exist')
@@ -108,8 +105,9 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 		updated_at: time.now()
 	}
 
-	mut q_token := orm.new_query[CoreToken](db)
-	q_token.insert(tokens)!
+	sql db {
+		upsert tokens into CoreToken
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return LoginByEmailResp{
 		expired_at: expired_at.str()

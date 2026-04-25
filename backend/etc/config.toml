@@ -73,7 +73,7 @@ get_timeout = 3     # 默认 3 second
 # get_timeout = 3  # 默认 3 second
 
 [redisconf]
-host = 'redis-10644.c60.us-west-1-2.ec2.cloud.redislabs.com'
-port = 10644
-password = 'LAIBbVhs5PoXHKlUbRMdjSRwY1CSsghn'
-get_timeout = 3
+host = 'mutual-mako-84612.upstash.io'
+port = 6380
+password = 'gQAAAAAAAUqEAAIgcDJlZDQ0NzkxOGIyYzc0ODRkOTEwYTBmYTllMmQxODEzZQ'
+get_timeout = 10

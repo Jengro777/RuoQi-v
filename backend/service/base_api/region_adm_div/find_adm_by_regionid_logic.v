@@ -3,7 +3,6 @@ module region_adm_div
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_base { BaseRegionAdmDiv }
 import common.api
@@ -84,9 +83,9 @@ fn get_region_adm_list(mut ctx Context, req RegionAdmListReq) !RegionAdmListResp
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[BaseRegionAdmDiv](db)
-	query := q.select()!.where('id = ?', req.region_id)!
-	result := query.query()!
+	result := sql db {
+		select from BaseRegionAdmDiv where id == req.region_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if result.len == 0 {
 		return error('BaseRegionAdmDiv not found')
