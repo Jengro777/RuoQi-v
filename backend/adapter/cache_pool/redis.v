@@ -9,6 +9,7 @@ pub mut:
 	host        string
 	port        u16
 	password    string
+	tls         ?bool
 	get_timeout time.Duration = 3 * time.second
 }
 
@@ -23,6 +24,7 @@ pub fn new_cache_pool(config CacheConfig) !&CachePool {
 		host:     config.host
 		password: config.password
 		port:     config.port
+		tls:      config.tls or { true }
 	}) or { panic(err) }
 
 	return &CachePool{redisdb}
