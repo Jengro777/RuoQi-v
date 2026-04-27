@@ -2,7 +2,6 @@ module region
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_base { BaseRegion }
@@ -75,72 +74,35 @@ fn update_region(mut ctx Context, req UpdateRegionReq) !UpdateRegionResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[BaseRegion](db)
-	if sys_region_code := req.sys_region_code {
-		q.set('sys_region_code = ?', sys_region_code)!
+	up_expr := {
+		if sys_region_code := req.sys_region_code { sys_region_code == sys_region_code },
+		if sys_region_name := req.sys_region_name { sys_region_name == sys_region_name },
+		if name_local := req.name_local { name_local == name_local },
+		if langcode_local := req.langcode_local { langcode_local == langcode_local },
+		if govt_code := req.govt_code { govt_code == govt_code },
+		if gid_zero := req.gid_zero { gid_zero == gid_zero },
+		if hasc := req.hasc { hasc == hasc },
+		if iso_two := req.iso_two { iso_two == iso_two },
+		if iso_three := req.iso_three { iso_three == iso_three },
+		if numeric := req.numeric { numeric == numeric },
+		if international_prefix := req.international_prefix {
+			international_prefix == international_prefix
+		},
+		if phone_area_code := req.phone_area_code { phone_area_code == phone_area_code },
+		if postal_code := req.postal_code { postal_code == postal_code },
+		if domain_name := req.domain_name { domain_name == domain_name },
+		if continent_code := req.continent_code { continent_code == continent_code },
+		if coord_bounds := req.coord_bounds { coord_bounds == coord_bounds },
+		if name_en := req.name_en { name_en == name_en },
+		if name_zh := req.name_zh { name_zh == name_zh },
+		if sort := req.sort { sort == sort },
+		if status := req.status { status == status },
+		updated_at == time.now()
 	}
-	if sys_region_name := req.sys_region_name {
-		q.set('sys_region_name = ?', sys_region_name)!
-	}
-	if name_local := req.name_local {
-		q.set('name_local = ?', name_local)!
-	}
-	if langcode_local := req.langcode_local {
-		q.set('langcode_local = ?', langcode_local)!
-	}
-	if govt_code := req.govt_code {
-		q.set('govt_code = ?', govt_code)!
-	}
-	if gid_zero := req.gid_zero {
-		q.set('gid_zero = ?', gid_zero)!
-	}
-	if hasc := req.hasc {
-		q.set('hasc = ?', hasc)!
-	}
-	if iso_two := req.iso_two {
-		q.set('iso_two = ?', iso_two)!
-	}
-	if iso_three := req.iso_three {
-		q.set('iso_three = ?', iso_three)!
-	}
-	if numeric := req.numeric {
-		q.set('numeric = ?', numeric)!
-	}
-	if international_prefix := req.international_prefix {
-		q.set('international_prefix = ?', international_prefix)!
-	}
-	if phone_area_code := req.phone_area_code {
-		q.set('phone_area_code = ?', phone_area_code)!
-	}
-	if postal_code := req.postal_code {
-		q.set('postal_code = ?', postal_code)!
-	}
-	if domain_name := req.domain_name {
-		q.set('domain_name = ?', domain_name)!
-	}
-	if continent_code := req.continent_code {
-		q.set('continent_code = ?', continent_code)!
-	}
-	if coord_bounds := req.coord_bounds {
-		q.set('coord_bounds = ?', coord_bounds)!
-	}
-	if name_en := req.name_en {
-		q.set('name_en = ?', name_en)!
-	}
-	if name_zh := req.name_zh {
-		q.set('name_zh = ?', name_zh)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
-	}
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	q.set('updated_at = ?', time_now)!
 
-	q.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update BaseRegion set up_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateRegionResp{
 		msg: 'regiion updated successfully'

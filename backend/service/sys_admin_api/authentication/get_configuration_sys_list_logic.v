@@ -66,11 +66,11 @@ fn get_configuration_system_list_repo(mut ctx Context) !GetConfigurationSystemLi
 	// 总数统计
 	mut count := sql db {
 		select count from SysConfiguration
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	mut result := sql db {
 		select from SysConfiguration
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 数据封装
 	mut datalist := []ConfigurationSystemData{}

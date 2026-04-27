@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_sys { SysUser }
 import common.api
@@ -60,6 +59,7 @@ fn delete_user(mut ctx Context, user_id string) ! {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q_user := orm.new_query[SysUser](db)
-	q_user.set('del_flag = ?', 1)!.where('id = ?', user_id)!.update()!
+	sql db {
+		update SysUser set del_flag = 1 where id == user_id
+	}!
 }

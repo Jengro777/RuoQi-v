@@ -2,11 +2,11 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_sys { SysUser }
 import common.api
 import structs { Context }
+import time
 
 // ----------------- Handler 层 -----------------
 @['/update_user_profile'; post]
@@ -38,18 +38,15 @@ fn update_user_profile_domain(req UpdateUserProfileReq) ! {
 	if req.user_id == '' {
 		return error('user_id cannot be empty')
 	}
-	if req.nickname == '' {
-		return error('nickname cannot be empty')
-	}
 }
 
 // ----------------- DTO 层 -----------------
 pub struct UpdateUserProfileReq {
-	user_id  string @[json: 'userId']
-	avatar   string @[json: 'avatar']
-	email    string @[json: 'email']
-	mobile   string @[json: 'mobile']
-	nickname string @[json: 'nickname']
+	user_id  string  @[json: 'userId']
+	avatar   ?string @[json: 'avatar']
+	email    ?string @[json: 'email']
+	mobile   ?string @[json: 'mobile']
+	nickname ?string @[json: 'nickname']
 }
 
 pub struct UpdateUserProfileResp {
@@ -63,14 +60,17 @@ fn update_user_profile(mut ctx Context, req UpdateUserProfileReq) !UpdateUserPro
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
 	}
 
-	mut q_user := orm.new_query[SysUser](db)
+	up_expr := {
+		if avatar := req.avatar { avatar == avatar },
+		if email := req.email { email == email },
+		if mobile := req.mobile { mobile == mobile },
+		if nickname := req.nickname { nickname == nickname },
+		updated_at == time.now()
+	}
 
-	q_user.set('avatar = ?', req.avatar)!
-		.set('email = ?', req.email)!
-		.set('mobile = ?', req.mobile)!
-		.set('nickname = ?', req.nickname)!
-		.where('id = ?', req.user_id)!
-		.update()!
+	sql db {
+		dynamic update SysUser set up_expr where id == req.user_id
+	}!
 
 	return UpdateUserProfileResp{
 		msg: 'User profile updated successfully'

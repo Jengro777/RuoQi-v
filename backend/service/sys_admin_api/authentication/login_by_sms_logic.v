@@ -2,7 +2,6 @@ module authentication
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -81,11 +80,9 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 	}
 
 	// 查询用户
-	mut q_user := orm.new_query[SysUser](db)
-	user_info := q_user.select('id', 'username', 'status', 'mobile')!
-		.where('mobile = ?', req.phone_num)!
-		.limit(1)!
-		.query()!
+	user_info := sql db {
+		select id, username, status, mobile from SysUser where mobile == req.phone_num limit 1
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if user_info.len == 0 {
 		return error('mobile not exist')
@@ -95,7 +92,6 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 	token_jwt := sms_token_jwt_generate(mut ctx, req)
 
 	// 写入 SysToken
-	mut q_token := orm.new_query[SysToken](db)
 	token_record := SysToken{
 		id:         rand.uuid_v7()
 		status:     req.status
@@ -107,7 +103,9 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 		created_at: time.now()
 		updated_at: time.now()
 	}
-	q_token.insert(token_record)!
+	sql db {
+		insert token_record into SysToken
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return LoginBySMSResp{
 		expired_at: expired_at.str()

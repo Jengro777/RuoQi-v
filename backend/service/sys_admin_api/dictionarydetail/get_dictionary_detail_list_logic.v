@@ -3,7 +3,6 @@ module dictionarydetail
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysDictionaryDetail }
 import common.api
@@ -40,11 +39,11 @@ fn dictionarydetail_list_domain(req DictionaryDetailListReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct DictionaryDetailListReq {
-	page          int    @[json: 'page']
-	page_size     int    @[json: 'pageSize']
-	dictionary_id string @[json: 'dictionaryId']
-	key           string @[json: 'key']
-	status        u8     @[json: 'status']
+	page          int     @[json: 'page']
+	page_size     int     @[json: 'pageSize']
+	dictionary_id ?string @[json: 'dictionaryId']
+	key           ?string @[json: 'key']
+	status        ?u8     @[json: 'status']
 }
 
 pub struct DictionaryDetailListItem {
@@ -73,8 +72,6 @@ fn dictionarydetail_list_repo(mut ctx Context, req DictionaryDetailListReq) !Dic
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysDictionaryDetail](db)
-
 	// 总数统计
 	mut count := sql db {
 		select count from SysDictionaryDetail
@@ -83,15 +80,20 @@ fn dictionarydetail_list_repo(mut ctx Context, req DictionaryDetailListReq) !Dic
 	offset_num := (req.page - 1) * req.page_size
 
 	// 条件过滤
-	mut query := q.select()!
-	if req.dictionary_id != '' {
-		query = query.where('dictionary_id = ?', req.dictionary_id)!
+	wh_expr := {
+		if dictionary_id := req.dictionary_id {
+			dictionary_id == dictionary_id
+		},
+		if key := req.key {
+			key == key
+		},
+		if status := req.status {
+			status == status
+		}
 	}
-	if req.key != '' {
-		query = query.where('key = ?', req.key)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	mut result := sql db {
+		dynamic select from SysDictionaryDetail where wh_expr limit req.page_size offset offset_num
+	}!
 
 	mut datalist := []DictionaryDetailListItem{}
 	for row in result {

@@ -140,7 +140,8 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
 	sys_user := sql db {
 		select from SysUser where id == user_id limit 1
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
+
 	if sys_user.len != 1 {
 		return error('User not found')
 	}
@@ -154,7 +155,8 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 	// step3: 查询用户角色（一个用户可对应多个角色）
 	sys_user_role := sql db {
 		select from schema_sys.SysUserRole where user_id == user_id
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
+
 	if sys_user_role.len < 1 {
 		return error('User role not found')
 	}

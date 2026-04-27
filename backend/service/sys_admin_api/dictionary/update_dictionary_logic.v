@@ -2,7 +2,6 @@ module dictionary
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysDictionary }
@@ -62,25 +61,17 @@ fn update_dictionary_repo(mut ctx Context, req UpdateDictionaryReq) !UpdateDicti
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[SysDictionary](db)
-
-	if name := req.name {
-		q.set('name = ?', name)!
-	}
-	if title := req.title {
-		q.set('title = ?', title)!
-	}
-	if desc := req.desc {
-		q.set('desc = ?', desc)!
-	}
-	if status := req.status {
-		q.set('status = ?', status)!
+	up_expr := {
+		if name := req.name { name == name },
+		if title := req.title { title == title },
+		if desc := req.desc { desc == desc },
+		if status := req.status { status == status },
+		updated_at == time.now()
 	}
 
-	q.set('updated_at = ?', time_now)!
-		.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update SysDictionary set up_expr where id == req.id
+	}!
 
 	return UpdateDictionaryResp{
 		msg: 'Dictionary updated successfully'

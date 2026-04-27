@@ -3,7 +3,6 @@ module dictionarydetail
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysDictionary, SysDictionaryDetail }
 import common.api
@@ -72,9 +71,10 @@ fn get_dictionary_detail_repo(mut ctx Context, req GetDictionaryDetailReq) !GetD
 	}
 
 	// 查询字典ID
-	mut q_dict := orm.new_query[SysDictionary](db)
-	mut qd := q_dict.select('id')!.where('name = ?', req.dictionary_name)!
-	dict_result := qd.query()!
+
+	mut dict_result := sql db {
+		select id from SysDictionary where name == req.dictionary_name
+	}!
 	if dict_result.len == 0 {
 		return GetDictionaryDetailResp{
 			msg:  'Dictionary not found'
@@ -84,9 +84,9 @@ fn get_dictionary_detail_repo(mut ctx Context, req GetDictionaryDetailReq) !GetD
 	dictionary_id := dict_result[0].id
 
 	// 查询字典明细
-	mut q_detail := orm.new_query[SysDictionaryDetail](db)
-	mut qd_detail := q_detail.select()!.where('dictionary_id = ?', dictionary_id)!
-	detail_result := qd_detail.query()!
+	mut detail_result := sql db {
+		select from SysDictionaryDetail where dictionary_id == dictionary_id
+	}!
 
 	mut datalist := []DictionaryDetailItem{}
 	for row in detail_result {

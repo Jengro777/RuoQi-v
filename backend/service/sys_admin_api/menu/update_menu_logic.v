@@ -2,7 +2,6 @@ module menu
 
 import veb
 import log
-// import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysMenu }
@@ -86,27 +85,48 @@ fn update_menu(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	}
 
 	sql db {
-		update SysMenu set parent_id = req.parent_id, menu_level = req.menu_level, menu_type = req.menu_type,
-		path = req.path, name = req.name, redirect = req.redirect, component = req.component,
-		disabled = fn [req] () u8 {
-		return if req.disabled or { false } { u8(1) } else { u8(0) }
-	}(), service_name = req.service_name, permission = req.permission, title = req.title,
-		icon = req.icon, hide_menu = fn [req] () u8 {
-		return if req.hide_menu or { false } { u8(1) } else { u8(0) }
-	}(), hide_breadcrumb = fn [req] () u8 {
-		return if req.hide_breadcrumb or { false } { u8(1) } else { u8(0) }
-	}(), ignore_keep_alive = fn [req] () u8 {
-		return if req.ignore_keep_alive or { false } { u8(1) } else { u8(0) }
-	}(), hide_tab = fn [req] () u8 {
-		return if req.hide_tab or { false } { u8(1) } else { u8(0) }
-	}(), frame_src = req.frame_src, carry_param = fn [req] () u8 {
-		return if req.carry_param or { false } { u8(1) } else { u8(0) }
-	}(), hide_children_in_menu = fn [req] () u8 {
-		return if req.hide_children_in_menu or { false } { u8(1) } else { u8(0) }
-	}(), affix = fn [req] () u8 {
-		return if req.affix or { false } { u8(1) } else { u8(0) }
-	}(), dynamic_level = req.dynamic_level, real_path = req.real_path, sort = req.sort,
-		updated_at = time.now().format_ss() where id == req.id
+		update SysMenu set
+			parent_id = req.parent_id,
+			menu_level = req.menu_level,
+			menu_type = req.menu_type,
+			path = req.path,
+			name = req.name,
+			redirect = req.redirect,
+			component = req.component,
+			disabled = fn [req] () u8 {
+				return if req.disabled or { false } { u8(1) } else { u8(0) }
+			}(),
+			service_name = req.service_name,
+			permission = req.permission,
+			title = req.title,
+			icon = req.icon,
+			hide_menu = fn [req] () u8 {
+				return if req.hide_menu or { false } { u8(1) } else { u8(0) }
+			}(),
+			hide_breadcrumb = fn [req] () u8 {
+				return if req.hide_breadcrumb or { false } { u8(1) } else { u8(0) }
+			}(),
+			ignore_keep_alive = fn [req] () u8 {
+				return if req.ignore_keep_alive or { false } { u8(1) } else { u8(0) }
+			}(),
+			hide_tab = fn [req] () u8 {
+				return if req.hide_tab or { false } { u8(1) } else { u8(0) }
+			}(),
+			frame_src = req.frame_src,
+			carry_param = fn [req] () u8 {
+				return if req.carry_param or { false } { u8(1) } else { u8(0) }
+			}(),
+			hide_children_in_menu = fn [req] () u8 {
+				return if req.hide_children_in_menu or { false } { u8(1) } else { u8(0) }
+			}(),
+			affix = fn [req] () u8 {
+				return if req.affix or { false } { u8(1) } else { u8(0) }
+			}(),
+			dynamic_level = req.dynamic_level,
+			real_path = req.real_path,
+			sort = req.sort,
+			updated_at = time.now().format_ss()
+		where id == req.id
 	} or { return error('Failed to update menu ${err}') }
 
 	return UpdateMenuResp{

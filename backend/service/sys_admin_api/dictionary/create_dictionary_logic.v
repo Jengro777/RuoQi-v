@@ -2,7 +2,6 @@ module dictionary
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -66,8 +65,6 @@ fn create_dictionary_repo(mut ctx Context, req CreateDictionaryReq) !CreateDicti
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysDictionary](db)
-
 	dict := SysDictionary{
 		id:         rand.uuid_v7()
 		title:      req.title
@@ -78,7 +75,9 @@ fn create_dictionary_repo(mut ctx Context, req CreateDictionaryReq) !CreateDicti
 		updated_at: time.now()
 	}
 
-	q.insert(dict)!
+	sql db {
+		insert dict into SysDictionary
+	}!
 
 	return CreateDictionaryResp{
 		msg: 'Dictionary created successfully'

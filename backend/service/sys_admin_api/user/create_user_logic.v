@@ -9,7 +9,6 @@ import structs { Context }
 import structs.schema_sys { SysUser, SysUserPosition, SysUserRole }
 import common.api
 import common.encrypt
-import orm
 
 // ----------------- Handler 层 -----------------
 @['/create_user'; post]
@@ -117,11 +116,19 @@ fn create_user(mut ctx Context, req CreateUserReq, user_id string, password_hash
 	}
 
 	// 插入数据库
-	mut q_user := orm.new_query[SysUser](db)
-	mut q_user_pos := orm.new_query[SysUserPosition](db)
-	mut q_user_role := orm.new_query[SysUserRole](db)
 
-	q_user.insert(user)!
-	q_user_pos.insert_many(user_positions)!
-	q_user_role.insert_many(user_roles)!
+	sql db {
+		insert user into SysUser
+	}!
+
+	for i in user_positions {
+		sql db {
+			insert i into SysUserPosition
+		}!
+	}
+	for i in user_roles {
+		sql db {
+			insert i into SysUserRole
+		}!
+	}
 }

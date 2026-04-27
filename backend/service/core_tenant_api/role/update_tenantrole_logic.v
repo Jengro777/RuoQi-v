@@ -2,7 +2,6 @@ module role
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_core { CoreRole }
@@ -39,27 +38,22 @@ fn update_tenant_role_domain(req UpdateTenantRoleReq) ! {
 	if req.role_id == '' {
 		return error('role_id is required')
 	}
-	if req.name == '' {
-		return error('name is required')
-	}
-	if req.code == '' {
-		return error('code is required')
+	if req.tenant_id == '' {
+		return error('tenant_id is required')
 	}
 	// 其他字段根据需要可以加校验
 }
 
 // ----------------- DTO 层 -----------------
 pub struct UpdateTenantRoleReq {
-	role_id        string    @[json: 'role_id']
-	tenant_id      string    @[json: 'tenant_id']
-	status         u8        @[default: 0; json: 'status']
-	name           string    @[json: 'name']
-	code           string    @[json: 'code']
-	default_router string    @[json: 'default_router']
-	remark         string    @[json: 'remark']
-	sort           u64       @[json: 'sort']
-	data_scope     u8        @[json: 'data_scope']
-	updated_at     time.Time @[json: 'updated_at']
+	role_id        string     @[json: 'role_id']
+	tenant_id      string     @[json: 'tenant_id']
+	status         ?u8        @[default: 0; json: 'status']
+	name           ?string    @[json: 'name']
+	default_router ?string    @[json: 'default_router']
+	remark         ?string    @[json: 'remark']
+	sort           ?u64       @[json: 'sort']
+	updated_at     ?time.Time @[json: 'updated_at']
 }
 
 pub struct UpdateTenantRoleResp {
@@ -73,18 +67,21 @@ fn update_tenant_role_repo(mut ctx Context, req UpdateTenantRoleReq) !UpdateTena
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[CoreRole](db)
+	up_expr := {
+		if status := req.status { status == status },
+		if name := req.name { name == name },
+		if default_router := req.default_router { default_router == default_router },
+		if remark := req.remark { remark == remark },
+		if sort := req.sort { sort == sort },
+		updated_at == time.now()
+	}
 
-	q.set('status = ?', req.status)!
-		.set('name = ?', req.name)!
-		.set('code = ?', req.code)!
-		.set('default_router = ?', req.default_router)!
-		.set('remark = ?', req.remark)!
-		.set('sort = ?', req.sort)!
-		.set('data_scope = ?', req.data_scope)!
-		.set('updated_at = ?', req.updated_at)!
-		.where('id = ?', req.role_id)!
-		.update()!
+	sql db {
+		dynamic update CoreRole set up_expr where {
+		id == req.role_id,
+		tenant_id == req.tenant_id
+	}
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateTenantRoleResp{
 		msg: 'Update Tenant Role successfully'

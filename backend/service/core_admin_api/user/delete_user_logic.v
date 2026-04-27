@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_core { CoreUser }
 import common.api
@@ -10,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/user/delete'; post]
-pub fn (app &User)delete_user_handler(mut ctx Context) veb.Result {
+pub fn (app &User) delete_user_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteUserReq](ctx.req.data) or {
@@ -57,8 +56,11 @@ fn delete_user_repo(mut ctx Context, req DeleteUserReq) !DeleteUserResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut core_user := orm.new_query[CoreUser](db)
-	core_user.set('del_flag = ?', 1)!.where('id = ?', req.user_id)!.update()!
+	sql db {
+		dynamic update CoreUser set {
+		del_flag == 1
+	} where id == req.user_id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return DeleteUserResp{
 		msg: 'User deleted successfully'

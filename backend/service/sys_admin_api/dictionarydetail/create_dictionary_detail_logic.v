@@ -2,7 +2,6 @@ module dictionarydetail
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -71,8 +70,6 @@ fn create_dictionarydetail_repo(mut ctx Context, req CreateDictionaryDetailReq) 
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysDictionaryDetail](db)
-
 	detail := SysDictionaryDetail{
 		id:            rand.uuid_v7()
 		title:         req.title
@@ -85,7 +82,9 @@ fn create_dictionarydetail_repo(mut ctx Context, req CreateDictionaryDetailReq) 
 		updated_at:    time.now()
 	}
 
-	q.insert(detail)!
+	sql db {
+		insert detail into SysDictionaryDetail
+	}!
 
 	return CreateDictionaryDetailResp{
 		msg: 'Dictionary detail created successfully'

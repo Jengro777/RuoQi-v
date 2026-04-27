@@ -13,7 +13,6 @@ import structs { Context }
 import structs.schema_sys { SysToken, SysUser }
 import common.api
 import common.jwt
-import orm
 
 // ----------------- Handler 层 -----------------
 @['/access_token'; post]
@@ -72,8 +71,6 @@ fn create_token(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 
 	token_jwt := token_jwt_generate(mut ctx, req)!
 
-	mut sys_token := orm.new_query[SysToken](db)
-
 	time_now := time.now()
 	expired_at := time_now.add_days(30)
 	new_token := SysToken{
@@ -87,7 +84,9 @@ fn create_token(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 		created_at: time_now
 		updated_at: time_now
 	}
-	sys_token.insert(new_token)!
+	sql db {
+		insert new_token into SysToken
+	}!
 
 	return AccessTokenResp{
 		token:      token_jwt

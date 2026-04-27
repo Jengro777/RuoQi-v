@@ -2,7 +2,6 @@ module configuration
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -72,8 +71,6 @@ fn create_configuration_repo(mut ctx Context, req CreateConfigurationReq) !Creat
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysConfiguration](db)
-
 	config := SysConfiguration{
 		id:         rand.uuid_v7()
 		name:       req.name
@@ -87,7 +84,9 @@ fn create_configuration_repo(mut ctx Context, req CreateConfigurationReq) !Creat
 		updated_at: req.updated_at or { time.now() }
 	}
 
-	q.insert(config)!
+	sql db {
+		insert config into SysConfiguration
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return CreateConfigurationResp{
 		msg: 'Configuration created successfully'

@@ -2,11 +2,10 @@ module user
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
-import structs.schema_sys { SysToken, SysUser }
+import structs.schema_sys { SysToken }
 import common.api
 import structs { Context }
 import common.jwt
@@ -71,8 +70,9 @@ fn refresh_token(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	expired_at_unix := time_now.add_days(30).unix()
 
 	// 禁用用户现有 token
-	mut q_token := orm.new_query[SysToken](db)
-	q_token.set('status = ?', 1)!.where('user_id = ?', req.user_id)!.update()!
+	sql db {
+		update SysToken set status = 1 where user_id == req.user_id
+	}!
 
 	// 生成新的 token
 	payload := jwt.JwtPayload{
@@ -89,8 +89,10 @@ fn refresh_token(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	token := jwt.jwt_generate(req.secret, payload)
 
 	// 获取 username
-	mut q_user := orm.new_query[SysUser](db)
-	username_row := q_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
+	mut username_row := sql db {
+		select username from schema_sys.SysUser where id == req.user_id limit 1
+	}!
+
 	username := if username_row.len > 0 { username_row[0].username } else { '' }
 
 	// 写入数据库
@@ -105,7 +107,9 @@ fn refresh_token(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 		created_at: time_now
 		updated_at: time_now
 	}
-	q_token.insert(new_token)!
+	sql db {
+		insert new_token into SysToken
+	}!
 
 	return RefreshTokenResp{
 		expired_at: time.unix(expired_at_unix)

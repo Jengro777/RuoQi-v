@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -101,8 +100,10 @@ fn access_token_repo(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 		created_at: time_now
 		updated_at: time_now
 	}
-	mut core_token := orm.new_query[CoreToken](db)
-	core_token.insert(new_token)!
+
+	sql db {
+		insert new_token into CoreToken
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return AccessTokenResp{
 		token:      token

@@ -3,7 +3,6 @@ module configuration
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysConfiguration }
 import common.api
@@ -44,11 +43,11 @@ fn get_configuration_list_domain(req GetConfigurationListReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct GetConfigurationListReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
-	name      string @[json: 'name']
-	key       string @[json: 'key']
-	category  string @[json: 'category']
+	page      int     @[json: 'page']
+	page_size int     @[json: 'pageSize']
+	name      ?string @[json: 'name']
+	key       ?string @[json: 'key']
+	category  ?string @[json: 'category']
 }
 
 pub struct ConfigurationData {
@@ -77,21 +76,6 @@ fn get_configuration_list_repo(mut ctx Context, req GetConfigurationListReq) !Ge
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysConfiguration](db)
-
-	// 条件查询
-	if req.name != '' {
-		q = q.select()!.where('name = ?', req.name)!
-	}
-
-	if req.key != '' {
-		q = q.where('key = ?', req.key)!
-	}
-
-	if req.category != '' {
-		q = q.where('category = ?', req.category)!
-	}
-
 	// 总数统计
 	mut count := sql db {
 		select count from SysConfiguration
@@ -99,7 +83,15 @@ fn get_configuration_list_repo(mut ctx Context, req GetConfigurationListReq) !Ge
 
 	// 分页
 	offset_num := (req.page - 1) * req.page_size
-	result := q.limit(req.page_size)!.offset(offset_num)!.query()!
+
+	expr := {
+		if name := req.name { name == name },
+		if key := req.key { key == key },
+		if category := req.category { category == category }
+	}
+	mut result := sql db {
+		dynamic select from SysConfiguration where expr limit req.page_size offset offset_num
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 数据封装
 	mut datalist := []ConfigurationData{}

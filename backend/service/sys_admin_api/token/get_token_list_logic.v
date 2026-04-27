@@ -3,7 +3,6 @@ module token
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysToken }
 import common.api
@@ -43,12 +42,10 @@ fn get_token_list_domain(req TokenListReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct TokenListReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
-	username  string @[json: 'username']
-	email     string @[json: 'email']
-	nickname  string @[json: 'nickname']
-	user_id   string @[json: 'uuid']
+	page      int     @[json: 'page']
+	page_size int     @[json: 'pageSize']
+	username  ?string @[json: 'username']
+	user_id   ?string @[json: 'uuid']
 }
 
 pub struct TokenListItem {
@@ -74,25 +71,15 @@ fn get_token_list(mut ctx Context, req TokenListReq) !TokenListResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q := orm.new_query[SysToken](db)
-
 	offset_num := (req.page - 1) * req.page_size
 
-	mut query := q.select()!
-	if req.username != '' {
-		query = query.where('username = ?', req.username)!
+	wh_expr := {
+		if username := req.username { username == username },
+		if user_id := req.user_id { user_id == user_id }
 	}
-	if req.email != '' {
-		query = query.where('email = ?', req.email)!
-	}
-	if req.nickname != '' {
-		query = query.where('nickname = ?', req.nickname)!
-	}
-	if req.user_id != '' {
-		query = query.where('user_id = ?', req.user_id)!
-	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	mut result := sql db {
+		dynamic select from SysToken where wh_expr limit req.page_size offset offset_num
+	}!
 
 	mut datalist := []TokenListItem{}
 	for row in result {

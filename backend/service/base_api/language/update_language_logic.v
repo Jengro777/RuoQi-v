@@ -2,7 +2,6 @@ module language
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_base { BaseLanguage }
@@ -63,36 +62,23 @@ fn update_language(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[BaseLanguage](db)
-	if language_self_proclaimed := req.language_self_proclaimed {
-		q.set('language_self_proclaimed = ?', language_self_proclaimed)!
+	up_expr := {
+		if language_self_proclaimed := req.language_self_proclaimed {
+			language_self_proclaimed == language_self_proclaimed
+		},
+		if language_code := req.language_code { language_code == language_code },
+		if two_letter_code := req.two_letter_code { two_letter_code == two_letter_code },
+		if three_letter_code := req.three_letter_code { three_letter_code == three_letter_code },
+		if utf8_encoding := req.utf8_encoding { utf8_encoding == utf8_encoding },
+		if is_basic := req.is_basic { is_basic == is_basic },
+		if sort := req.sort { sort == sort },
+		if status := req.status { status == status },
+		updated_at == time.now()
 	}
-	if language_code := req.language_code {
-		q.set('language_code = ?', language_code)!
-	}
-	if two_letter_code := req.two_letter_code {
-		q.set('two_letter_code = ?', two_letter_code)!
-	}
-	if three_letter_code := req.three_letter_code {
-		q.set('three_letter_code = ?', three_letter_code)!
-	}
-	if utf8_encoding := req.utf8_encoding {
-		q.set('utf8_encoding = ?', utf8_encoding)!
-	}
-	if is_basic := req.is_basic {
-		q.set('is_basic = ?', is_basic)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
-	}
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	q.set('updated_at = ?', time_now)!
 
-	q.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update BaseLanguage set up_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateLanguageResp{
 		msg: 'language updated successfully'
