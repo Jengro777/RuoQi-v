@@ -75,17 +75,17 @@ fn update_user_repo(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 	// 更新用户基础信息
 	sql db {
 		dynamic update CoreUser set {
-				avatar == req.avatar,
-				email == req.email,
-				phone == req.mobile,
-				nickname == req.nickname,
-				description == req.description,
-				home_path == req.home_path,
-				password == req.password,
-				status == req.status,
-				username == req.username,
-				updated_at == req.updated_at
-		} where id == req.user_id
+		avatar == req.avatar,
+		email == req.email,
+		phone == req.mobile,
+		nickname == req.nickname,
+		description == req.description,
+		home_path == req.home_path,
+		password == req.password,
+		status == req.status,
+		username == req.username,
+		updated_at == req.updated_at
+	} where id == req.user_id
 	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 更新用户角色

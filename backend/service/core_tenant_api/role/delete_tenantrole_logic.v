@@ -56,8 +56,8 @@ fn delete_role_repo(mut ctx Context, req DeleteTenantRoleReq) !DeleteTenantRoleR
 	}
 
 	update_expr := {
-				del_flag == 1
-		}
+		del_flag == 1
+	}
 	sql db {
 		dynamic update CoreRole set update_expr where id == req.role_id
 	} or { return error('Failed to execute SQL query: ${err}') }

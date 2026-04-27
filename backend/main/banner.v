@@ -11,8 +11,7 @@ pub fn banner() {
  | |_) | | | | |  / _ \  | | | | | |  _____   \ \ / /
  |  _ <  | |_| | | (_) | | |_| | | | |_____|   \ V /
  |_| \_\  \__,_|  \___/   \__\_\ |_|            \_/
-' +
-		reset)
+' + reset)
 
 	println(cyan + ':: RuoQi-V :: Admin Dashboard (v0.5.0)' + reset)
 }

@@ -69,14 +69,14 @@ fn update_api(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 
 	is_required_u8 := u8(if req.is_required { 1 } else { 0 })
 	update_expr := {
-				path == req.path,
-				description == req.description,
-				api_group == req.api_group,
-				service_name == req.service_name,
-				method == req.method,
-				is_required == is_required_u8,
-				updated_at == time.now()
-		}
+		path == req.path,
+		description == req.description,
+		api_group == req.api_group,
+		service_name == req.service_name,
+		method == req.method,
+		is_required == is_required_u8,
+		updated_at == time.now()
+	}
 	sql db {
 		dynamic update SysApi set update_expr where id == req.id
 	} or { return error('Failed to execute SQL query: ${err}') }

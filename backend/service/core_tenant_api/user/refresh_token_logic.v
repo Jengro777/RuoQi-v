@@ -72,8 +72,8 @@ fn refresh_token_repo(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	// 禁用当前用户所有 token
 	sql db {
 		dynamic update CoreToken set {
-				status == 1
-		} where user_id == req.user_id
+		status == 1
+	} where user_id == req.user_id
 	} or { return error('Failed to execute SQL query: ${err}') }
 
 	// 获取用户名
