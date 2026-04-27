@@ -24,7 +24,7 @@ pub fn new_cache_pool(config CacheConfig) !&CachePool {
 		host:     config.host
 		password: config.password
 		port:     config.port
-		tls:      config.tls or { true }
+		tls:      config.tls or { false }
 	}) or { panic(err) }
 
 	return &CachePool{redisdb}
