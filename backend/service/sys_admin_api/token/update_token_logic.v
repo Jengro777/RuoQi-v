@@ -2,7 +2,6 @@ module token
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysToken }
@@ -61,27 +60,18 @@ fn update_token(mut ctx Context, req UpdateTokenReq) !UpdateTokenResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[SysToken](db)
-	if userid := req.user_id {
-		q.set('status = ?', userid)!
+	up_expr := {
+		if user_id := req.user_id { user_id == user_id },
+		if status := req.status { status == status },
+		if username := req.username { username == username },
+		if source := req.source { source == source },
+		if expired_at := req.expired_at { expired_at == expired_at },
+		updated_at == time.now()
 	}
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	if username := req.username {
-		q.set('username = ?', username)!
-	}
-	if source := req.source {
-		q.set('source = ?', source)!
-	}
-	if expired_at := req.expired_at {
-		q.set('expired_at = ?', expired_at)!
-	}
-	q.set('updated_at = ?', time_now)!
 
-	q.where('id = ?', req.token_id)!
-		.update()!
+	sql db {
+		dynamic update SysToken set up_expr where id == req.token_id
+	}!
 
 	return UpdateTokenResp{
 		msg: 'Token updated successfully'

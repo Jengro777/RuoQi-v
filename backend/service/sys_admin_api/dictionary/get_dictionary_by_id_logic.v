@@ -3,7 +3,6 @@ module dictionary
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysDictionary }
 import common.api
@@ -61,9 +60,9 @@ fn dictionary_by_id_repo(mut ctx Context, req DictionaryByIdReq) !DictionaryById
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysDictionary](db)
-	query := q.select()!.where('id = ?', req.id)!
-	result := query.query()!
+	mut result := sql db {
+		select from SysDictionary where id == req.id
+	}!
 
 	if result.len == 0 {
 		return error('dictionary not found')

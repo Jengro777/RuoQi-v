@@ -9,7 +9,6 @@ repo（仓储）
 */
 module user
 
-import orm
 import structs { Context }
 import structs.schema_sys { SysRole, SysUser, SysUserRole }
 import parts.sys_admin.user as parts { SysRolePart, SysUserPart }
@@ -28,8 +27,9 @@ pub fn (mut r UserRepo) find_user_by_id(user_id string) !SysUserPart {
 		r.ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
 	}
 
-	mut query := orm.new_query[SysUser](db)
-	result := query.select()!.where('id = ?', user_id)!.query()!
+	mut result := sql db {
+		select from SysUser where id == user_id
+	}!
 
 	if result.len == 0 {
 		return error('User not found')

@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_sys { SysUser, SysUserDepartment, SysUserPosition, SysUserRole }
 import common.api
@@ -87,73 +86,58 @@ fn update_user(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 	}
 
 	// 更新用户表
-	mut q_user := orm.new_query[SysUser](db)
-
-	if avatar := req.avatar {
-		q_user.set('avatar = ?', avatar)!
+	up_expr := {
+		if avatar := req.avatar { avatar == avatar },
+		if email := req.email { email == email },
+		if mobile := req.mobile { mobile == mobile },
+		if nickname := req.nickname { nickname == nickname },
+		if description := req.description { description == description },
+		if home_path := req.home_path { home_path == home_path },
+		if password := req.password { password == password },
+		if status := req.status { status == status },
+		if username := req.username { username == username }
 	}
-	if email := req.email {
-		q_user.set('email = ?', email)!
-	}
-	if mobile := req.mobile {
-		q_user.set('mobile = ?', mobile)!
-	}
-	if nickname := req.nickname {
-		q_user.set('nickname = ?', nickname)!
-	}
-	// 移除 department_id 设置，因为它不在 SysUser 表中
-	// if department_id := req.department_id {
-	//     q_user.set('department_id = ?', department_id)!
-	// }
-	if description := req.description {
-		q_user.set('description = ?', description)!
-	}
-	if home_path := req.home_path {
-		q_user.set('home_path = ?', home_path)!
-	}
-	if password := req.password {
-		q_user.set('password = ?', password)!
-	}
-	if status := req.status {
-		q_user.set('status = ?', status)!
-	}
-	if username := req.username {
-		q_user.set('username = ?', username)!
-	}
-
-	q_user.where('id = ?', req.user_id)!
-		.update()!
+	sql db {
+		dynamic update SysUser set up_expr where id == req.user_id
+	}!
 
 	// 更新用户职位关系 - 修正链式调用顺序
-	mut q_user_pos := orm.new_query[SysUserPosition](db)
-
-	q_user_pos.where('user_id = ?', req.user_id)!
-		.delete()!
+	sql db {
+		delete from SysUserPosition where user_id == req.user_id
+	}!
 	if user_positions.len > 0 {
-		q_user_pos.insert_many(user_positions)!
+		for up in user_positions {
+			sql db {
+				insert up into SysUserPosition
+			}!
+		}
 	}
 
 	// 更新用户角色关系
-	mut q_user_role := orm.new_query[SysUserRole](db)
-
-	q_user_role.where('user_id = ?', req.user_id)!
-		.delete()!
+	sql db {
+		delete from SysUserRole where user_id == req.user_id
+	}!
 	if user_roles.len > 0 {
-		q_user_role.insert_many(user_roles)!
+		for ur in user_roles {
+			sql db {
+				insert ur into SysUserRole
+			}!
+		}
 	}
 
 	// 处理部门关联（新增）
 	if department_id := req.department_id {
-		mut q_user_dep := orm.new_query[SysUserDepartment](db)
-
-		q_user_dep.where('user_id = ?', req.user_id)!
-			.delete()!
+		sql db {
+			delete from SysUserDepartment where user_id == req.user_id
+		}!
 		if department_id != '' {
 			user_dep := SysUserDepartment{
 				user_id:       req.user_id
 				department_id: department_id
 			}
-			q_user_dep.insert(user_dep)!
+			sql db {
+				insert user_dep into SysUserDepartment
+			}!
 		}
 	}
 

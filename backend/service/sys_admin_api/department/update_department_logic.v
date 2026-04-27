@@ -2,7 +2,6 @@ module department
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysDepartment }
@@ -63,36 +62,21 @@ fn update_department_repo(mut ctx Context, req UpdateDepartmentReq) !UpdateDepar
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[SysDepartment](db)
-	if parent_id := req.parent_id {
-		q.set('parent_id = ?', parent_id)!
-	}
-	if name := req.name {
-		q.set('name = ?', name)!
-	}
-	if leader := req.leader {
-		q.set('leader = ?', leader)!
-	}
-	if phone := req.phone {
-		q.set('phone = ?', phone)!
-	}
-	if email := req.email {
-		q.set('email = ?', email)!
-	}
-	if remark := req.remark {
-		q.set('remark = ?', remark)!
-	}
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
+	up_expr := {
+		if parent_id := req.parent_id { parent_id == parent_id },
+		if name := req.name { name == name },
+		if leader := req.leader { leader == leader },
+		if phone := req.phone { phone == phone },
+		if email := req.email { email == email },
+		if remark := req.remark { remark == remark },
+		if status := req.status { status == status },
+		if sort := req.sort { sort == sort },
+		updated_at == time.now()
 	}
 
-	q.set('updated_at = ?', time_now)!
-		.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update SysDepartment set up_expr where id == req.id
+	}!
 
 	return UpdateDepartmentResp{
 		msg: 'Department updated successfully'

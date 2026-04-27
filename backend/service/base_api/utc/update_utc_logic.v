@@ -2,10 +2,8 @@ module utc
 
 import veb
 import log
-import orm
-import time
 import x.json2 as json
-import structs.schema_base { BaseCurrency }
+import structs.schema_base { BaseUtc }
 import common.api
 import structs { Context }
 
@@ -60,30 +58,17 @@ fn update_utc(mut ctx Context, req UpdateUtcReq) !UpdateUtcResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[BaseCurrency](db)
-	if sort := req.sort {
-		q.set('expired_at = ?', sort)!
+	up_expr := {
+		if sort := req.sort { sort == sort },
+		if name := req.name { name == name },
+		if lng_range_start := req.lng_range_start { lng_range_start == lng_range_start },
+		if lng_range_end := req.lng_range_end { lng_range_end == lng_range_end },
+		if lng_mid := req.lng_mid { lng_mid == lng_mid }
 	}
-	if name := req.name {
-		q.set('name = ?', name)!
-	}
-	if lng_range_start := req.lng_range_start {
-		q.set('lng_range_start = ?', lng_range_start)!
-	}
-	if lng_range_start := req.lng_range_start {
-		q.set('lng_range_start = ?', lng_range_start)!
-	}
-	if lng_range_end := req.lng_range_end {
-		q.set('lng_range_end = ?', lng_range_end)!
-	}
-	if lng_mid := req.lng_mid {
-		q.set('lng_mid = ?', lng_mid)!
-	}
-	q.set('updated_at = ?', time_now)!
 
-	q.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update BaseUtc set up_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateUtcResp{
 		msg: 'UTC updated successfully'

@@ -2,7 +2,6 @@ module configuration
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_sys { SysConfiguration }
 import common.api
@@ -56,8 +55,9 @@ fn delete_configuration_repo(mut ctx Context, req DeleteConfigurationReq) !Delet
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysConfiguration](db)
-	q.delete()!.where('id = ?', req.id)!.update()!
+	sql db {
+		delete from SysConfiguration where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return DeleteConfigurationResp{
 		msg: 'Configuration deleted successfully'

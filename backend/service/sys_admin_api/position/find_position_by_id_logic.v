@@ -3,7 +3,6 @@ module position
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysPosition }
 import common.api
@@ -63,9 +62,9 @@ fn find_position_by_id(mut ctx Context, id string) !GetPositionByIdResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q := orm.new_query[SysPosition](db)
-	mut query := q.select()!.where('id = ?', id)!
-	result := query.query()!
+	mut result := sql db {
+		select from SysPosition where id == id
+	}!
 
 	if result.len == 0 {
 		return error('Position not found')

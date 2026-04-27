@@ -3,7 +3,6 @@ module configuration
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysConfiguration }
 import common.api
@@ -64,9 +63,9 @@ fn get_configuration_by_id_repo(mut ctx Context, req GetConfigurationByIdReq) !G
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysConfiguration](db)
-	mut query := q.select()!.where('id = ?', req.id)!
-	result := query.query()!
+	result := sql db {
+		select from SysConfiguration where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	if result.len == 0 {
 		return error('Configuration not found')

@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import x.json2 as json
 import structs.schema_sys { SysUser }
 import common.api
@@ -58,10 +57,11 @@ fn update_password(mut ctx Context, req ChangePasswordReq) ! {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
 	}
 
-	mut sys_user := orm.new_query[SysUser](db)
-
 	// 查询当前密码
-	user_rows := sys_user.select('password')!.where('id = ?', req.user_id)!.limit(1)!.query()!
+	mut user_rows := sql db {
+		select password from SysUser where id == req.user_id limit 1
+	}!
+
 	if user_rows.len == 0 {
 		return error('User not found')
 	}
@@ -71,9 +71,7 @@ fn update_password(mut ctx Context, req ChangePasswordReq) ! {
 	verify_old_password_domain(req.old_password, current_password)!
 
 	// 更新新密码
-	sys_user.reset()
-
-	sys_user.set('password = ?', req.new_password)!
-		.where('id = ?', req.user_id)!
-		.update()!
+	sql db {
+		update SysUser set password = req.new_password where id == req.user_id
+	}!
 }

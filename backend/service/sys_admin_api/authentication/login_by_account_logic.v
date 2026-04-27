@@ -2,7 +2,6 @@ module authentication
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -85,11 +84,10 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 	}
 
 	// 查询用户
-	mut q_user := orm.new_query[SysUser](db)
-	user_info := q_user.select('id', 'username', 'password', 'status')!
-		.where('username = ?', req.username)!
-		.limit(1)!
-		.query()!
+
+	mut user_info := sql db {
+		select id, username, password, status from SysUser where username == req.username limit 1
+	}!
 
 	if user_info.len == 0 {
 		return error('UserName not exist')
@@ -121,8 +119,9 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 		updated_at: time.now()
 	}
 
-	mut q_token := orm.new_query[SysToken](db)
-	q_token.insert(tokens)!
+	sql db {
+		insert tokens into SysToken
+	}!
 
 	return LoginByAccountResp{
 		expired_at: expired_at.unix()
@@ -140,7 +139,8 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
 	sys_user := sql db {
 		select from SysUser where id == user_id limit 1
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
+
 	if sys_user.len != 1 {
 		return error('User not found')
 	}
@@ -154,7 +154,8 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 	// step3: 查询用户角色（一个用户可对应多个角色）
 	sys_user_role := sql db {
 		select from schema_sys.SysUserRole where user_id == user_id
-	}!
+	} or { return error('Failed to execute SQL query: ${err}') }
+
 	if sys_user_role.len < 1 {
 		return error('User role not found')
 	}

@@ -61,11 +61,11 @@ fn update_user_profile_repo(mut ctx Context, req UpdateUserProfileReq) !UpdateUs
 
 	sql db {
 		dynamic update SysUser set {
-				avatar == req.avatar,
-				email == req.email,
-				mobile == req.mobile,
-				nickname == req.nickname
-		} where id == req.user_id
+		avatar == req.avatar,
+		email == req.email,
+		mobile == req.mobile,
+		nickname == req.nickname
+	} where id == req.user_id
 	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateUserProfileResp{

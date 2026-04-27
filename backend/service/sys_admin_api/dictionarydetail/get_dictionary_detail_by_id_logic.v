@@ -3,7 +3,6 @@ module dictionarydetail
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysDictionaryDetail }
 import common.api
@@ -66,9 +65,9 @@ fn dictionarydetail_by_id_repo(mut ctx Context, req DictionaryDetailByIdReq) !Di
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysDictionaryDetail](db)
-	mut query := q.select()!.where('id = ?', req.id)!
-	result := query.query()!
+	mut result := sql db {
+		select from SysDictionaryDetail where id == req.id
+	}!
 
 	if result.len == 0 {
 		return error('DictionaryDetail not found for id=${req.id}')

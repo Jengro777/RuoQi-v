@@ -57,8 +57,8 @@ fn logout_repo(mut ctx Context, req LogoutReq) !LogoutResp {
 
 	sql db {
 		dynamic update CoreToken set {
-				status == '1'
-		} where id == req.user_id
+		status == 1
+	} where id == req.user_id
 	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return LogoutResp{

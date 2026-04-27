@@ -71,7 +71,8 @@ get_timeout = 5    # 默认 3 second
 host = '127.0.0.1'
 port = 6379
 password = ''
-get_timeout = 3
+get_timeout = 5
+tls = false
 
 [Prometheus]
 Host = '0.0.0.0'

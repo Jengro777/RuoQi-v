@@ -2,7 +2,6 @@ module role
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysRole }
@@ -64,40 +63,21 @@ fn update_role(mut ctx Context, req UpdateRoleReq) !UpdateRoleResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[SysRole](db)
-
-	// 只更新有值的字段
-	q.set('updated_at = ?', time_now)!
-
-	// 使用条件判断，只有字段不为空时才更新
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	if name := req.name {
-		q.set('name = ?', name)!
-	}
-	if code := req.code {
-		q.set('code = ?', code)!
-	}
-	if default_router := req.default_router {
-		q.set('default_router = ?', default_router)!
-	}
-	if remark := req.remark {
-		q.set('remark = ?', remark)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
-	}
-	if data_scope := req.data_scope {
-		q.set('data_scope = ?', data_scope)!
-	}
-	if custom_dept_ids := req.custom_dept_ids {
-		q.set('custom_dept_ids = ?', custom_dept_ids)!
+	up_expr := {
+		if status := req.status { status == status },
+		if name := req.name { name == name },
+		if code := req.code { code == code },
+		if default_router := req.default_router { default_router == default_router },
+		if remark := req.remark { remark == remark },
+		if sort := req.sort { sort == sort },
+		if data_scope := req.data_scope { data_scope == data_scope },
+		if custom_dept_ids := req.custom_dept_ids { custom_dept_ids == custom_dept_ids },
+		updated_at == time.now()
 	}
 
-	q.where('id = ?', req.id)!
-	q.update()!
+	sql db {
+		dynamic update SysRole set up_expr where id == req.id
+	}!
 
 	return UpdateRoleResp{
 		msg: 'Role updated successfully'

@@ -3,7 +3,6 @@ module user
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysUser, SysUserDepartment, SysUserPosition, SysUserRole }
 import common.api
@@ -40,14 +39,13 @@ fn get_user_list_domain(req GetUserListReq) ! {
 
 // ----------------- DTO 层 | 请求/返回结构 -----------------
 pub struct GetUserListReq {
-	page          int = 1    @[json: 'page']
-	page_size     int = 10    @[json: 'pageSize']
-	department_id string @[json: 'departmentId']
-	username      string @[json: 'username']
-	nickname      string @[json: 'nickname']
-	position_id   string @[json: 'positionId']
-	mobile        string @[json: 'mobile']
-	email         string @[json: 'email']
+	page          int = 1     @[json: 'page']
+	page_size     int = 10     @[json: 'pageSize']
+	department_id string  @[json: 'departmentId']
+	username      ?string @[json: 'username']
+	nickname      ?string @[json: 'nickname']
+	mobile        ?string @[json: 'mobile']
+	email         ?string @[json: 'email']
 }
 
 pub struct GetUserListResp {
@@ -81,78 +79,76 @@ fn find_user_list(mut ctx Context, req GetUserListReq) !GetUserListResp {
 
 	offset_num := (req.page - 1) * req.page_size
 
-	// 总数统计
-	mut count := sql db {
-		select count from SysUser
-	}!
-
-	mut q_user := orm.new_query[SysUser](db)
-	mut query := q_user.select()!
-
-	if req.username != '' {
-		query = query.where('username = ?', req.username)!
-	}
-	if req.nickname != '' {
-		query = query.where('nickname = ?', req.nickname)!
-	}
-	if req.position_id != '' {
-		query = query.where('position_id = ?', req.position_id)!
-	}
-	if req.mobile != '' {
-		query = query.where('mobile = ?', req.mobile)!
-	}
-	if req.email != '' {
-		query = query.where('email = ?', req.email)!
-	}
-
-	// 处理 department_id 过滤 - 使用 JOIN 查询
+	// 处理 department_id 过滤 - 获取用户ID列表
+	mut user_ids := []string{}
 	if req.department_id != '' {
-		// 先查询该部门下的用户ID
 		user_departments := sql db {
 			select from SysUserDepartment where department_id == req.department_id
 		}!
 
-		if user_departments.len > 0 {
-			// 使用 OR 条件构建查询
-			mut first := true
-			for ud in user_departments {
-				if first {
-					query = query.where('id = ?', ud.user_id)!
-					first = false
-				} else {
-					query = query.or_where('id = ?', ud.user_id)!
-				}
+		if user_departments.len == 0 {
+			// 部门下没有用户，返回空结果
+			return GetUserListResp{
+				total: 0
+				data:  []
 			}
-		} else {
-			// 如果没有用户在该部门，返回空结果
-			return error('No users found in the specified department')
+		}
+
+		// 提取用户ID
+		for ud in user_departments {
+			user_ids << ud.user_id
 		}
 	}
 
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	// 构建动态查询条件
+	wh_expr := {
+		if username := req.username { username == username },
+		if nickname := req.nickname { nickname == nickname },
+		if mobile := req.mobile { mobile == mobile },
+		if email := req.email { email == email },
+		if user_ids.len > 0 { id in user_ids }
+	}
 
+	// 总数统计
+	count := sql db {
+		dynamic select count from SysUser where wh_expr
+	}!
+
+	// 查询分页数据
+	result := sql db {
+		dynamic select from SysUser where wh_expr limit req.page_size offset offset_num
+	}!
+
+	// 组装返回数据
 	mut datalist := []GetUserList{}
-
-	mut q_user_role := orm.new_query[SysUserRole](db)
-	mut q_user_position := orm.new_query[SysUserPosition](db)
-	mut q_user_department := orm.new_query[SysUserDepartment](db)
 
 	for row in result {
 		// 获取角色
-		user_roles := q_user_role.select()!.where('user_id = ?', row.id)!.query()!
+		user_roles := sql db {
+			select from SysUserRole where user_id == row.id
+		}!
 		mut role_ids := []string{}
 		for r in user_roles {
 			role_ids << r.role_id
 		}
 
 		// 获取职位
-		user_positions := q_user_position.select()!.where('user_id = ?', row.id)!.query()!
+		user_positions := sql db {
+			select from SysUserPosition where user_id == row.id
+		}!
 		mut position_ids := []string{}
 		for p in user_positions {
 			position_ids << p.position_id
 		}
 
-		q_user_department.select()!.where('user_id = ?', row.id)!.query()!
+		// 获取部门（如果需要）
+		user_departments := sql db {
+			select from SysUserDepartment where user_id == row.id
+		}!
+		mut department_ids := []string{}
+		for d in user_departments {
+			department_ids << d.department_id
+		}
 
 		datalist << GetUserList{
 			id:          row.id

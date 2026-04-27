@@ -2,7 +2,6 @@ module currency
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_base { BaseCurrency }
@@ -65,42 +64,25 @@ fn update_currency(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[BaseCurrency](db)
-	if english_name := req.english_name {
-		q.set('english_name = ?', english_name)!
+	up_expr := {
+		if english_name := req.english_name { english_name == english_name },
+		if simplified_name := req.simplified_name { simplified_name == simplified_name },
+		if currency_code := req.currency_code { currency_code == currency_code },
+		if currency_symbol := req.currency_symbol { currency_symbol == currency_symbol },
+		if decimal_place := req.decimal_place { decimal_place == decimal_place },
+		if exchange_rate := req.exchange_rate { exchange_rate == exchange_rate },
+		if exchange_rate_fluctuation := req.exchange_rate_fluctuation {
+			exchange_rate_fluctuation == exchange_rate_fluctuation
+		},
+		if exchange_rate_used := req.exchange_rate_used { exchange_rate_used == exchange_rate_used },
+		if sort := req.sort { sort == sort },
+		if status := req.status { status == status },
+		updated_at == time.now()
 	}
-	if simplified_name := req.simplified_name {
-		q.set('simplified_name = ?', simplified_name)!
-	}
-	if currency_code := req.currency_code {
-		q.set('currency_code = ?', currency_code)!
-	}
-	if currency_symbol := req.currency_symbol {
-		q.set('currency_symbol = ?', currency_symbol)!
-	}
-	if decimal_place := req.decimal_place {
-		q.set('decimal_place = ?', decimal_place)!
-	}
-	if exchange_rate := req.exchange_rate {
-		q.set('exchange_rate = ?', exchange_rate)!
-	}
-	if exchange_rate_fluctuation := req.exchange_rate_fluctuation {
-		q.set('exchange_rate_fluctuation = ?', exchange_rate_fluctuation)!
-	}
-	if exchange_rate_used := req.exchange_rate_used {
-		q.set('exchange_rate_used = ?', exchange_rate_used)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
-	}
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	q.set('updated_at = ?', time_now)!
 
-	q.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update BaseCurrency set up_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateCurrencyResp{
 		msg: 'Currency updated successfully'

@@ -2,7 +2,6 @@ module position
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysPosition }
@@ -61,28 +60,18 @@ fn update_position(mut ctx Context, req UpdatePositionReq) !UpdatePositionResp {
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[SysPosition](db)
-
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	if name := req.name {
-		q.set('name = ?', name)!
-	}
-	if code := req.code {
-		q.set('code = ?', code)!
-	}
-	if remark := req.remark {
-		q.set('remark = ?', remark)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
+	up_expr := {
+		if status := req.status { status == status },
+		if name := req.name { name == name },
+		if code := req.code { code == code },
+		if remark := req.remark { remark == remark },
+		if sort := req.sort { sort == sort },
+		updated_at == time.now()
 	}
 
-	q.set('updated_at = ?', time_now)!
-		.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update SysPosition set up_expr where id == req.id
+	}!
 
 	return UpdatePositionResp{
 		msg: 'Position updated successfully'

@@ -2,7 +2,6 @@ module menu
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_core { CoreMenu }
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/menu/update'; post]
-pub fn (app &Menu)menu_update_handler(mut ctx Context) veb.Result {
+pub fn (app &Menu) menu_update_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateMenuReq](ctx.req.data) or {
@@ -39,43 +38,37 @@ fn update_menu_domain(req UpdateMenuReq) ! {
 	if req.id == '' {
 		return error('id is required')
 	}
-	if req.name == '' {
-		return error('name is required')
-	}
-	if req.updated_at.unix() == 0 {
-		return error('updated_at is required')
-	}
 }
 
 // ----------------- DTO 层 -----------------
 pub struct UpdateMenuReq {
-	id                    string    @[json: 'id']
-	parent_id             u64       @[default: 0; json: 'parent_id']
-	menu_level            u8        @[default: 0; json: 'menuLevel']
-	menu_type             u8        @[default: 0; json: 'menuType']
-	path                  string    @[json: 'path']
-	name                  string    @[json: 'name']
-	redirect              string    @[json: 'redirect']
-	component             string    @[json: 'component']
-	disabled              u8        @[json: 'disabled']
-	service_name          string    @[json: 'serviceName']
-	permission            string    @[json: 'permission']
-	title                 string    @[json: 'title']
-	icon                  string    @[json: 'icon']
-	hide_menu             u8        @[json: 'hideMenu']
-	hide_breadcrumb       u8        @[json: 'hideBreadcrumb']
-	ignore_keep_alive     u8        @[json: 'ignoreKeepAlive']
-	hide_tab              u8        @[json: 'hideTab']
-	frame_src             string    @[json: 'frameSrc']
-	carry_param           u8        @[json: 'carryParam']
-	hide_children_in_menu u8        @[json: 'hideChildrenInMenu']
-	affix                 u8        @[default: 20; json: 'affix']
-	dynamic_level         u64       @[json: 'dynamicLevel']
-	real_path             string    @[json: 'realPath']
-	sort                  u64       @[json: 'sort']
-	source_type           string    @[json: 'source_type']
-	source_id             string    @[json: 'source_id']
-	updated_at            time.Time @[json: 'updated_at']
+	id                    string     @[json: 'id']
+	parent_id             ?u64       @[default: 0; json: 'parent_id']
+	menu_level            ?u8        @[default: 0; json: 'menuLevel']
+	menu_type             ?u8        @[default: 0; json: 'menuType']
+	path                  ?string    @[json: 'path']
+	name                  ?string    @[json: 'name']
+	redirect              ?string    @[json: 'redirect']
+	component             ?string    @[json: 'component']
+	disabled              ?u8        @[json: 'disabled']
+	service_name          ?string    @[json: 'serviceName']
+	permission            ?string    @[json: 'permission']
+	title                 ?string    @[json: 'title']
+	icon                  ?string    @[json: 'icon']
+	hide_menu             ?u8        @[json: 'hideMenu']
+	hide_breadcrumb       ?u8        @[json: 'hideBreadcrumb']
+	ignore_keep_alive     ?u8        @[json: 'ignoreKeepAlive']
+	hide_tab              ?u8        @[json: 'hideTab']
+	frame_src             ?string    @[json: 'frameSrc']
+	carry_param           ?u8        @[json: 'carryParam']
+	hide_children_in_menu ?u8        @[json: 'hideChildrenInMenu']
+	affix                 ?u8        @[default: 20; json: 'affix']
+	dynamic_level         ?u64       @[json: 'dynamicLevel']
+	real_path             ?string    @[json: 'realPath']
+	sort                  ?u64       @[json: 'sort']
+	source_type           ?string    @[json: 'source_type']
+	source_id             ?string    @[json: 'source_id']
+	updated_at            ?time.Time @[json: 'updated_at']
 }
 
 pub struct UpdateMenuResp {
@@ -89,34 +82,38 @@ fn update_menu_repo(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[CoreMenu](db)
+	up_expr := {
+		if parent_id := req.parent_id { parent_id == parent_id },
+		if menu_level := req.menu_level { menu_level == menu_level },
+		if menu_type := req.menu_type { menu_type == menu_type },
+		if path := req.path { path == path },
+		if name := req.name { name == name },
+		if redirect := req.redirect { redirect == redirect },
+		if component := req.component { component == component },
+		if disabled := req.disabled { disabled == disabled },
+		if service_name := req.service_name { service_name == service_name },
+		if permission := req.permission { permission == permission },
+		if title := req.title { title == title },
+		if icon := req.icon { icon == icon },
+		if hide_menu := req.hide_menu { hide_menu == hide_menu },
+		if hide_breadcrumb := req.hide_breadcrumb { hide_breadcrumb == hide_breadcrumb },
+		if ignore_keep_alive := req.ignore_keep_alive { ignore_keep_alive == ignore_keep_alive },
+		if hide_tab := req.hide_tab { hide_tab == hide_tab },
+		if frame_src := req.frame_src { frame_src == frame_src },
+		if carry_param := req.carry_param { carry_param == carry_param },
+		if hide_children_in_menu := req.hide_children_in_menu {
+			hide_children_in_menu == hide_children_in_menu
+		},
+		if affix := req.affix { affix == affix },
+		if dynamic_level := req.dynamic_level { dynamic_level == dynamic_level },
+		if real_path := req.real_path { real_path == real_path },
+		if sort := req.sort { sort == sort },
+		updated_at == req.updated_at
+	}
 
-	q.set('parent_id = ?', req.parent_id)!
-		.set('menu_level = ?', req.menu_level)!
-		.set('menu_type = ?', req.menu_type)!
-		.set('path = ?', req.path)!
-		.set('name = ?', req.name)!
-		.set('redirect = ?', req.redirect)!
-		.set('component = ?', req.component)!
-		.set('disabled = ?', req.disabled)!
-		.set('service_name = ?', req.service_name)!
-		.set('permission = ?', req.permission)!
-		.set('title = ?', req.title)!
-		.set('icon = ?', req.icon)!
-		.set('hide_menu = ?', req.hide_menu)!
-		.set('hide_breadcrumb = ?', req.hide_breadcrumb)!
-		.set('ignore_keep_alive = ?', req.ignore_keep_alive)!
-		.set('hide_tab = ?', req.hide_tab)!
-		.set('frame_src = ?', req.frame_src)!
-		.set('carry_param = ?', req.carry_param)!
-		.set('hide_children_in_menu = ?', req.hide_children_in_menu)!
-		.set('affix = ?', req.affix)!
-		.set('dynamic_level = ?', req.dynamic_level)!
-		.set('real_path = ?', req.real_path)!
-		.set('sort = ?', req.sort)!
-		.set('updated_at = ?', req.updated_at)!
-		.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update CoreMenu set up_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateMenuResp{
 		msg: 'CoreMenu Updated Successfully'

@@ -2,7 +2,6 @@ module project
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_core { CoreProject }
@@ -11,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/update'; post]
-pub fn (app &Project)project_update_handler(mut ctx Context) veb.Result {
+pub fn (app &Project) project_update_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateCoreProjectReq](ctx.req.data) or {
@@ -39,20 +38,14 @@ fn update_project_domain(req UpdateCoreProjectReq) ! {
 	if req.id == '' {
 		return error('id is required')
 	}
-	if req.name == '' {
-		return error('name is required')
-	}
-	if req.logo == '' {
-		return error('logo is required')
-	}
 }
 
 // ----------------- DTO 层 -----------------
 pub struct UpdateCoreProjectReq {
 	id           string  @[json: 'id'; required]
-	name         string  @[json: 'name']
+	name         ?string @[json: 'name']
 	display_name ?string @[json: 'display_name']
-	logo         string  @[json: 'logo']
+	logo         ?string @[json: 'logo']
 	description  ?string @[json: 'description']
 }
 
@@ -67,15 +60,17 @@ fn update_project_repo(mut ctx Context, req UpdateCoreProjectReq) !UpdateCorePro
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[CoreProject](db)
+	up_expr := {
+		if name := req.name { name == name },
+		if description := req.description { description == description },
+		if display_name := req.display_name { display_name == display_name },
+		if logo := req.logo { logo == logo },
+		updated_at == time.now()
+	}
 
-	q.set('name = ?', req.name)!
-		.set('description = ?', req.description or { '' })!
-		.set('display_name = ?', req.display_name or { '' })!
-		.set('logo = ?', req.logo)!
-		.set('updated_at = ?', time.now())!
-		.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update CoreProject set up_expr where id == req.id
+	} or { return error('Failed to execute SQL query: ${err}') }
 
 	return UpdateCoreProjectResp{
 		msg: 'Project updated successfully'

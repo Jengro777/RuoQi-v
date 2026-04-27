@@ -121,7 +121,7 @@ pub fn find_user_by_id(mut ctx Context, user_id string) !SysUser {
 }
 
 // 获取用户角色 -  map去重
-pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
+pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]service.sys_admin_api.user.SysRole {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }

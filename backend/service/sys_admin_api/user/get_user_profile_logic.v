@@ -2,8 +2,7 @@ module user
 
 import veb
 import log
-import orm
-import structs.schema_sys { SysUser }
+import structs.schema_sys
 import common.api
 import structs { Context }
 
@@ -54,8 +53,9 @@ fn get_user_profile(mut ctx Context, user_id string) !UserProfileResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
 	}
 
-	mut q_user := orm.new_query[SysUser](db)
-	result := q_user.select()!.where('id = ?', user_id)!.query()!
+	mut result := sql db {
+		select from schema_sys.SysUser where id == user_id
+	}!
 
 	if result.len == 0 {
 		return error('User not found')

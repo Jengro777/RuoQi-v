@@ -2,7 +2,6 @@ module role
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import rand
@@ -80,8 +79,10 @@ fn create_role(mut ctx Context, req CreateRoleReq) !CreateRoleResp {
 		created_at:      time_now
 		updated_at:      time_now
 	}
-	mut q := orm.new_query[SysRole](db)
-	q.insert(role)!
+
+	sql db {
+		insert role into SysRole
+	}!
 
 	return CreateRoleResp{
 		msg: 'Role created successfully'

@@ -3,7 +3,6 @@ module role
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysRole }
 import common.api
@@ -74,16 +73,10 @@ fn get_role_list(mut ctx Context, req GetRoleListPageReq) !GetRoleListPageResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q_role := orm.new_query[SysRole](db)
-
-	// 条件查询
-	mut query := q_role.select()!
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
-	}
-
 	offset_num := (req.page - 1) * req.page_size
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	result := sql db {
+		select from SysRole where name == req.name limit req.page_size offset offset_num
+	}!
 
 	mut datalist := []GetRole{}
 	for row in result {

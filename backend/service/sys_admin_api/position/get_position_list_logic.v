@@ -3,7 +3,6 @@ module position
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysPosition }
 import common.api
@@ -40,9 +39,9 @@ fn get_position_list_domain(req GetPositionListPageReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct GetPositionListPageReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
-	name      string @[json: 'name']
+	page      int     @[json: 'page']
+	page_size int     @[json: 'pageSize']
+	name      ?string @[json: 'name']
 }
 
 pub struct GetPositionListPageResp {
@@ -68,16 +67,13 @@ fn find_position_list(mut ctx Context, req GetPositionListPageReq) !GetPositionL
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q := orm.new_query[SysPosition](db)
-
 	offset_num := (req.page - 1) * req.page_size
-
-	mut query := q.select()!
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
+	wh_expr := {
+		if name := req.name { name == name }
 	}
-
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	mut result := sql db {
+		dynamic select from SysPosition where wh_expr limit req.page_size offset offset_num
+	}!
 
 	mut datalist := []GetPositionList{}
 	for row in result {

@@ -2,7 +2,6 @@ module user
 
 import veb
 import log
-import orm
 import structs.schema_sys { SysToken }
 import common.api
 import structs { Context }
@@ -47,8 +46,9 @@ fn logout(mut ctx Context, user_id string) !LogoutResp {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
 	}
 
-	mut q_token := orm.new_query[SysToken](db)
-	q_token.set('status = ?', '1')!.where('id = ?', user_id)!.update()!
+	sql db {
+		update SysToken set status = 1 where id == user_id
+	}!
 
 	return LogoutResp{
 		msg: 'Logout successful'

@@ -2,7 +2,6 @@ module token
 
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2 as json
@@ -67,8 +66,6 @@ fn create_token(mut ctx Context, req CreateTokenReq) !CreateTokenResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q := orm.new_query[SysToken](db)
-
 	time_now := time.now()
 	expired_at := time_now.add_days(30)
 	token_jwt := token_jwt_generate(mut ctx, req) or { return error('Failed to generate token') }
@@ -85,7 +82,9 @@ fn create_token(mut ctx Context, req CreateTokenReq) !CreateTokenResp {
 		updated_at: time_now
 	}
 
-	q.insert(tokens)!
+	sql db {
+		insert tokens into SysToken
+	}!
 
 	return CreateTokenResp{
 		msg: 'Token created successfully'

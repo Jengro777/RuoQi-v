@@ -3,7 +3,6 @@ module dictionary
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysDictionary }
 import common.api
@@ -77,20 +76,14 @@ fn find_dictionary_list(mut ctx Context, req GetDictionaryListReq) !GetDictionar
 
 	offset_num := (req.page - 1) * req.page_size
 
-	mut q := orm.new_query[SysDictionary](db)
-	mut query := q.select()!
-
-	// 条件过滤
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
-	}
-
 	// 总数统计
 	mut count := sql db {
 		select count from SysDictionary
 	}!
 
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	mut result := sql db {
+		select from SysDictionary where name == req.name limit req.page_size offset offset_num
+	}!
 
 	mut datalist := []DictionaryData{}
 	for row in result {

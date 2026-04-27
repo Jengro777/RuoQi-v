@@ -3,7 +3,6 @@ module department
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysDepartment }
 import common.api
@@ -44,10 +43,10 @@ fn get_department_list_domain(req GetDepartmentListPageReq) ! {
 
 // ----------------- DTO 层 -----------------
 pub struct GetDepartmentListPageReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
-	name      string @[json: 'name']
-	leader    string @[json: 'leader']
+	page      int     @[json: 'page']
+	page_size int     @[json: 'pageSize']
+	name      ?string @[json: 'name']
+	leader    ?string @[json: 'leader']
 }
 
 pub struct DepartmentItem {
@@ -76,20 +75,17 @@ fn get_department_list(mut ctx Context, req GetDepartmentListPageReq) !GetDepart
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q := orm.new_query[SysDepartment](db)
-
 	offset_num := (req.page - 1) * req.page_size
 
 	// 条件查询
-	mut query := q.select()!
-	if req.name != '' {
-		query = query.where('name = ?', req.name)!
-	}
-	if req.leader != '' {
-		query = query.where('leader = ?', req.leader)!
+	expr := {
+		if name := req.name { name == name },
+		if leader := req.leader { leader == leader }
 	}
 
-	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+	mut result := sql db {
+		dynamic select from SysDepartment where expr limit req.page_size offset offset_num
+	}!
 
 	mut datalist := []DepartmentItem{}
 	for row in result {

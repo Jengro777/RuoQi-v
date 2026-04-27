@@ -68,10 +68,10 @@ fn get_core_api_by_id_repo(mut ctx Context, req GetCoreApiByIDReq) ![]GetCoreApi
 	}
 
 	where_expr := {
-				if req.id != '' {
-						id == req.id
-				}
+		if req.id != '' {
+			id == req.id
 		}
+	}
 
 	result := sql db {
 		dynamic select from CoreApi where where_expr limit 1

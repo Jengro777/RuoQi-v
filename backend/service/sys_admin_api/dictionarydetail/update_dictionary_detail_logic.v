@@ -2,7 +2,6 @@ module dictionarydetail
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysDictionaryDetail }
@@ -44,7 +43,6 @@ fn update_dictionarydetail_domain(req UpdateDictionaryDetailReq) ! {
 // ----------------- DTO 层 -----------------
 pub struct UpdateDictionaryDetailReq {
 	id            string     @[json: 'id']
-	name          ?string    @[json: 'name']
 	title         ?string    @[json: 'title']
 	key           ?string    @[json: 'key']
 	value         ?string    @[json: 'value']
@@ -65,33 +63,19 @@ fn update_dictionarydetail_repo(mut ctx Context, req UpdateDictionaryDetailReq) 
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	mut q := orm.new_query[SysDictionaryDetail](db)
-
-	if title := req.title {
-		q.set('title = ?', title)!
+	up_expr := {
+		if title := req.title { title == title },
+		if key := req.key { key == key },
+		if value := req.value { value == value },
+		if sort := req.sort { sort == sort },
+		if status := req.status { status == status },
+		if dictionary_id := req.dictionary_id { dictionary_id == dictionary_id },
+		updated_at == time.now()
 	}
 
-	if name := req.name {
-		q.set('name = ?', name)!
-	}
-	if key := req.key {
-		q.set('key = ?', key)!
-	}
-	if value := req.value {
-		q.set('value = ?', value)!
-	}
-	if sort := req.sort {
-		q.set('sort = ?', sort)!
-	}
-	if status := req.status {
-		q.set('status = ?', status)!
-	}
-	if dictionary_id := req.dictionary_id {
-		q.set('dictionary_id = ?', dictionary_id)!
-	}
-
-	q.where('id = ?', req.id)!
-		.update()!
+	sql db {
+		dynamic update SysDictionaryDetail set up_expr where id == req.id
+	}!
 
 	return UpdateDictionaryDetailResp{
 		msg: 'Dictionary detail updated successfully'

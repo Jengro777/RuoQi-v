@@ -3,7 +3,6 @@ module token
 import veb
 import log
 import time
-import orm
 import x.json2 as json
 import structs.schema_sys { SysToken }
 import common.api
@@ -64,9 +63,9 @@ fn find_token_by_id(mut ctx Context, req TokenByIdReq) !TokenByIdResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	mut q := orm.new_query[SysToken](db)
-	query := q.select()!.where('id = ?', req.token_id)!
-	result := query.query()!
+	result := sql db {
+		select from SysToken where id == req.token_id
+	}!
 
 	if result.len == 0 {
 		return error('Token not found')

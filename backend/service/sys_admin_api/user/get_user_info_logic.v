@@ -2,9 +2,8 @@ module user
 
 import veb
 import log
-import orm
 // import x.json2 as json
-import structs.schema_sys { SysUser }
+import structs.schema_sys
 import common.api
 import structs { Context }
 
@@ -60,8 +59,9 @@ fn get_user_info(mut ctx Context, user_id string) !GetUserInfoResp {
 	}
 
 	// 查询用户基本信息
-	mut q_user := orm.new_query[SysUser](db)
-	users := q_user.select()!.where('id = ?', user_id)!.query()!
+	mut users := sql db {
+		select from schema_sys.SysUser where id == user_id
+	}!
 	if users.len == 0 {
 		return error('User not found')
 	}
