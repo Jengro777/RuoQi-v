@@ -2,7 +2,6 @@ module configuration
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import structs.schema_sys { SysConfiguration }
@@ -44,13 +43,13 @@ fn update_configuration_domain(req UpdateConfigurationReq) ! {
 // ----------------- DTO 层 -----------------
 pub struct UpdateConfigurationReq {
 	config_id  string     @[json: 'id']
-	name       string     @[json: 'name']
-	key        string     @[json: 'key']
-	value      string     @[json: 'value']
-	category   string     @[json: 'category']
-	remark     string     @[json: 'remark']
-	status     bool       @[json: 'status']
-	sort       u64        @[json: 'sort']
+	name       ?string    @[json: 'name']
+	key        ?string    @[json: 'key']
+	value      ?string    @[json: 'value']
+	category   ?string    @[json: 'category']
+	remark     ?string    @[json: 'remark']
+	status     ?bool      @[json: 'status']
+	sort       ?u64       @[json: 'sort']
 	updated_at ?time.Time @[json: 'updatedAt']
 }
 
@@ -65,33 +64,20 @@ fn update_configuration_repo(mut ctx Context, req UpdateConfigurationReq) !Updat
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}
 
-	time_now := time.now().format_ss()
-	mut q := orm.new_query[SysConfiguration](db)
-
-	if req.name != '' {
-		q.set('name = ?', req.name)!
-	}
-	if req.key != '' {
-		q.set('key = ?', req.key)!
-	}
-	if req.value != '' {
-		q.set('value = ?', req.value)!
-	}
-	if req.category != '' {
-		q.set('category = ?', req.category)!
-	}
-	if req.remark != '' {
-		q.set('remark = ?', req.remark)!
+	up_expr := {
+		if name := req.name { name == name },
+		if key := req.key { key == req.key },
+		if value := req.value { value == req.value },
+		if category := req.category { category == req.category },
+		if remark := req.remark { remark == req.remark },
+		if sort := req.sort { sort == req.sort },
+		status == u8(if req.status or { false } { 1 } else { 0 }),
+		updated_at == time.now()
 	}
 
-	if req.sort != 0 {
-		q.set('sort = ?', req.sort)!
-	}
-
-	q.set('status = ?', if req.status { 1 } else { 0 })!
-		.set('updated_at = ?', time_now)!
-		.where('id = ?', req.config_id)!
-		.update()!
+	sql db {
+		dynamic update SysConfiguration set up_expr where id == req.config_id
+	}!
 
 	return UpdateConfigurationResp{
 		msg: 'Configuration updated successfully'
