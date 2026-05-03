@@ -9,6 +9,15 @@ import common.api
 import structs { Context }
 
 // ----------------- Handler 层 -----------------
+// @summary 获取用户列表
+// @description 分页查询系统用户，支持按部门、用户名、昵称、手机号、邮箱筛选。
+// @tag sys_admin_api/user
+// @security bearerAuth
+// @response 200 GetUserListResp 查询成功
+// @response 400 api.ApiErrorResponse 请求参数错误
+// @response 401 api.ApiErrorResponse 未登录
+// @response 403 api.ApiErrorResponse 无权限
+// @response 500 api.ApiErrorResponse 服务器内部错误
 @['/list'; post]
 pub fn (app &User) user_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -39,13 +48,27 @@ fn get_user_list_domain(req GetUserListReq) ! {
 
 // ----------------- DTO 层 | 请求/返回结构 -----------------
 pub struct GetUserListReq {
-	page          int = 1     @[json: 'page']
-	page_size     int = 10     @[json: 'pageSize']
-	department_id string  @[json: 'departmentId']
-	username      ?string @[json: 'username']
-	nickname      ?string @[json: 'nickname']
-	mobile        ?string @[json: 'mobile']
-	email         ?string @[json: 'email']
+	// 页码，从 1 开始。
+	// @example 1
+	page int = 1 @[json: 'page']
+	// 每页条数。
+	// @example 10
+	page_size int = 10 @[json: 'pageSize']
+	// 部门 ID。
+	// @example "dept_001"
+	department_id string @[json: 'departmentId']
+	// 用户名，可选。
+	// @example "admin"
+	username ?string @[json: 'username']
+	// 昵称，可选。
+	// @example "管理员"
+	nickname ?string @[json: 'nickname']
+	// 手机号，可选。
+	// @example "13800000000"
+	mobile ?string @[json: 'mobile']
+	// 邮箱，可选。
+	// @example "admin@example.com"
+	email ?string @[json: 'email']
 }
 
 pub struct GetUserListResp {

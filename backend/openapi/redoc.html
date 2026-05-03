@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>RuoQi-v API 文档 - Redoc</title>
+	<link rel="icon" type="image/png" href="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4c4/512.webp"/>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="redoc-container"></div>
+	<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+	<script>
+		Redoc.init('/openapi.json', {
+			scrollYOffset: 0,
+			hideHostname: false,
+			expandResponses: '200',
+			requiredPropsFirst: true,
+			sortPropsAlphabetically: false,
+			sortTagsAlphabetically: true,
+			sortOperationsAlphabetically: false,
+			showObjectSchemaExamples: true,
+			theme: {
+				colors: {
+					primary: {
+						main: '#4f46e5'
+					}
+				},
+				typography: {
+					fontSize: '14px',
+					fontFamily: 'system-ui, -apple-system, sans-serif'
+				},
+				sidebar: {
+					backgroundColor: '#1e1e2e'
+				},
+				rightPanel: {
+					backgroundColor: '#1e1e2e'
+				}
+			}
+		}, document.getElementById('redoc-container'));
+	</script>
+</body>
+</html>

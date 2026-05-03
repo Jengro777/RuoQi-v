@@ -94,6 +94,49 @@ pub fn (app &AliasApp) i18n(mut ctx Context) veb.Result {
 	return ctx.json(result)
 }
 
+// http://localhost:9009/rapidoc 打开 RapiDoc API 文档
+@['/rapidoc'; get]
+fn (mut app AliasApp) rapidoc(mut ctx Context) veb.Result {
+	file_path := os.join_path(os.getwd(), 'openapi/rapidoc.html')
+	html_content := os.read_file(file_path) or {
+		return ctx.html('<h1>OpenAPI 文档未生成</h1><p>请先运行: v run openapi/openapi_generate.vsh</p>')
+	}
+	return ctx.html(html_content)
+}
+
+// http://localhost:9009/redoc 打开 Redoc API 文档
+@['/redoc'; get]
+fn (mut app AliasApp) redoc(mut ctx Context) veb.Result {
+	file_path := os.join_path(os.getwd(), 'openapi/redoc.html')
+	html_content := os.read_file(file_path) or { return ctx.html('<h1>Redoc 页面未找到</h1>') }
+	return ctx.html(html_content)
+}
+
+// http://localhost:9009/elements 打开 Stoplight Elements API 文档
+@['/sleapidoc'; get]
+fn (mut app AliasApp) stoplight_elements(mut ctx Context) veb.Result {
+	file_path := os.join_path(os.getwd(), 'openapi/stoplight_elements.html')
+	html_content := os.read_file(file_path) or {
+		return ctx.html('<h1>Elements 页面未找到</h1>')
+	}
+	return ctx.html(html_content)
+}
+
+// http://localhost:9009/openapi.json 获取 OpenAPI JSON 数据
+@['/openapi.json'; get]
+fn (mut app AliasApp) openapi_json(mut ctx Context) veb.Result {
+	file_path := os.join_path(os.getwd(), 'etc/openapi.json')
+	content := os.read_file(file_path) or {
+		return ctx.json(api.json_error(
+			code:   404
+			status: 404
+			error:  'OpenAPI spec not found. Run: v run openapi/openapi_generate.vsh'
+		))
+	}
+	ctx.set_content_type('application/json')
+	return ctx.text(content)
+}
+
 // curl -H "Accept-Language: zh" --compressed http://localhost:9009/i18n/debug
 @['/i18n/debug'; get]
 pub fn (app &AliasApp) i18n_debug(mut ctx Context) veb.Result {

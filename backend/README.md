@@ -1,15 +1,17 @@
-Hexagonal 风格的 DDD
+## 项目架构：Hexagonal DDD
 
-命名后缀
+### 命名后缀
 
-```
-*_handler:
-*_dto :
-*_domian:
-*_repo:
-*_parts:
-*_service:
-```
+| 后缀        | 所属层  | 说明                                             |
+| ----------- | ------- | ------------------------------------------------ |
+| `*_handler` | Handler | 接收请求/返回响应，校验参数/鉴权，不包含业务逻辑 |
+| `*_dto`     | DTO     | 应用层数据传输对象，用例输入/输出模型            |
+| `*_domain`  | Domain  | 核心业务规则，实体/值对象/领域服务               |
+| `*_parts`   | Ports   | 抽象接口定义（依赖反转），只定义方法签名         |
+| `*_repo`    | Adapter | Ports 的具体实现，实际操作 DB/缓存/MQ            |
+| `*_service` | Service | 应用用例层，协调业务流程、事务、日志             |
+
+### 分层调用关系
 
 ```
 ┌─────────────────────────────────────┐
@@ -50,17 +52,19 @@ Hexagonal 风格的 DDD
 │  - 对领域逻辑透明                     │
 │  - 提供非业务相关服务（邮件、外部 API）  │
 └─────────────────────────────────────┘
-
 ```
 
-```
+## 项目结构
+
+```text
 v_project/
 ├── main/                           # 程序入口层（Composition Root）
 │   └── main.v                      # 程序启动、依赖注入、初始化模块
 │
 ├── routes/                         # 路由注册层（HTTP / gRPC / CLI 映射）
 │   ├── user_routes.v               # 用户模块路由
-│   └── auth_routes.v               # 认证模块路由
+│   ├── auth_routes.v               # 认证模块路由
+│   └── openapi_routes.v            # API 文档路由
 │
 ├── structs/                        # 数据结构定义（Infra Schema）
 │   ├── db/                         # 数据库结构体（ORM 映射）
@@ -84,7 +88,8 @@ v_project/
 │   ├── http/                       # HTTP Handler / Controller, 一个文件对应一个模块
 │   │   ├── user_handler.v          # 用户模块所有 HTTP 接口
 │   │   ├── product_handler.v       # 商品模块所有 HTTP 接口
-│   │   └── tenant_handler.v        # 租户模块所有 HTTP 接口
+│   │   ├── tenant_handler.v        # 租户模块所有 HTTP 接口
+│   │   └── openapi_handler.v       # API 文档页面处理器
 │   └── grpc/                       # gRPC Handler
 │
 ├── service/                        # Application Use Cases（应用服务层）
@@ -127,12 +132,21 @@ v_project/
 │   │   ├── mysql_pool.v            # 实现mysql连接池
 │   │   ├── pg_pool.v
 │   │   └── tidb_pool.v
-│   ├── cache/                      # Redis 缓存适配器
+│   ├── redis/                      # Redis 缓存适配器
+│   │   └── redis.v
+│   ├── cache/                      # 缓存共有业务
 │   │   └── tenant_cache.v
 │   ├── http/                       # 外部 HTTP 服务适配器
 │   │   └── external_api.v
 │   └── mq/                         # 消息队列适配器
 │       └── tenant_channel.v
+│
+├── openapi/                        # OpenAPI 文档与查看器
+│   ├── openapi_generate.vsh        # 自动扫描 route/service 源码生成 openapi.json
+│   ├── openapi.md                  # 注释标注规范说明 (@summary / @tag / @security…)
+│   ├── rapidoc.html                # RapiDoc  交互式文档 (GET /rapidoc)
+│   ├── redoc.html                  # Redoc    静态文档   (GET /redoc)
+│   └── stoplight_elements.html     # Stoplight Elements 文档 (GET /sleapidoc)
 │
 ├── common/                         # 通用基础库（非业务）
 │   ├── captcha/                    # 验证码模块
@@ -144,6 +158,11 @@ v_project/
 ├── config/                         # 配置层
 │   ├── loader.v                    # 配置文件加载
 │   └── validator.v                 # 配置校验
+│
+├── etc/                            # 配置文件目录
+│   ├── config.toml                 # 主配置文件
+│   ├── openapi.json                 # 生成的 OpenAPI 3.0.3 规范
+│   └── locales/                    # 语言资源目录
 │
 └── i18n/                           # 国际化资源
 │   ├── en.v

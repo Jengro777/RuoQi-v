@@ -132,10 +132,18 @@ RuoQi-v/
 │   ├── 404.html                    # 404 页面
 │   └── 500.html                    # 500 页面
 │
+├── openapi/                        # OpenAPI 文档与查看器
+│   ├── openapi_generate.vsh        # 自动扫描 route/service 源码生成 openapi.json
+│   ├── openapi.md                  # 注释标注规范说明
+│   ├── rapidoc.html                # RapiDoc 交互式文档 (GET /rapidoc)
+│   ├── redoc.html                  # Redoc 静态文档 (GET /redoc)
+│   └── stoplight_elements.html     # Stoplight Elements 文档 (GET /sleapidoc)
+│
 └── etc/                            # 配置文件目录
     ├── config.toml                 # 主配置文件
     ├── config_dev.toml             # 开发环境配置
     ├── config_template.toml        # 配置模板
+    ├── openapi.json                 # 生成的 OpenAPI 3.0.3 规范
     └── locales/                    # 语言资源目录
 ```
 

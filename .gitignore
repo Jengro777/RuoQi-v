@@ -44,6 +44,9 @@ dist
 # Node dependencies
 node_modules
 
+# OpenAPI generated file
+backend/etc/openapi.json
+
 # Logs
 logs
 *.log
