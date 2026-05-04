@@ -30,7 +30,7 @@ v run openapi/openapi_generate.vsh
 ### 环境要求
 
 - **V 语言**: 0.5.0+
-- **数据库**: MySQL 8.0+ / PostgreSQL 15+
+- **数据库**: MySQL 8.0+ / PostgreSQL 18+
 - **缓存**: Redis 7.0+ (可选)
 
 ### 运行
@@ -38,22 +38,12 @@ v run openapi/openapi_generate.vsh
 ```bash
 cd backend
 
-# 开发模式
-v run main/main.v
+# 开发环境（热加载-指定配置)
+v -d autofree -d trace_orm -d veb_livereload watch -o app run main/main.v -f etc/config_dev.toml
 
 # 编译后运行
-v build main/main.v
-./app
-```
-
-### 启动示例
-
-```bash
-# 开发环境（指定配置）
-v run main/main.v --config etc/config_dev.toml
-
-# 默认配置
-v run main/main.v
+v -d autofree -prod -o app ./main
+./app -f etc/config_dev.toml
 ```
 
 > 默认端口: `9009`，启动后访问 `http://localhost:9009`
