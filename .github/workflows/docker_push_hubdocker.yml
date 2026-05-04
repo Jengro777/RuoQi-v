@@ -8,7 +8,7 @@ jobs:
   docker_push:
     if: startsWith(github.server_url, 'https://github.com')
     name: Build and Push Application with Docker
-    runs-on: ubuntu-latest
+    runs-on: codeberg-medium
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
 
   notification:
     if: startsWith(github.server_url, 'https://github.com')
-    runs-on: ubuntu-latest
+    runs-on: codeberg-medium
     steps:
       - name: Pipeline status
         run: echo "🍏 This job's status is ${{ job.status }}."

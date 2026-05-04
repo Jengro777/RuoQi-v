@@ -106,9 +106,12 @@ fn update_users(mut db sqlite.DB, req UserReq) ! {
 	name_dyn := 'Jengro888'
 
 	sql db {
-		update User set email = fn [req] () string {
-		return if req.email != '' { 'nickname_1' } else { 'nickname_0' }
-	}(), name = name_dyn where id == '1'
+		update User set
+			email = fn [req] () string {
+				return if req.email != '' { 'nickname_1' } else { 'nickname_0' }
+			}(),
+			name = name_dyn
+		where id == '1'
 	}!
 }
 

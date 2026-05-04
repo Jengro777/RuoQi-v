@@ -12,13 +12,13 @@ on:
 jobs:
   test:
     name: Run Tests
-    runs-on: ubuntu-latest
+    runs-on: codeberg-medium
     container:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v5
       - name: Check V version
-        run: v version
+        run: v up && v version
       - name: Install dependencies
         run: |
           apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev
@@ -33,13 +33,13 @@ jobs:
 
   build:
     name: Build Application
-    runs-on: ubuntu-latest
+    runs-on: codeberg-medium
     container:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v5
-      # - name: update v
-      #   run: v up
+      - name: Check V version
+        run: v up && v version
       - name: Install dependencies
         run: |
           apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev
@@ -49,7 +49,7 @@ jobs:
         run: v -stats -cc gcc -o ruoqi-v ./main
 
   notification:
-    runs-on: ubuntu-latest
+    runs-on: codeberg-medium
     if: always()
     steps:
       - name: Pipeline status

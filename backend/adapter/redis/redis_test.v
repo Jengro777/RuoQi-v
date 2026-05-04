@@ -21,9 +21,11 @@ fn test_cache_config() {
 fn test_cache_connection() {
 	// 测试缓存连接
 	config := CacheConfig{
-		host:     'mutual-mako-84612.upstash.io'
-		port:     6379
-		password: 'gQAAAAAAAUqEAAIgcDJlZDQ0NzkxOGIyYzc0ODRkOTEwYTBmYTllMmQxODEzZQ'
+		host:        'mutual-mako-84612.upstash.io'
+		port:        6379
+		password:    'gQAAAAAAAUqEAAIgcDJlZDQ0NzkxOGIyYzc0ODRkOTEwYTBmYTllMmQxODEzZQ'
+		get_timeout: 5
+		tls:         true
 	}
 
 	// 尝试连接，如果失败则跳过测试
@@ -43,9 +45,11 @@ fn test_cache_connection() {
 fn test_cache_basic_operations() {
 	// 测试基本的缓存操作
 	config := CacheConfig{
-		host:     'mutual-mako-84612.upstash.io'
-		port:     6379
-		password: 'gQAAAAAAAUqEAAIgcDJlZDQ0NzkxOGIyYzc0ODRkOTEwYTBmYTllMmQxODEzZQ'
+		host:        'mutual-mako-84612.upstash.io'
+		port:        6379
+		password:    'gQAAAAAAAUqEAAIgcDJlZDQ0NzkxOGIyYzc0ODRkOTEwYTBmYTllMmQxODEzZQ'
+		get_timeout: 5
+		tls:         true
 	}
 
 	mut db := new_cache_pool(config) or {
