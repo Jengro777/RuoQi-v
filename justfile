@@ -1,0 +1,19 @@
+# RuoQi-v 项目命令
+
+# ─── 开发 ───────────────────────────────────────────
+dev:
+    cd backend && v -d autofree -d trace_orm -d veb_livereload watch run ./main -f etc/config_dev.toml
+
+uat:
+    cd backend && v -d autofree -d trace_orm -d veb_livereload watch run ./main -f etc/config.toml
+
+build:
+    cd backend && v -prod -o app ./main
+
+# ─── OpenAPI ────────────────────────────────────────
+openapi:
+    cd backend && v run openapi/openapi_generate.vsh
+
+# ─── 工具 ──────────────────────────────────────────
+kill:
+    lsof -ti :9009 | xargs -r sudo kill -9
