@@ -82,6 +82,25 @@ fn (mut app AliasApp) index(mut ctx Context) veb.Result {
 	return ctx.html(final_html)
 }
 
+/*
+curl -X POST \
+  -H "X-Shutdown-Token: dev_shutdown_token" \
+  http://127.0.0.1:9009/shutdown
+*/
+// 触发优雅关停，真正的 shutdown 在 main.new_app() 中统一执行。
+@['/shutdown'; post]
+fn (mut app AliasApp) graceful_shutdown(mut ctx Context) veb.Result {
+	token := ctx.get_custom_header('X-Shutdown-Token') or { '' }
+	if ctx.config.web.shutdown_token == '' || token != ctx.config.web.shutdown_token {
+		return ctx.json(api.json_error_403())
+	}
+	app.request_shutdown()
+	return ctx.json({
+		'status':  '1'
+		'message': 'graceful shutdown complete'
+	})
+}
+
 // curl -H "Accept-Language: en" --compressed http://localhost:9009/i18n
 // curl -H "Accept-Language: zh" --compressed http://localhost:9009/i18n
 @['/i18n'; get]
