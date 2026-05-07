@@ -12,7 +12,9 @@ pub struct App {
 	veb.Controller
 	veb.StaticHandler
 pub mut:
-	started chan bool // 用于通知应用程序已成功启动
+	server          &veb.Server = unsafe { nil } // 服务器实例引用,优雅关闭服务使用
+	started         chan bool // 用于通知应用程序已成功启动
+	shutdown_signal chan bool // 用于触发优雅关闭
 }
 
 pub struct Context {

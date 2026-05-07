@@ -1,6 +1,9 @@
 [web]
 port = 9009
-timeout = 30
+request_timeout = 30  # web请求超时时间,单位:秒
+startup_timeout = 5   # web启动监听等待时间,单位:秒
+shutdown_timeout = 30 # 优雅关闭等待时间,单位:秒
+shutdown_token = 'prod_shutdown_token'
 
 [logging]
 log_level = 'info' # 默认info [debug info warn error fatal]

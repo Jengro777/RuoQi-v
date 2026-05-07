@@ -11,6 +11,10 @@ import sync
 import log
 import os
 
+const default_web_startup_timeout = 5
+const default_web_request_timeout = 30
+const default_web_shutdown_timeout = 30
+
 @[heap]
 pub struct ConfigLoader {
 pub mut:
@@ -55,9 +59,24 @@ pub fn parse_data() !GlobalConfig {
 		return error('无法读取配置文档')
 	}
 	// 解析web配置节
+	mut shutdown_timeout := doc.value('web.shutdown_timeout').int()
+	if shutdown_timeout <= 0 {
+		shutdown_timeout = default_web_shutdown_timeout
+	}
+	mut startup_timeout := doc.value('web.startup_timeout').int()
+	if startup_timeout <= 0 {
+		startup_timeout = default_web_startup_timeout
+	}
+	mut request_timeout := doc.value('web.request_timeout').int()
+	if request_timeout <= 0 {
+		request_timeout = default_web_request_timeout
+	}
 	web_config := WebConf{
-		port:    doc.value('web.port').int()
-		timeout: doc.value('web.timeout').int()
+		port:             doc.value('web.port').int()
+		request_timeout:  request_timeout
+		startup_timeout:  startup_timeout
+		shutdown_timeout: shutdown_timeout
+		shutdown_token:   doc.value('web.shutdown_token').string()
 	}
 	//解析logging配置节
 	log_config := LogConf{
@@ -142,14 +161,15 @@ pub fn find_toml() !string {
 	}
 
 	// 2. 默认搜索路径
-	mut paths := $if test {
-		[
+	mut paths := []string{}
+	$if test {
+		paths = [
 			os.join_path(@VMODROOT, 'etc', 'config_dev.toml'),
 			os.join_path(@VMODROOT, 'etc', 'config_test.toml'),
 			os.join_path(@VMODROOT, 'etc', 'config.toml'),
 		]
 	} $else {
-		[
+		paths = [
 			os.join_path(@VMODROOT, 'config.toml'),
 			os.join_path(@VMODROOT, 'etc', 'config.toml'),
 		]

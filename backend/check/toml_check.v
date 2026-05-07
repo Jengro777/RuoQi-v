@@ -66,12 +66,12 @@ fn check_config_toml_data(doc toml.Doc) {
 		log.error('web.port监听端口: 1000 < port < 65535')
 	}
 
-	doc.value_opt('web.timeout') or {
-		log.warn('配置数据：web.timeout 键无效或键没有值，请检查配置数据')
+	doc.value_opt('web.request_timeout') or {
+		log.warn('配置数据：web.request_timeout 键无效或键没有值，请检查配置数据')
 	}
-	web_timeout := doc.value('web.timeout').int()
-	if web_timeout < 3 || web_timeout > 1000 {
-		log.error('web.timeout监听端口: 3 < port < 1000')
+	web_request_timeout := doc.value('web.request_timeout').int()
+	if web_request_timeout < 3 || web_request_timeout > 1000 {
+		log.error('web.request_timeout请求超时: 3 < timeout < 1000')
 	}
 
 	doc.value_opt('dbconf.type') or {
