@@ -11,7 +11,6 @@ import sync
 import log
 import os
 
-const default_web_startup_timeout = 5
 const default_web_request_timeout = 30
 const default_web_shutdown_timeout = 30
 
@@ -63,10 +62,6 @@ pub fn parse_data() !GlobalConfig {
 	if shutdown_timeout <= 0 {
 		shutdown_timeout = default_web_shutdown_timeout
 	}
-	mut startup_timeout := doc.value('web.startup_timeout').int()
-	if startup_timeout <= 0 {
-		startup_timeout = default_web_startup_timeout
-	}
 	mut request_timeout := doc.value('web.request_timeout').int()
 	if request_timeout <= 0 {
 		request_timeout = default_web_request_timeout
@@ -74,9 +69,7 @@ pub fn parse_data() !GlobalConfig {
 	web_config := WebConf{
 		port:             doc.value('web.port').int()
 		request_timeout:  request_timeout
-		startup_timeout:  startup_timeout
 		shutdown_timeout: shutdown_timeout
-		shutdown_token:   doc.value('web.shutdown_token').string()
 	}
 	//解析logging配置节
 	log_config := LogConf{

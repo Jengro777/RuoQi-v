@@ -15,9 +15,7 @@ pub struct WebConf {
 pub:
 	port             int
 	request_timeout  int
-	startup_timeout  int = 5
 	shutdown_timeout int = 30
-	shutdown_token   string
 }
 
 //[logging]
