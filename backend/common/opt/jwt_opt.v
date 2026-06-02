@@ -18,11 +18,11 @@ const header_opt = base64.url_encode_str(json.encode(JwtHeader{
 const opt_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
 fn random_num() string {
-	random_num := fn () int {
+	gen_random := fn () int {
 		mut r := rand.new_default()
 		return r.int_in_range(10000, 100000) or { 0 }
 	}()
-	return random_num.str()
+	return gen_random.str()
 }
 
 //生成captcha_opt令牌
