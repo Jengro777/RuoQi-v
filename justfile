@@ -2,13 +2,13 @@
 
 # ─── 开发 ───────────────────────────────────────────
 dev:
-    cd backend && v -d autofree -d trace_orm -d veb_livereload watch run ./main -f etc/config_dev.toml
+    cd backend && v -d trace_orm -d veb_livereload watch run ./main -f etc/config_dev.toml
 
 test:
-    cd backend && v -d autofree -d trace_orm  run ./main -f etc/config_dev.toml
+    cd backend && v -d trace_orm  run ./main -f etc/config_dev.toml
 
 uat:
-    cd backend && v -d autofree -d trace_orm  run ./main -f etc/config.toml
+    cd backend && v -d trace_orm  run ./main -f etc/config.toml
 
 build:
     cd backend && v -prod -o app ./main
