@@ -1,5 +1,7 @@
-module fms_api
+module pay_api
 
 import structs { App }
 
-type HandlerApp = App
+pub struct Pay {
+	App
+}
