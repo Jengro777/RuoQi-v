@@ -40,9 +40,6 @@ fn refresh_token_domain(req RefreshTokenReq) ! {
 	if req.user_id == '' {
 		return error('user_id cannot be empty')
 	}
-	if req.secret == '' {
-		return error('secret cannot be empty')
-	}
 }
 
 // ----------------- DTO 层 -----------------
@@ -86,7 +83,7 @@ fn refresh_token(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 		client_ip: ctx.ip()
 		device_id: req.device_id
 	}
-	token := jwt.jwt_generate(req.secret, payload)
+	token := jwt.jwt_generate(ctx.config.jwt.secret, payload)
 
 	// 获取 username
 	mut username_row := sql db {

@@ -43,9 +43,6 @@ fn access_token_domain(req AccessTokenReq) ! {
 	if req.device_id == '' {
 		return error('device_id is required')
 	}
-	if req.secret == '' {
-		return error('secret is required')
-	}
 }
 
 // ----------------- DTO 层 -----------------
@@ -126,5 +123,5 @@ fn access_token_jwt_generate(req AccessTokenReq, ctx Context, expired_at int) st
 		device_id: req.device_id
 	}
 
-	return jwt.jwt_generate(req.secret, payload)
+	return jwt.jwt_generate(ctx.config.jwt.secret, payload)
 }

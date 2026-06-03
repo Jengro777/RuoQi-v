@@ -40,9 +40,6 @@ fn refresh_token_domain(req RefreshTokenReq) ! {
 	if req.user_id == '' {
 		return error('user_id is required')
 	}
-	if req.secret == '' {
-		return error('secret is required')
-	}
 }
 
 // ----------------- DTO 层 -----------------
@@ -121,5 +118,5 @@ fn generate_jwt(mut ctx Context, req RefreshTokenReq, now time.Time) string {
 		client_ip: ctx.ip()
 		device_id: req.device_id
 	}
-	return jwt.jwt_generate(req.secret, payload)
+	return jwt.jwt_generate(ctx.config.jwt.secret, payload)
 }
