@@ -11,9 +11,9 @@ pub fn logger_middleware(mut ctx Context) bool {
 	log.info('req.host: ${ctx.req.host}')
 	log.info('req.url: ${ctx.req.url}')
 	log.info('req.method: ${ctx.req.method}')
-	log.info('req.version: ${ctx.req.version}')
+	log.debug('req.version: ${ctx.req.version}')
 	log.debug('req.proxy: ${ctx.req.proxy}')
-	log.debug('req.user_agent: ${ctx.req.user_agent}')
+	log.info('req.user_agent: ${ctx.req.user_agent}')
 	log.debug('req.read_timeout: ${ctx.req.read_timeout}')
 	log.debug('req.write_timeout: ${ctx.req.write_timeout}')
 	log.debug('req.validate: ${ctx.req.validate}')
@@ -32,11 +32,11 @@ pub fn logger_middleware(mut ctx Context) bool {
 	log.debug('req.data: ${ctx.req.data}')
 
 	//响应信息,需要设置 after: true
-	log.info('res.http_version: ${ctx.res.http_version}')
+	log.debug('res.http_version: ${ctx.res.http_version}')
 	log.info('res.header: ${ctx.res.header}')
 	log.info('res.status_code: ${ctx.res.status_code}')
 	log.info('res.status_msg: ${ctx.res.status_msg}')
-	log.info('res.body: ${ctx.res.body}')
+	log.debug('res.body: ${ctx.res.body}')
 
 	return true
 }
