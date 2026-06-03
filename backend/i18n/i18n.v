@@ -13,7 +13,7 @@ pub:
 	dir          string
 pub mut:
 	translations   map[string]map[string]string
-	lang_cache     map[string]string // 当前语言缓存
+	current_lang   string // 当前语言缓存
 	mod_times      map[string]int
 	last_check     i64
 	check_interval i64 = 2000 // 毫秒
@@ -27,9 +27,7 @@ pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 		dir:          dir
 		default_lang: default_lang
 		translations: map[string]map[string]string{}
-		lang_cache:   {
-			default_lang: default_lang
-		} // 初始化为默认语言
+		current_lang: default_lang
 		mod_times:    map[string]int{}
 		last_check:   0
 	}
@@ -99,7 +97,7 @@ pub fn (s &I18nStore) t(key string) string {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 使用当前缓存语言或默认语言
-	selected := if s.lang_cache.len > 0 { s.lang_cache.keys()[0] } else { s.default_lang }
+	selected := if s.current_lang != '' { s.current_lang } else { s.default_lang }
 
 	// 查找翻译，首先检查当前语言，如果没有再回退到默认语言
 	if key in s.translations[selected] {
@@ -114,21 +112,19 @@ pub fn (s &I18nStore) t(key string) string {
 }
 
 // 设置当前语言
-// 当语言切换时更新 lang_cache
+// 当语言切换时更新 current_lang
 pub fn (mut s I18nStore) set_language(lang string) {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 检查语言是否已经加载
 	if lang in s.translations {
-		// 清空并重新设置当前语言
-		s.lang_cache.clear()
-		s.lang_cache[lang] = lang
+		// 设置当前语言
+		s.current_lang = lang
 		log.debug('Language set to: ${lang}')
 	} else {
 		// 如果指定的语言未加载，则回退到默认语言
 		log.debug('Language ${lang} not found. Falling back to default language: ${s.default_lang}')
-		s.lang_cache.clear()
-		s.lang_cache[s.default_lang] = s.default_lang // 设置为默认语言
+		s.current_lang = s.default_lang
 	}
 }
 
