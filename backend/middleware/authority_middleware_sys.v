@@ -19,11 +19,8 @@ JWT 权限认证中间件
 fn authority_jwt_verify(mut ctx Context) bool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	// 从自定义 Header 获取 secret（JWT 验证密钥）
-	// secret := ctx.get_custom_header('secret') or { '' }
-	// log.debug(secret)
-
-	secret := 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
+	// ---------- 读取 JWT 签名密钥 ----------
+	secret := ctx.config.jwt.secret
 	// 从标准 Header 中获取 Authorization: Bearer <token>
 	auth_header := ctx.get_header(.authorization) or { '' }
 	// log.debug('auth_header:${auth_header}')

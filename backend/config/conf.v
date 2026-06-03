@@ -104,9 +104,15 @@ pub fn parse_data() !GlobalConfig {
 		get_timeout: doc.value('redisconf.get_timeout').int()
 	}
 
+	// 解析 jwt 配置节
+	jwt_config := JwtConf{
+		secret: doc.value('jwt.secret').string()
+	}
+
 	// 构建完整配置对象
 	cfg := GlobalConfig{
 		web:     web_config
+		jwt:     jwt_config
 		logging: log_config
 		dbconf:  db_config
 		redis:   redis_config

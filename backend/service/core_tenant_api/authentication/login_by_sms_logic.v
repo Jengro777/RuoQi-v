@@ -117,7 +117,7 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 
 // ----------------- JWT 生成逻辑 -----------------
 fn sms_token_jwt_generate(mut ctx Context, req LoginBySMSReq) string {
-	secret := ctx.get_custom_header('secret') or { '' }
+	secret := ctx.config.jwt.secret
 
 	mut payload := jwt.JwtPayload{
 		iss:       'ruoqi-v'

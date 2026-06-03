@@ -129,7 +129,7 @@ fn find_user_roleids(mut ctx Context, user_id string) ![]string {
 
 // ----------------- JWT 生成逻辑 -----------------
 fn token_jwt_generate(mut ctx Context, req AccessTokenReq) !string {
-	secret := ctx.get_custom_header('secret') or { '' }
+	secret := ctx.config.jwt.secret
 	user_role_ids := find_user_roleids(mut ctx, req.user_id) or {
 		return error('Failed to find user role ids')
 	}

@@ -3,6 +3,10 @@ port = 9009
 request_timeout = 30  # web请求超时时间,单位:秒
 shutdown_timeout = 30 # 优雅关闭等待时间,单位:秒
 
+[jwt]
+secret = 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
+
+
 [logging]
 log_level = 'info' # 默认info [debug info warn error fatal]
 

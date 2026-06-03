@@ -28,8 +28,8 @@ Core认证中间件 authority_jwt_verify_core
 fn authority_jwt_verify_core(mut ctx Context) bool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	// ---------- 读取 Header 基本参数 ----------
-	secret := ctx.get_custom_header('secret') or { '' }
+	// ---------- 读取 JWT 签名密钥 ----------
+	secret := ctx.config.jwt.secret
 	log.debug(secret)
 
 	tenant_id := ctx.get_custom_header('tenant_id') or { '' }

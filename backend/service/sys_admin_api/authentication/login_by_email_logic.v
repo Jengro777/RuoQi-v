@@ -115,7 +115,7 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 
 // ----------------- JWT 生成逻辑 -----------------
 fn email_token_jwt_generate(mut ctx Context, req LoginByEmailReq) string {
-	secret := ctx.get_custom_header('secret') or { '' }
+	secret := ctx.config.jwt.secret
 
 	mut payload := jwt.JwtPayload{
 		iss:       'ruoqi-v'

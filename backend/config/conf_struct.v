@@ -5,6 +5,7 @@ module config
 pub struct GlobalConfig {
 pub:
 	web     WebConf
+	jwt     JwtConf
 	logging LogConf
 	dbconf  DBConf
 	redis   RedisConf
@@ -16,6 +17,12 @@ pub:
 	port             int
 	request_timeout  int
 	shutdown_timeout int = 30
+}
+
+// JWT / 认证配置
+pub struct JwtConf {
+pub:
+	secret string // JWT 签名密钥
 }
 
 //[logging]
