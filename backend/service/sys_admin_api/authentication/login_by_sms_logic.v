@@ -9,7 +9,6 @@ import structs.schema_sys { SysToken, SysUser }
 import common.api
 import structs { Context }
 import common.jwt
-import common.opt
 
 // ----------------- Handler 层 -----------------
 @['/login_by_sms'; post]
@@ -75,7 +74,7 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 	}
 
 	// 验证 OTP
-	if !opt.opt_verify(req.opt_token, req.opt_num) {
+	if !jwt.opt_verify(req.opt_token, req.opt_num) {
 		return error('Captcha error')
 	}
 
@@ -118,17 +117,19 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 fn sms_token_jwt_generate(mut ctx Context, req LoginBySMSReq) string {
 	secret := ctx.config.jwt.secret
 
-	mut payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       req.user_id
-		exp:       time.now().add_days(30).unix()
-		nbf:       time.now().unix()
-		iat:       time.now().unix()
-		jti:       rand.uuid_v4()
-		role_ids:  ['admin', 'editor']
-		client_ip: req.login_ip
-		device_id: req.device_id
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: req.user_id
+			exp: time.now().add_days(30).unix()
+			nbf: time.now().unix()
+			iat: time.now().unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    ['admin', 'editor']
+		client_ip:   req.login_ip
+		device_id:   req.device_id
 	}
 
-	return jwt.jwt_generate(secret, payload)
+	return jwt.auth_generate(secret, payload)
 }

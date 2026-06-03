@@ -1,4 +1,4 @@
-module jwt
+module auth
 
 pub struct JwtHeader {
 pub:

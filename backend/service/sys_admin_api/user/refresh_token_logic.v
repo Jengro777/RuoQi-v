@@ -72,18 +72,20 @@ fn refresh_token(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	}!
 
 	// 生成新的 token
-	payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       req.user_id
-		exp:       expired_at_unix
-		nbf:       time_now.unix()
-		iat:       time_now.unix()
-		jti:       rand.uuid_v4()
-		role_ids:  ['', '']
-		client_ip: ctx.ip()
-		device_id: req.device_id
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: req.user_id
+			exp: expired_at_unix
+			nbf: time_now.unix()
+			iat: time_now.unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    ['', '']
+		client_ip:   ctx.ip()
+		device_id:   req.device_id
 	}
-	token := jwt.jwt_generate(ctx.config.jwt.secret, payload)
+	token := jwt.auth_generate(ctx.config.jwt.secret, payload)
 
 	// 获取 username
 	mut username_row := sql db {

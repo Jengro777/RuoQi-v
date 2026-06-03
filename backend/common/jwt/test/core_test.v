@@ -4,25 +4,25 @@
 // ==============================================================================
 module test
 
-import common.jwts
+import common.jwt
 import time
 
 fn test_constant_time_compare_match() {
-	assert jwts.constant_time_compare('abc', 'abc') == true
+	assert jwt.constant_time_compare('abc', 'abc') == true
 }
 
 fn test_constant_time_compare_mismatch() {
-	assert jwts.constant_time_compare('abc', 'abd') == false
+	assert jwt.constant_time_compare('abc', 'abd') == false
 }
 
 fn test_constant_time_compare_diff_len() {
-	assert jwts.constant_time_compare('abcdef', 'abc') == false
+	assert jwt.constant_time_compare('abcdef', 'abc') == false
 }
 
 fn test_sign_and_verify_roundtrip() {
 	now := time.now().unix()
-	payload := jwts.OptPayload{
-		BasePayload: jwts.BasePayload{
+	payload := jwt.OptPayload{
+		BasePayload: jwt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'roundtrip-user'
 			exp: now + 300
@@ -32,8 +32,8 @@ fn test_sign_and_verify_roundtrip() {
 		}
 		opt_text:    '67890'
 	}
-	token := jwts.sign_payload[jwts.OptPayload](jwts.jwt_secret, payload)
-	decoded := jwts.verify_and_decode[jwts.OptPayload](jwts.jwt_secret, token)!
+	token := jwt.sign_payload[jwt.OptPayload](jwt.jwt_secret, payload)
+	decoded := jwt.verify_and_decode[jwt.OptPayload](jwt.jwt_secret, token)!
 
 	assert decoded.iss == payload.iss
 	assert decoded.sub == payload.sub
@@ -42,8 +42,8 @@ fn test_sign_and_verify_roundtrip() {
 }
 
 fn test_verify_and_decode_wrong_secret() {
-	token, _ := jwts.opt_generate()
-	_ := jwts.verify_and_decode[jwts.OptPayload]('wrong-secret', token) or {
+	token, _ := jwt.opt_generate()
+	_ := jwt.verify_and_decode[jwt.OptPayload]('wrong-secret', token) or {
 		assert true
 		return
 	}
@@ -52,8 +52,8 @@ fn test_verify_and_decode_wrong_secret() {
 
 fn test_verify_and_decode_expired() {
 	now := time.now().unix()
-	payload := jwts.OptPayload{
-		BasePayload: jwts.BasePayload{
+	payload := jwt.OptPayload{
+		BasePayload: jwt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'exp-test'
 			exp: now - 1
@@ -63,8 +63,8 @@ fn test_verify_and_decode_expired() {
 		}
 		opt_text:    '12345'
 	}
-	token := jwts.sign_payload[jwts.OptPayload](jwts.jwt_secret, payload)
-	_ := jwts.verify_and_decode[jwts.OptPayload](jwts.jwt_secret, token) or {
+	token := jwt.sign_payload[jwt.OptPayload](jwt.jwt_secret, payload)
+	_ := jwt.verify_and_decode[jwt.OptPayload](jwt.jwt_secret, token) or {
 		assert true
 		return
 	}

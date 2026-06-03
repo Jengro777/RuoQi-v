@@ -13,10 +13,10 @@
 module mfa
 
 import veb
+import common.jwt
 import log
 import common.api
 import structs { Context }
-import common.captcha
 
 // ----------------- Handler 层 -----------------
 @['/captcha'; get; post]
@@ -52,7 +52,7 @@ pub struct GetCaptchaResp {
 
 // ----------------- Repository / Adapter 层 -----------------
 fn get_captcha() !GetCaptchaResp {
-	captcha_token, captcha_image, captcha_text := captcha.captcha_generate() or {
+	captcha_token, captcha_image, captcha_text := jwt.captcha_generate() or {
 		return error('Failed to generate captcha')
 	}
 

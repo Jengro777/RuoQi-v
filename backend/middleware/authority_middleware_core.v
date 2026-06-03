@@ -57,7 +57,7 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 	log.debug(req_token)
 
 	// ---------- 验证 JWT 签名 ----------
-	verify := jwt.jwt_verify(secret, req_token)
+	verify := jwt.auth_verify(secret, req_token)
 	if verify == false {
 		ctx.res.status_code = 401
 		ctx.request_error('Authorization error')

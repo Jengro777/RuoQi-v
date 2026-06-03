@@ -136,17 +136,19 @@ fn token_jwt_generate(mut ctx Context, req AccessTokenReq) !string {
 
 	time_now := time.now()
 	expired_at_unix := time_now.add_days(30).unix()
-	mut payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       req.user_id
-		exp:       expired_at_unix
-		nbf:       time_now.unix()
-		iat:       time_now.unix()
-		jti:       rand.uuid_v4()
-		role_ids:  user_role_ids
-		client_ip: req.login_ip
-		device_id: req.device_id
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: req.user_id
+			exp: expired_at_unix
+			nbf: time_now.unix()
+			iat: time_now.unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    user_role_ids
+		client_ip:   req.login_ip
+		device_id:   req.device_id
 	}
 
-	return jwt.jwt_generate(secret, payload)
+	return jwt.auth_generate(secret, payload)
 }

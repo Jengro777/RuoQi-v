@@ -9,7 +9,6 @@ import structs.schema_sys { SysToken, SysUser }
 import common.api
 import structs { Context }
 import common.jwt
-import common.captcha
 import common.encrypt
 
 // ----------------- Handler 层 -----------------
@@ -49,7 +48,7 @@ fn login_by_account_domain(req LoginByAccountReq) ! {
 		return error('captcha is required')
 	}
 
-	if !captcha.captcha_verify(req.captcha_id, req.captcha_text) {
+	if !jwt.captcha_verify(req.captcha_id, req.captcha_text) {
 		return error('Captcha error')
 	}
 
@@ -173,17 +172,19 @@ fn token_jwt_generate(mut ctx Context, req LoginByAccountReq, user_id string) !s
 		return error('Failed to find user role ids')
 	}
 
-	mut payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       user_id
-		exp:       time.now().add_days(30).unix()
-		nbf:       time.now().unix()
-		iat:       time.now().unix()
-		jti:       rand.uuid_v4()
-		role_ids:  user_role_ids
-		client_ip: req.login_ip or { '' }
-		device_id: req.device_id or { '' }
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: user_id
+			exp: time.now().add_days(30).unix()
+			nbf: time.now().unix()
+			iat: time.now().unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    user_role_ids
+		client_ip:   req.login_ip or { '' }
+		device_id:   req.device_id or { '' }
 	}
 
-	return jwt.jwt_generate(secret, payload)
+	return jwt.auth_generate(secret, payload)
 }

@@ -6,7 +6,7 @@
 //   JwtTimeBounded   — 时间校验接口（供 verify_and_decode 泛型使用）
 //   jwt_secret       — opt / captcha 签名密钥
 // ==============================================================================
-module jwts
+module jwt
 
 pub struct JwtHeader {
 pub:

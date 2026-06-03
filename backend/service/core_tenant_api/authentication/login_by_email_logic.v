@@ -9,7 +9,6 @@ import structs.schema_core { CoreToken, CoreUser }
 import common.api
 import structs { Context }
 import common.jwt
-import common.opt
 
 // ----------------- Handler 层 -----------------
 @['/auth/login_by_email'; post]
@@ -75,7 +74,7 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 	}
 
 	// 验证验证码
-	if opt.opt_verify(req.opt_token, req.opt_num) == false {
+	if jwt.opt_verify(req.opt_token, req.opt_num) == false {
 		return error('Captcha error')
 	}
 
@@ -120,17 +119,19 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 fn generate_email_jwt(mut ctx Context, req LoginByEmailReq) string {
 	secret := ctx.config.jwt.secret
 
-	mut payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       req.user_id
-		exp:       time.now().add_days(30).unix()
-		nbf:       time.now().unix()
-		iat:       time.now().unix()
-		jti:       rand.uuid_v4()
-		role_ids:  ['admin', 'editor']
-		client_ip: req.login_ip
-		device_id: req.device_id
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: req.user_id
+			exp: time.now().add_days(30).unix()
+			nbf: time.now().unix()
+			iat: time.now().unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    ['admin', 'editor']
+		client_ip:   req.login_ip
+		device_id:   req.device_id
 	}
 
-	return jwt.jwt_generate(secret, payload)
+	return jwt.auth_generate(secret, payload)
 }

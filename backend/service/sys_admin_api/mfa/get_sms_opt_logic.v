@@ -4,9 +4,9 @@ import veb
 import log
 import x.json2 as json
 import regex
+import common.jwt
 import common.api
 import structs { Context }
-import common.opt
 
 // ----------------- Handler 层 -----------------
 @['/login_by_sms'; post]
@@ -64,7 +64,7 @@ const phone_re = regex.regex_opt(r'^\+?[0-9]{1,4}?[-\s]?\(?[0-9]{1,4}\)?[-\s]?[0
 fn sms_login() !SmsLoginResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	token_opt, opt_num := opt.opt_generate()
+	token_opt, opt_num := jwt.opt_generate()
 
 	// TODO: 可选数据库保存逻辑
 	/*

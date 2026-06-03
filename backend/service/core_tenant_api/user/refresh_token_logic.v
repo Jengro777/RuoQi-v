@@ -107,16 +107,18 @@ fn refresh_token_repo(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 
 // ----------------- JWT 生成逻辑 -----------------
 fn generate_jwt(mut ctx Context, req RefreshTokenReq, now time.Time) string {
-	payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       req.user_id
-		exp:       now.add_days(30).unix()
-		nbf:       now.unix()
-		iat:       now.unix()
-		jti:       rand.uuid_v4()
-		role_ids:  ['', '']
-		client_ip: ctx.ip()
-		device_id: req.device_id
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: req.user_id
+			exp: now.add_days(30).unix()
+			nbf: now.unix()
+			iat: now.unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    ['', '']
+		client_ip:   ctx.ip()
+		device_id:   req.device_id
 	}
-	return jwt.jwt_generate(ctx.config.jwt.secret, payload)
+	return jwt.auth_generate(ctx.config.jwt.secret, payload)
 }

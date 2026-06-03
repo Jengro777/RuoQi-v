@@ -4,9 +4,9 @@ import veb
 import log
 import x.json2 as json
 import structs { Context }
+import common.jwt
 import regex
 import common.api
-import common.opt
 
 // ----------------- Handler 层 -----------------
 @['/login_by_email'; post]
@@ -62,7 +62,7 @@ const email_re = regex.regex_opt(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2
 fn email_login() !EmailLoginResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	token_opt, opt_num := opt.opt_generate()
+	token_opt, opt_num := jwt.opt_generate()
 
 	// 未来可以在这里插入 DB 日志
 	/*

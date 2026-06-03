@@ -3,7 +3,7 @@
 //
 // 数据结构定义见 struct.v。
 // ==============================================================================
-module jwts
+module jwt
 
 import crypto.hmac
 import crypto.sha256
@@ -84,5 +84,18 @@ pub fn verify_and_decode[T](secret string, token string) !T {
 		return error('JWT: token not yet valid')
 	}
 
+	return payload
+}
+
+// 解析 JWT token（不验证签名，只解析 payload）
+pub fn jwt_decode(token string) !AuthPayload {
+	parts := token.split('.')
+	if parts.len != 3 {
+		return error('Invalid JWT format: expected 3 parts, got ${parts.len}')
+	}
+	// 解析 JSON
+	payload := json.decode[AuthPayload](base64.url_decode_str(parts[1])) or {
+		return error('Failed to parse JWT payload JSON: ${err}')
+	}
 	return payload
 }

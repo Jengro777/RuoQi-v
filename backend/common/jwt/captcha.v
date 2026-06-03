@@ -7,7 +7,7 @@
 //   captcha_generate() !(string, string, string) — 签发，返回 (token, image, text)
 //   captcha_verify(token, captcha_text)        — 验证
 // ==============================================================================
-module jwts
+module jwt
 
 import time
 import rand

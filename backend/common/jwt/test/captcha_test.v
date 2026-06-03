@@ -4,12 +4,12 @@
 // ==============================================================================
 module test
 
-import common.jwts
+import common.jwt
 
 // ---- captcha_generate -------------------------------------------------------
 
 fn test_captcha_generate() {
-	token, captcha_image, captcha_text := jwts.captcha_generate()!
+	token, captcha_image, captcha_text := jwt.captcha_generate()!
 	dump(token)
 	dump('${captcha_image[..50]}...')
 	dump(captcha_text)
@@ -25,27 +25,27 @@ fn test_captcha_generate() {
 // ---- captcha_verify ---------------------------------------------------------
 
 fn test_captcha_verify() {
-	token, _, captcha_text := jwts.captcha_generate()!
-	verify := jwts.captcha_verify(token, captcha_text)
+	token, _, captcha_text := jwt.captcha_generate()!
+	verify := jwt.captcha_verify(token, captcha_text)
 	assert verify == true
 }
 
 fn test_captcha_verify_wrong_text() {
-	token, _, _ := jwts.captcha_generate()!
-	assert jwts.captcha_verify(token, 'XXXX') == false
+	token, _, _ := jwt.captcha_generate()!
+	assert jwt.captcha_verify(token, 'XXXX') == false
 }
 
 fn test_captcha_verify_tampered_header() {
-	token, _, text := jwts.captcha_generate()!
+	token, _, text := jwt.captcha_generate()!
 	parts := token.split('.')
 	tampered := 'BADHEADER.${parts[1]}.${parts[2]}'
-	assert jwts.captcha_verify(tampered, text) == false
+	assert jwt.captcha_verify(tampered, text) == false
 }
 
 // ---- generate_captcha ------------------------------------------------------
 
 fn test_generate_captcha() {
-	c := jwts.generate_captcha()
+	c := jwt.generate_captcha()
 	dump('验证码文本: ${c.text}')
 	dump('图像数据: ${c.image[..50]}...')
 	assert c.text.len == 4

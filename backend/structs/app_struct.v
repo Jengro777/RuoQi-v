@@ -1,7 +1,7 @@
 module structs
 
 import veb
-import common.jwt { JwtPayload }
+import common.jwt { AuthPayload }
 import adapter.dbpool
 import adapter.cache_pool
 import config
@@ -23,7 +23,7 @@ pub mut:
 	dbpool      &dbpool.DatabasePool
 	cache_pool  &cache_pool.CachePool
 	config      &config.GlobalConfig
-	jwt_payload ?JwtPayload
+	jwt_payload ?AuthPayload
 	i18n        &i18n.I18nStore
 	extra_i18n  map[string]string = map[string]string{}
 

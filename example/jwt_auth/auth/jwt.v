@@ -1,4 +1,4 @@
-module jwt
+module auth
 
 // JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 import crypto.hmac

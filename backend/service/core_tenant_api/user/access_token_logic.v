@@ -111,17 +111,19 @@ fn access_token_repo(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 // ----------------- JWT 生成逻辑 -----------------
 fn access_token_jwt_generate(req AccessTokenReq, ctx Context, expired_at int) string {
 	time_now := time.now()
-	mut payload := jwt.JwtPayload{
-		iss:       'ruoqi-v'
-		sub:       req.user_id
-		exp:       expired_at
-		nbf:       time_now.unix()
-		iat:       time_now.unix()
-		jti:       rand.uuid_v4()
-		role_ids:  ['', '']
-		client_ip: ctx.ip()
-		device_id: req.device_id
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: req.user_id
+			exp: expired_at
+			nbf: time_now.unix()
+			iat: time_now.unix()
+			jti: rand.uuid_v4()
+		}
+		role_ids:    ['', '']
+		client_ip:   ctx.ip()
+		device_id:   req.device_id
 	}
 
-	return jwt.jwt_generate(ctx.config.jwt.secret, payload)
+	return jwt.auth_generate(ctx.config.jwt.secret, payload)
 }

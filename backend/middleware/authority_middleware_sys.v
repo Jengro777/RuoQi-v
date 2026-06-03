@@ -37,7 +37,7 @@ fn authority_jwt_verify(mut ctx Context) bool {
 	log.debug('req_token: ${req_token}')
 
 	// 使用 common.jwt 模块验证 token 签名有效性
-	verify := jwt.jwt_verify(secret, req_token)
+	verify := jwt.auth_verify(secret, req_token)
 	if verify == false {
 		ctx.res.status_code = 401
 		ctx.request_error('Authorization request error ')

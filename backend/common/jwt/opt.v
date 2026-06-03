@@ -6,7 +6,7 @@
 //   opt_generate() (string, string) — 签发，返回 (token, opt_num)
 //   opt_verify(token, opt_num)      — 验证
 // ==============================================================================
-module jwts
+module jwt
 
 import time
 import rand
