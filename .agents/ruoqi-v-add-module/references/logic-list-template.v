@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler -----------------
 @['/xxx/list'; post]
-pub fn (app &XxxApp) xxx_list_handler(mut ctx Context) veb.Result {
+pub fn (app &Xxx) xxx_list_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[GetXxxListReq](ctx.req.data) or {

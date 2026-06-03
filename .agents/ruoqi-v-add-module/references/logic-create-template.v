@@ -14,7 +14,7 @@ import structs { Context }
 
 // ----------------- Handler -----------------
 @['/xxx/create'; post]
-pub fn (app &XxxApp) xxx_create_handler(mut ctx Context) veb.Result {
+pub fn (app &Xxx) xxx_create_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateXxxReq](ctx.req.data) or {
