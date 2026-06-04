@@ -30,7 +30,7 @@ pub fn update_currency_usecase(mut ctx Context, req UpdateCurrencyReq) !UpdateCu
 	update_currency_domain(req)!
 
 	// Repository 更新
-	return update_currency(mut ctx, req)
+	return update_currency_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -60,7 +60,7 @@ pub struct UpdateCurrencyResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn update_currency(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyResp {
+fn update_currency_repo(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

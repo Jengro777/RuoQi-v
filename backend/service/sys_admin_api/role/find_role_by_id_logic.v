@@ -17,7 +17,7 @@ pub fn (app &Role) find_role_by_id_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := role_by_id_usecase(mut ctx, req) or {
+	result := find_role_by_id_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -25,16 +25,16 @@ pub fn (app &Role) find_role_by_id_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Usecase 层 -----------------
-pub fn role_by_id_usecase(mut ctx Context, req RoleByIdReq) !RoleByIdResp {
+pub fn find_role_by_id_usecase(mut ctx Context, req RoleByIdReq) !RoleByIdResp {
 	// Domain 校验
-	role_by_id_domain(req)!
+	find_role_by_id_domain(req)!
 
 	// Repository 获取数据
 	return find_role_by_id(mut ctx, req.id)
 }
 
 // ----------------- Domain 层 -----------------
-fn role_by_id_domain(req RoleByIdReq) ! {
+fn find_role_by_id_domain(req RoleByIdReq) ! {
 	if req.id == '' {
 		return error('role id is required')
 	}

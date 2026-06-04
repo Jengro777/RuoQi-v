@@ -9,14 +9,14 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/delete'; post]
-pub fn (app &DictionaryDetail) dictionarydetail_delete_handler(mut ctx Context) veb.Result {
+pub fn (app &DictionaryDetail) delete_dictionary_detail_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteDictionaryDetailReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := delete_dictionarydetail_usecase(mut ctx, req) or {
+	result := delete_dictionary_detail_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -24,16 +24,16 @@ pub fn (app &DictionaryDetail) dictionarydetail_delete_handler(mut ctx Context) 
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn delete_dictionarydetail_usecase(mut ctx Context, req DeleteDictionaryDetailReq) !DeleteDictionaryDetailResp {
+pub fn delete_dictionary_detail_usecase(mut ctx Context, req DeleteDictionaryDetailReq) !DeleteDictionaryDetailResp {
 	// Domain 校验层
-	delete_dictionarydetail_domain(req)!
+	delete_dictionary_detail_domain(req)!
 
 	// Repository 层操作
-	return delete_dictionarydetail_repo(mut ctx, req.ids)
+	return delete_dictionary_detail_repo(mut ctx, req.ids)
 }
 
 // ----------------- Domain 层 -----------------
-fn delete_dictionarydetail_domain(req DeleteDictionaryDetailReq) ! {
+fn delete_dictionary_detail_domain(req DeleteDictionaryDetailReq) ! {
 	if req.ids.len == 0 {
 		return error('dictionarydetail id is required')
 	}
@@ -49,7 +49,7 @@ pub struct DeleteDictionaryDetailResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn delete_dictionarydetail_repo(mut ctx Context, ids []string) !DeleteDictionaryDetailResp {
+fn delete_dictionary_detail_repo(mut ctx Context, ids []string) !DeleteDictionaryDetailResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }

@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/create'; post]
-pub fn (app &Position) position_create_handler(mut ctx Context) veb.Result {
+pub fn (app &Position) create_position_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreatePositionReq](ctx.req.data) or {

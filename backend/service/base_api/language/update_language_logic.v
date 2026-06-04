@@ -30,7 +30,7 @@ pub fn update_language_usecase(mut ctx Context, req UpdateLanguageReq) !UpdateLa
 	update_language_domain(req)!
 
 	// Repository 更新
-	return update_language(mut ctx, req)
+	return update_language_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -58,7 +58,7 @@ pub struct UpdateLanguageResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn update_language(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageResp {
+fn update_language_repo(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

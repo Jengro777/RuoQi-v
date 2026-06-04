@@ -30,7 +30,7 @@ pub fn delete_language_usecase(mut ctx Context, req DeleteLanguageReq) !DeleteLa
 	delete_language_domain(req)!
 
 	// Repository 执行删除
-	return delete_language(mut ctx, req.language_ids)
+	return delete_language_repo(mut ctx, req.language_ids)
 }
 
 // ----------------- Domain 层 -----------------
@@ -50,7 +50,7 @@ pub struct DeleteLanguageResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn delete_language(mut ctx Context, language_ids []string) !DeleteLanguageResp {
+fn delete_language_repo(mut ctx Context, language_ids []string) !DeleteLanguageResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

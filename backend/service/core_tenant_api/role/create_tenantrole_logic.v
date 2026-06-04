@@ -11,14 +11,14 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/tenant_role/create'; post]
-pub fn (app &Role) tenant_role_create_handler(mut ctx Context) veb.Result {
+pub fn (app &Role) create_tenantrole_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateTenantRoleReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := create_tenant_role_usecase(mut ctx, req) or {
+	result := create_tenantrole_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -26,16 +26,16 @@ pub fn (app &Role) tenant_role_create_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn create_tenant_role_usecase(mut ctx Context, req CreateTenantRoleReq) !CreateTenantRoleResp {
+pub fn create_tenantrole_usecase(mut ctx Context, req CreateTenantRoleReq) !CreateTenantRoleResp {
 	// Domain 校验
-	create_tenant_role_domain(req)!
+	create_tenantrole_domain(req)!
 
 	// Repository 插入数据库
-	return create_tenant_role_repo(mut ctx, req)
+	return create_tenantrole_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_tenant_role_domain(req CreateTenantRoleReq) ! {
+fn create_tenantrole_domain(req CreateTenantRoleReq) ! {
 	if req.tenant_id == '' {
 		return error('tenant_id is required')
 	}
@@ -69,7 +69,7 @@ pub struct CreateTenantRoleResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn create_tenant_role_repo(mut ctx Context, req CreateTenantRoleReq) !CreateTenantRoleResp {
+fn create_tenantrole_repo(mut ctx Context, req CreateTenantRoleReq) !CreateTenantRoleResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }

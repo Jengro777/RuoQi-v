@@ -12,7 +12,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/menu/create_or_update'; post]
-pub fn (app &RolePermission) save_menu_handler(mut ctx Context) veb.Result {
+pub fn (app &RolePermission) save_role_menu_authority_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateMenuReq](ctx.req.data) or {
@@ -20,7 +20,7 @@ pub fn (app &RolePermission) save_menu_handler(mut ctx Context) veb.Result {
 	}
 
 	// Usecase 执行
-	result := save_menu_usecase(mut ctx, req) or {
+	result := save_role_menu_authority_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -28,16 +28,16 @@ pub fn (app &RolePermission) save_menu_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn save_menu_usecase(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
+pub fn save_role_menu_authority_usecase(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	// Domain 校验
-	save_menu_domain(req)!
+	save_role_menu_authority_domain(req)!
 
 	// Repository 执行数据库操作
 	return save_menu_permission(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn save_menu_domain(req UpdateMenuReq) ! {
+fn save_role_menu_authority_domain(req UpdateMenuReq) ! {
 	if req.role_id == '' {
 		return error('role_id is required')
 	}

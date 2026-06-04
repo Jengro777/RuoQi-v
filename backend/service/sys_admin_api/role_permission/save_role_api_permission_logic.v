@@ -12,14 +12,14 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/api/create_or_update'; post]
-pub fn (app &RolePermission) save_api_permission_handler(mut ctx Context) veb.Result {
+pub fn (app &RolePermission) save_role_api_permission_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[SaveApiReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400('Invalid request body: ${err.msg()}'))
 	}
 
-	result := save_api_permission_usecase(mut ctx, req) or {
+	result := save_role_api_permission_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -27,16 +27,16 @@ pub fn (app &RolePermission) save_api_permission_handler(mut ctx Context) veb.Re
 }
 
 // ----------------- Usecase 层 -----------------
-pub fn save_api_permission_usecase(mut ctx Context, req SaveApiReq) !SaveApiResp {
+pub fn save_role_api_permission_usecase(mut ctx Context, req SaveApiReq) !SaveApiResp {
 	// Domain 校验
-	save_api_permission_domain(req)!
+	save_role_api_permission_domain(req)!
 
 	// Repository 执行事务
-	return save_api_permission(mut ctx, req)
+	return save_role_api_permission(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn save_api_permission_domain(req SaveApiReq) ! {
+fn save_role_api_permission_domain(req SaveApiReq) ! {
 	if req.role_id == '' {
 		return error('role_id is required')
 	}
@@ -56,7 +56,7 @@ pub struct SaveApiResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn save_api_permission(mut ctx Context, req SaveApiReq) !SaveApiResp {
+fn save_role_api_permission(mut ctx Context, req SaveApiReq) !SaveApiResp {
 	mut db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

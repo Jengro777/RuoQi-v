@@ -10,7 +10,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/update'; post]
-pub fn (app &Project) project_update_handler(mut ctx Context) veb.Result {
+pub fn (app &Project) update_project_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateCoreProjectReq](ctx.req.data) or {

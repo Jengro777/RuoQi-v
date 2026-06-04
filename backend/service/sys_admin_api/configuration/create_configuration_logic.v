@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/create'; post]
-pub fn (app &Configuration) configuration_create_handler(mut ctx Context) veb.Result {
+pub fn (app &Configuration) create_configuration_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateConfigurationReq](ctx.req.data) or {

@@ -28,7 +28,7 @@ pub fn (app &Language) create_language_handler(mut ctx Context) veb.Result {
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_language_usecase(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
 	// create_language_domain(req)!
-	return create_language(mut ctx, req)
+	return create_language_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -61,7 +61,7 @@ pub struct CreateLanguageResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn create_language(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
+fn create_language_repo(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
 	time_now := time.now()
 	base_language := BaseLanguage{
 		id:                       rand.uuid_v7()

@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/project/create'; post]
-pub fn (app &Project) project_create_handler(mut ctx Context) veb.Result {
+pub fn (app &Project) create_project_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateCoreProjectReq](ctx.req.data) or {

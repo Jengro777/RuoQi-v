@@ -30,7 +30,7 @@ pub fn update_adm_usecase(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
 	update_adm_domain(req)!
 
 	// Repository 更新
-	return update_adm(mut ctx, req)
+	return update_adm_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -73,7 +73,7 @@ pub struct UpdateAdmResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn update_adm(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
+fn update_adm_repo(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

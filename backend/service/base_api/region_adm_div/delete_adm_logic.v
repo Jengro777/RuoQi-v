@@ -30,7 +30,7 @@ pub fn delete_adm_usecase(mut ctx Context, req DeleteAdmReq) !DeleteAdmResp {
 	delete_adm_domain(req)!
 
 	// Repository 执行删除
-	return delete_adm(mut ctx, req.adm_ids)
+	return delete_adm_repo(mut ctx, req.adm_ids)
 }
 
 // ----------------- Domain 层 -----------------
@@ -50,7 +50,7 @@ pub struct DeleteAdmResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn delete_adm(mut ctx Context, adm_ids []string) !DeleteAdmResp {
+fn delete_adm_repo(mut ctx Context, adm_ids []string) !DeleteAdmResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

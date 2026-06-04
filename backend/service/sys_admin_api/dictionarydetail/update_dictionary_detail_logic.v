@@ -10,14 +10,14 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/update'; post]
-pub fn (app &DictionaryDetail) dictionarydetail_update_handler(mut ctx Context) veb.Result {
+pub fn (app &DictionaryDetail) update_dictionary_detail_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateDictionaryDetailReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := update_dictionarydetail_usecase(mut ctx, req) or {
+	result := update_dictionary_detail_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -25,16 +25,16 @@ pub fn (app &DictionaryDetail) dictionarydetail_update_handler(mut ctx Context) 
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn update_dictionarydetail_usecase(mut ctx Context, req UpdateDictionaryDetailReq) !UpdateDictionaryDetailResp {
+pub fn update_dictionary_detail_usecase(mut ctx Context, req UpdateDictionaryDetailReq) !UpdateDictionaryDetailResp {
 	// Domain 校验
-	update_dictionarydetail_domain(req)!
+	update_dictionary_detail_domain(req)!
 
 	// Repository 执行更新
-	return update_dictionarydetail_repo(mut ctx, req)
+	return update_dictionary_detail_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn update_dictionarydetail_domain(req UpdateDictionaryDetailReq) ! {
+fn update_dictionary_detail_domain(req UpdateDictionaryDetailReq) ! {
 	if req.id == '' {
 		return error('id is required')
 	}
@@ -57,7 +57,7 @@ pub struct UpdateDictionaryDetailResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn update_dictionarydetail_repo(mut ctx Context, req UpdateDictionaryDetailReq) !UpdateDictionaryDetailResp {
+fn update_dictionary_detail_repo(mut ctx Context, req UpdateDictionaryDetailReq) !UpdateDictionaryDetailResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }

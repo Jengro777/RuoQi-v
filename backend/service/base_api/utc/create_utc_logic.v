@@ -28,7 +28,7 @@ pub fn (app &Utc) create_utc_handler(mut ctx Context) veb.Result {
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_utc_usecase(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
 	// create_utc_domain(req)!
-	return create_utc(mut ctx, req)
+	return create_utc_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -59,7 +59,7 @@ pub struct CreateUtcResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn create_utc(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
+fn create_utc_repo(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
 	// time_now := time.now()
 	base_utc := BaseUtc{
 		id:              rand.uuid_v7()

@@ -30,7 +30,7 @@ pub fn delete_region_usecase(mut ctx Context, req DeleteRegionReq) !DeleteRegion
 	delete_region_domain(req)!
 
 	// Repository 执行删除
-	return delete_region(mut ctx, req.region_ids)
+	return delete_region_repo(mut ctx, req.region_ids)
 }
 
 // ----------------- Domain 层 -----------------
@@ -50,7 +50,7 @@ pub struct DeleteRegionResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn delete_region(mut ctx Context, region_ids []string) !DeleteRegionResp {
+fn delete_region_repo(mut ctx Context, region_ids []string) !DeleteRegionResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

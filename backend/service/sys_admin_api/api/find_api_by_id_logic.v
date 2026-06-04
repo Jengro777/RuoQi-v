@@ -17,7 +17,7 @@ pub fn (app &Api) find_api_by_id_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := get_api_by_id_usecase(mut ctx, req) or {
+	result := find_api_by_id_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -25,7 +25,7 @@ pub fn (app &Api) find_api_by_id_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn get_api_by_id_usecase(mut ctx Context, req FindApiByIdReq) !FindApiByIdResp {
+pub fn find_api_by_id_usecase(mut ctx Context, req FindApiByIdReq) !FindApiByIdResp {
 	validate_api_by_id_domain(req)!
 
 	return find_api_by_id(mut ctx, req)

@@ -9,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/delete'; post]
-pub fn (app &Token) soft_delete_token_handler(mut ctx Context) veb.Result {
+pub fn (app &Token) delete_token_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteTokenReq](ctx.req.data) or {

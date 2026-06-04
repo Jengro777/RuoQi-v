@@ -11,14 +11,14 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/create'; post]
-pub fn (app &DictionaryDetail) dictionarydetail_create_handler(mut ctx Context) veb.Result {
+pub fn (app &DictionaryDetail) create_dictionary_detail_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateDictionaryDetailReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := create_dictionarydetail_usecase(mut ctx, req) or {
+	result := create_dictionary_detail_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -26,16 +26,16 @@ pub fn (app &DictionaryDetail) dictionarydetail_create_handler(mut ctx Context) 
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn create_dictionarydetail_usecase(mut ctx Context, req CreateDictionaryDetailReq) !CreateDictionaryDetailResp {
+pub fn create_dictionary_detail_usecase(mut ctx Context, req CreateDictionaryDetailReq) !CreateDictionaryDetailResp {
 	// Domain 校验
-	create_dictionarydetail_domain(req)!
+	create_dictionary_detail_domain(req)!
 
 	// Repository 插入数据
-	return create_dictionarydetail_repo(mut ctx, req)
+	return create_dictionary_detail_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn create_dictionarydetail_domain(req CreateDictionaryDetailReq) ! {
+fn create_dictionary_detail_domain(req CreateDictionaryDetailReq) ! {
 	if req.dictionary_id == '' {
 		return error('dictionary_id is required')
 	}
@@ -64,7 +64,7 @@ pub struct CreateDictionaryDetailResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn create_dictionarydetail_repo(mut ctx Context, req CreateDictionaryDetailReq) !CreateDictionaryDetailResp {
+fn create_dictionary_detail_repo(mut ctx Context, req CreateDictionaryDetailReq) !CreateDictionaryDetailResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }

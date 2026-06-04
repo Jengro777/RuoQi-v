@@ -30,7 +30,7 @@ pub fn delete_utc_usecase(mut ctx Context, req DeleteUtcReq) !DeleteUtcResp {
 	delete_utc_domain(req)!
 
 	// Repository 执行删除
-	return delete_utc(mut ctx, req.utc_ids)
+	return delete_utc_repo(mut ctx, req.utc_ids)
 }
 
 // ----------------- Domain 层 -----------------
@@ -50,7 +50,7 @@ pub struct DeleteUtcResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn delete_utc(mut ctx Context, utc_ids []string) !DeleteUtcResp {
+fn delete_utc_repo(mut ctx Context, utc_ids []string) !DeleteUtcResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

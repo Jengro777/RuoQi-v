@@ -11,7 +11,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/api/create'; post]
-pub fn (app &Api) api_create_handler(mut ctx Context) veb.Result {
+pub fn (app &Api) create_api_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateCoreApiReq](ctx.req.data) or {

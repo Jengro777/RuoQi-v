@@ -1,7 +1,7 @@
-module token
+module task
 
 import structs { App }
 
-pub struct Token {
+pub struct Task {
 	App
 }

@@ -28,7 +28,7 @@ pub fn (app &Region) create_region_handler(mut ctx Context) veb.Result {
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_region_usecase(mut ctx Context, req CreateRegionReq) !CreateRegionResp {
 	// create_region_domain(req)!
-	return create_region(mut ctx, req)
+	return create_region_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -75,7 +75,7 @@ pub struct CreateRegionResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn create_region(mut ctx Context, req CreateRegionReq) !CreateRegionResp {
+fn create_region_repo(mut ctx Context, req CreateRegionReq) !CreateRegionResp {
 	time_now := time.now()
 	base_region := BaseRegion{
 		id:                   rand.uuid_v7()

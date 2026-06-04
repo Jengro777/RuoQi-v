@@ -29,7 +29,7 @@ pub fn update_utc_usecase(mut ctx Context, req UpdateUtcReq) !UpdateUtcResp {
 	update_utc_domain(req)!
 
 	// Repository 更新
-	return update_utc(mut ctx, req)
+	return update_utc_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -54,7 +54,7 @@ pub struct UpdateUtcResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn update_utc(mut ctx Context, req UpdateUtcReq) !UpdateUtcResp {
+fn update_utc_repo(mut ctx Context, req UpdateUtcReq) !UpdateUtcResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

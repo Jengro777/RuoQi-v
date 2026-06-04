@@ -10,14 +10,14 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/tenant_role/update'; post]
-pub fn (app &Role) tenant_role_update_handler(mut ctx Context) veb.Result {
+pub fn (app &Role) update_tenantrole_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateTenantRoleReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := update_tenant_role_usecase(mut ctx, req) or {
+	result := update_tenantrole_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
@@ -25,16 +25,16 @@ pub fn (app &Role) tenant_role_update_handler(mut ctx Context) veb.Result {
 }
 
 // ----------------- Application Service | Usecase 层 -----------------
-pub fn update_tenant_role_usecase(mut ctx Context, req UpdateTenantRoleReq) !UpdateTenantRoleResp {
+pub fn update_tenantrole_usecase(mut ctx Context, req UpdateTenantRoleReq) !UpdateTenantRoleResp {
 	// Domain 校验层
-	update_tenant_role_domain(req)!
+	update_tenantrole_domain(req)!
 
 	// Repository 写入数据库
-	return update_tenant_role_repo(mut ctx, req)
+	return update_tenantrole_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
-fn update_tenant_role_domain(req UpdateTenantRoleReq) ! {
+fn update_tenantrole_domain(req UpdateTenantRoleReq) ! {
 	if req.role_id == '' {
 		return error('role_id is required')
 	}
@@ -61,7 +61,7 @@ pub struct UpdateTenantRoleResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn update_tenant_role_repo(mut ctx Context, req UpdateTenantRoleReq) !UpdateTenantRoleResp {
+fn update_tenantrole_repo(mut ctx Context, req UpdateTenantRoleReq) !UpdateTenantRoleResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }

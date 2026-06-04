@@ -9,7 +9,7 @@ import structs { Context }
 
 // ----------------- Handler 层 -----------------
 @['/api/delete'; post]
-pub fn (app &Api) api_delete_handler(mut ctx Context) veb.Result {
+pub fn (app &Api) delete_api_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteApiReq](ctx.req.data) or {

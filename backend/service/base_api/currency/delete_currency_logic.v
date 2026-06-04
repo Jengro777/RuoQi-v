@@ -30,7 +30,7 @@ pub fn delete_currency_usecase(mut ctx Context, req DeleteCurrencyReq) !DeleteCu
 	delete_currency_domain(req)!
 
 	// Repository 执行删除
-	return delete_currency(mut ctx, req.currency_ids)
+	return delete_currency_repo(mut ctx, req.currency_ids)
 }
 
 // ----------------- Domain 层 -----------------
@@ -50,7 +50,7 @@ pub struct DeleteCurrencyResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn delete_currency(mut ctx Context, currency_ids []string) !DeleteCurrencyResp {
+fn delete_currency_repo(mut ctx Context, currency_ids []string) !DeleteCurrencyResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 

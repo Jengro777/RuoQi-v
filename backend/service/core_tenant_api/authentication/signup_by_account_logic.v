@@ -12,7 +12,7 @@ import common.encrypt
 
 // ----------------- Handler 层 -----------------
 @['/user/create'; post]
-pub fn (app &Authentication) create_user_handler(mut ctx Context) veb.Result {
+pub fn (app &Authentication) signup_by_account_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateUserReq](ctx.req.data) or {

@@ -28,7 +28,7 @@ pub fn (app &Currency) create_currency_handler(mut ctx Context) veb.Result {
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn create_currency_usecase(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
 	// create_currency_domain(req)!
-	return create_currency(mut ctx, req)
+	return create_currency_repo(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -63,7 +63,7 @@ pub struct CreateCurrencyResp {
 }
 
 // ----------------- Repository 层 -----------------
-fn create_currency(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
+fn create_currency_repo(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
 	time_now := time.now()
 	base_currency := BaseCurrency{
 		id:                        rand.uuid_v7()
