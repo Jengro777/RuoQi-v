@@ -11,6 +11,9 @@ uat:
     cd backend && v -d trace_orm  run ./main -f etc/config.toml
 
 build:
+    cd backend && v -o app ./main
+
+build_prod:
     cd backend && v -prod -o app ./main
 
 # ─── OpenAPI ────────────────────────────────────────

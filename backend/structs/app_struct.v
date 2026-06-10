@@ -29,6 +29,16 @@ pub mut:
 
 	svc_sys  ServiceContextSys
 	svc_core ServiceContextCore
+	svc_iam  ServiceContextIam
+}
+
+// ----- IAM 统一上下文 ---
+pub struct ServiceContextIam {
+pub mut:
+	user_id   string
+	token_jwt string
+	role_ids  []string
+	tenant_id string // 仅 realm=external 时有效
 }
 
 // -----  Sys用户&&租户层上下文 ---

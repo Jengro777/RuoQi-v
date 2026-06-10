@@ -12,6 +12,8 @@ module jwt
 // AuthPayload  嵌入 BasePayload（标准声明），追加认证业务字段。
 pub struct AuthPayload {
 	BasePayload
+pub mut:
+	realm string // "sys" | "external"
 pub:
 	role_ids  []string // 角色数组
 	client_ip string   // 客户端 IP

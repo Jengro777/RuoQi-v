@@ -10,6 +10,10 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	$if fms ? {
 		log.warn('routes_ifdef - Fms')
 	}
+	$if iam ? {
+		log.warn('routes_ifdef - Core')
+		app.routes_iam(mut ctx)
+	}
 	$if core ? {
 		log.warn('routes_ifdef - Core')
 		app.routes_core_tenant(mut ctx)
@@ -34,5 +38,6 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 		app.routes_sys_admin(mut ctx)
 		app.routes_core_admin(mut ctx)
 		app.routes_core_tenant(mut ctx)
+		app.routes_iam(mut ctx)
 	}
 }
