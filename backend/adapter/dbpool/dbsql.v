@@ -1,10 +1,22 @@
 module dbpool
 
-import db.mysql
+import orm
 import pool
+import db.mysql
 
-// 创建新连接池
-pub fn new_db_pool(config DatabaseConfig) !&DatabasePool {
+pub fn new_db_pool(config DatabaseConfig) !&DatabasePoolable {
+	match config.type {
+		'mysql' {
+			p := new_mysql_pool(config)!
+			return &DatabasePoolable(p)
+		}
+		else {
+			return error('unsupported db_type: ${config.type}')
+		}
+	}
+}
+
+fn new_mysql_pool(config DatabaseConfig) !&DatabasePool[mysql.DB] {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
 		mut db := mysql.connect(mysql.Config{
 			host:     config.host
@@ -15,36 +27,34 @@ pub fn new_db_pool(config DatabaseConfig) !&DatabasePool {
 		})!
 		return &db
 	}
-
 	pool_conf := pool.ConnectionPoolConfig{
 		max_conns:      config.max_conns
 		min_idle_conns: config.min_idle_conns
-		max_lifetime:   config.max_lifetime
-		idle_timeout:   config.idle_timeout
-		get_timeout:    config.get_timeout
 	}
-
 	inner_pool := pool.new_connection_pool(create_conn, pool_conf)!
-	pool_instance := &DatabasePool{
+	return &DatabasePool[mysql.DB]{
 		inner: inner_pool
 	}
-	return pool_instance
 }
 
-// 获取连接
-pub fn (mut p DatabasePool) acquire() !(mysql.DB, &pool.ConnectionPoolable) {
-	conn := p.inner.get()!
-	// 安全类型转换
-	return conn as mysql.DB, conn
+// acquire 返回 orm.Connection，数据库无关，用于 sql db { ... } 块。
+pub fn (mut p DatabasePool[T]) acquire() !(orm.Connection, &pool.ConnectionPoolable) {
+	raw_conn := p.inner.get()!
+	raw := raw_conn as T
+	return raw, raw_conn
 }
 
-// 释放连接
-pub fn (mut p DatabasePool) release(conn &pool.ConnectionPoolable) ! {
+// acquire_raw 返回具体类型 T，可用于调用驱动特有方法（如 db.exec()）。
+pub fn (mut p DatabasePool[T]) acquire_raw() !(T, &pool.ConnectionPoolable) {
+	raw_conn := p.inner.get()!
+	raw := raw_conn as T
+	return raw, raw_conn
+}
+
+pub fn (mut p DatabasePool[T]) release(conn &pool.ConnectionPoolable) ! {
 	p.inner.put(conn)!
-	return
 }
 
-// 关闭连接池
-pub fn (mut p DatabasePool) close() {
+pub fn (mut p DatabasePool[T]) close() {
 	p.inner.close()
 }

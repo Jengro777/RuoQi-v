@@ -3,7 +3,7 @@ module schema_platform
 import time
 
 @[comment: '套餐定价表']
-@[table: 'pf_price']
+@[table: 'pf_plan_price']
 pub struct PfPlanPrice {
 pub:
 	id         string     @[comment: 'UUID'; primary; sql_type: 'CHAR(36)']

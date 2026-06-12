@@ -3,6 +3,7 @@
 */
 module role_permission
 
+import orm
 import veb
 import log
 import x.json2 as json
@@ -59,16 +60,18 @@ pub struct UpdateMenuResp {
 // ----------------- Repository 层 -----------------
 fn save_menu_permission(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	mut db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
 	// 开启事务
-	db.begin() or { return error('Failed to begin transaction: ${err}') }
+	mut scoped := orm.new_db(db, orm.DataScope{})
+	scoped.orm_begin() or { return error('Failed to begin transaction: ${err}') }
 
 	// 删除旧权限
-	sql db {
+	sql scoped {
 		delete from SysRoleMenu where role_id == req.role_id
 	} or {
-		db.rollback() or {}
+		scoped.orm_rollback() or {}
 		return error('Failed to delete old role-menu permissions: ${err}')
 	}
 
@@ -78,17 +81,17 @@ fn save_menu_permission(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 			role_id: req.role_id
 			menu_id: menu_id
 		}
-		sql db {
+		sql scoped {
 			insert new_perm into SysRoleMenu
 		} or {
-			db.rollback() or {}
+			scoped.orm_rollback() or {}
 			return error('Failed to insert menu_id=${menu_id}: ${err}')
 		}
 	}
 
 	// 提交事务
-	db.commit() or {
-		db.rollback() or {}
+	scoped.orm_commit() or {
+		scoped.orm_rollback() or {}
 		return error('Failed to commit transaction: ${err}')
 	}
 

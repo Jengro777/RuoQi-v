@@ -3,6 +3,7 @@
 // step1 插入角色关联的租户的所有api权限
 module role_permission
 
+import orm
 import veb
 import log
 import x.json2 as json
@@ -68,14 +69,15 @@ fn upsert_role_api_permission_repo(mut ctx Context, req UpdateApiReq) !UpdateApi
 	}
 
 	// 开启事务
-	db.begin() or { return error('Failed to begin transaction: ${err}') }
+	mut scoped := orm.new_db(db, orm.DataScope{})
+	scoped.orm_begin() or { return error('Failed to begin transaction: ${err}') }
 
 	// Step 1: 删除旧权限
-	sql db {
+	sql scoped {
 		delete from CoreRoleApi where role_id == req.role_id && source_type == req.source_type
 		&& source_id == req.source_id
 	} or {
-		db.rollback() or {}
+		scoped.orm_rollback() or {}
 		return error('Failed to delete old role-api permissions: ${err}')
 	}
 
@@ -87,17 +89,17 @@ fn upsert_role_api_permission_repo(mut ctx Context, req UpdateApiReq) !UpdateApi
 			source_type: req.source_type
 			source_id:   req.source_id
 		}
-		sql db {
+		sql scoped {
 			insert new_perm into CoreRoleApi
 		} or {
-			db.rollback() or {}
+			scoped.orm_rollback() or {}
 			return error('Failed to insert api_id=${api_id}: ${err}')
 		}
 	}
 
 	// 提交事务
-	db.commit() or {
-		db.rollback() or {}
+	scoped.orm_commit() or {
+		scoped.orm_rollback() or {}
 		return error('Failed to commit transaction: ${err}')
 	}
 

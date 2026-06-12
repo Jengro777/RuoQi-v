@@ -20,7 +20,7 @@ pub mut:
 pub struct Context {
 	veb.Context
 pub mut:
-	dbpool      &dbpool.DatabasePool
+	dbpool      &dbpool.DatabasePoolable @[noinit]
 	cache_pool  &cache_pool.CachePool
 	config      &config.GlobalConfig
 	jwt_payload ?AuthPayload
@@ -38,7 +38,7 @@ pub mut:
 	user_id   string
 	token_jwt string
 	role_ids  []string
-	tenant_id string // 仅 realm=external 时有效
+	tenant_id string
 }
 
 // -----  Sys用户&&租户层上下文 ---
@@ -55,6 +55,6 @@ pub mut:
 	user_id         string
 	token_jwt       string
 	tenant_id       string
-	sub_app_id      string // 当前操作的订阅应用(考虑到一个租户可以重复订阅一个应用)
+	sub_app_id      string
 	tenant_role_ids []string
 }

@@ -3,6 +3,7 @@
 */
 module role_permission
 
+import orm
 import veb
 import log
 import x.json2 as json
@@ -61,13 +62,14 @@ fn save_role_api_permission(mut ctx Context, req SaveApiReq) !SaveApiResp {
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
 	// 开启事务
-	db.begin() or { return error('Failed to begin transaction: ${err}') }
+	mut scoped := orm.new_db(db, orm.DataScope{})
+	scoped.orm_begin() or { return error('Failed to begin transaction: ${err}') }
 
 	// 删除旧权限
-	sql db {
+	sql scoped {
 		delete from SysRoleApi where role_id == req.role_id
 	} or {
-		db.rollback() or {}
+		scoped.orm_rollback() or {}
 		return error('Failed to delete old role-api permissions: ${err}')
 	}
 
@@ -77,17 +79,17 @@ fn save_role_api_permission(mut ctx Context, req SaveApiReq) !SaveApiResp {
 			role_id: req.role_id
 			api_id:  api_id
 		}
-		sql db {
+		sql scoped {
 			insert new_perm into SysRoleApi
 		} or {
-			db.rollback() or {}
+			scoped.orm_rollback() or {}
 			return error('Failed to insert api_id=${api_id}: ${err}')
 		}
 	}
 
 	// 提交事务
-	db.commit() or {
-		db.rollback() or {}
+	scoped.orm_commit() or {
+		scoped.orm_rollback() or {}
 		return error('Failed to commit transaction: ${err}')
 	}
 

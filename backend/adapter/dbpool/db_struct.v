@@ -1,25 +1,17 @@
 module dbpool
 
-import db.mysql
+import orm
 import pool
 import time
 
-// 数据库连接配置
 pub struct DatabaseConfig {
 pub mut:
-	type       string
-	host       string
-	port       u32
-	username   string
-	password   string
-	dbname     string
-	ssl_verify bool @[default: false] // #设置为true时，验证ssl证书
-	flag       mysql.ConnectionFlag
-	ssl_key    string
-	ssl_cert   string
-	ssl_ca     string
-	ssl_capath string
-	ssl_cipher string
+	type     string
+	host     string
+	port     u32
+	username string
+	password string
+	dbname   string
 
 	//*pool 配置*/
 	// 最大连接数：连接池允许同时打开的最大数据库连接数
@@ -42,17 +34,16 @@ pub mut:
 	get_timeout time.Duration = 3 * time.second
 }
 
-// 公共接口
 pub interface DatabasePoolable {
 mut:
-	acquire() !(mysql.DB, &pool.ConnectionPoolable)
+	acquire() !(orm.Connection, &pool.ConnectionPoolable)
 	release(conn &pool.ConnectionPoolable) !
 	close()
 }
 
 // 连接池结构体，和APP同生命周期，分配到堆上
 @[heap]
-pub struct DatabasePool implements DatabasePoolable {
+pub struct DatabasePool[T] implements DatabasePoolable {
 pub mut:
 	inner &pool.ConnectionPool
 }

@@ -4,6 +4,7 @@
 
 module role_permission
 
+import orm
 import veb
 import log
 import x.json2 as json
@@ -70,14 +71,15 @@ fn upsert_role_menu_permission_repo(mut ctx Context, req UpdateMenuReq) !UpdateM
 	}
 
 	// 开启事务
-	db.begin() or { return error('Failed to begin transaction: ${err}') }
+	mut scoped := orm.new_db(db, orm.DataScope{})
+	scoped.orm_begin() or { return error('Failed to begin transaction: ${err}') }
 
 	// Step 1: 删除旧菜单权限
-	sql db {
+	sql scoped {
 		delete from CoreRoleMenu where role_id == req.role_id && source_type == req.source_type
 		&& source_id == req.source_id
 	} or {
-		db.rollback() or {}
+		scoped.orm_rollback() or {}
 		return error('Failed to delete old role-menu permissions: ${err}')
 	}
 
@@ -89,17 +91,17 @@ fn upsert_role_menu_permission_repo(mut ctx Context, req UpdateMenuReq) !UpdateM
 			source_type: req.source_type
 			source_id:   req.source_id
 		}
-		sql db {
+		sql scoped {
 			insert new_perm into CoreRoleMenu
 		} or {
-			db.rollback() or {}
+			scoped.orm_rollback() or {}
 			return error('Failed to insert menu_id=${menu_id}: ${err}')
 		}
 	}
 
 	// 提交事务
-	db.commit() or {
-		db.rollback() or {}
+	scoped.orm_commit() or {
+		scoped.orm_rollback() or {}
 		return error('Failed to commit transaction: ${err}')
 	}
 

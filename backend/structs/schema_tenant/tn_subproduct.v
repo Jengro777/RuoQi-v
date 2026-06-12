@@ -2,9 +2,9 @@ module schema_tenant
 
 import time
 
-@[comment: '租户产品订阅表（含套餐）']
-@[table: 'tn_subscription']
-pub struct TnSubscription {
+@[comment: '租户产品订阅表（含套餐）— subproduct = subscription to a product']
+@[table: 'tn_subproduct']
+pub struct TnSubProduct {
 pub:
 	id         string     @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	tenant_id  string     @[comment: '租户ID'; immutable; sql: 'tenant_id'; sql_type: 'CHAR(36)']

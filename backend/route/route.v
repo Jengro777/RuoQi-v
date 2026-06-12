@@ -30,6 +30,7 @@ fn (mut app AliasApp) register_routes_sys[T, U](mut ctrl T, url_path string, mut
 fn (mut app AliasApp) register_routes_core[T, U](mut ctrl T, url_path string, mut ctx Context) {
 	app.common_middleware[T, U](mut ctrl, mut ctx)
 	ctrl.use(middleware.authority_middleware_core())
+	ctrl.use(middleware.datascope_middleware(['tenant_id']))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	ctrl.route_use('${url_path}/*', veb.encode_auto[Context]())
 }
@@ -37,6 +38,7 @@ fn (mut app AliasApp) register_routes_core[T, U](mut ctrl T, url_path string, mu
 fn (mut app AliasApp) register_routes_iam[T, U](mut ctrl T, url_path string, mut ctx Context) {
 	app.common_middleware[T, U](mut ctrl, mut ctx)
 	ctrl.use(middleware.iam_middleware())
+	ctrl.use(middleware.datascope_middleware(['user_id']))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	ctrl.route_use('${url_path}/*', veb.encode_auto[Context]())
 }

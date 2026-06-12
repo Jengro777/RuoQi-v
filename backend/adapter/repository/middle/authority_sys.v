@@ -1,8 +1,8 @@
 module middle
 
+import orm
 import structs { Context }
 import structs.schema_sys { SysApi, SysRoleApi, SysToken, SysUser, SysUserRole }
-import db.mysql
 import log
 
 /* =============================================
@@ -52,7 +52,7 @@ pub fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 }
 
 // 1: 根据token_jwt 获取用户ID
-fn find_userid_by_token(mut ctx Context, db mysql.DB, req_token string) !string {
+fn find_userid_by_token(mut ctx Context, db orm.Connection, req_token string) !string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// step1: 根据 token 查找 SysToken 表，验证 token 是否存在
@@ -73,7 +73,7 @@ fn find_userid_by_token(mut ctx Context, db mysql.DB, req_token string) !string 
 }
 
 // 2:3: 根据user_id 获取用户角色ID列表
-fn find_roleids_by_userid(mut ctx Context, db mysql.DB, user_id string) ![]string {
+fn find_roleids_by_userid(mut ctx Context, db orm.Connection, user_id string) ![]string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// step2: 根据 user_id 查询 SysUser 表，判断是否为超级管理员
@@ -109,7 +109,7 @@ fn find_roleids_by_userid(mut ctx Context, db mysql.DB, user_id string) ![]strin
 }
 
 // 4:5: 查询角色关联的 API ID
-fn find_apiids_by_roleids(db mysql.DB, role_id_list []string) ![]string {
+fn find_apiids_by_roleids(db orm.Connection, role_id_list []string) ![]string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut sys_api := []SysApi{}
