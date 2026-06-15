@@ -9,7 +9,7 @@ import structs.schema_base { BaseUtc }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/create'; post]
 pub fn (app &Utc) create_utc_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -25,13 +25,13 @@ pub fn (app &Utc) create_utc_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn create_utc_usecase(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
 	// create_utc_domain(req)!
 	return create_utc_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 // fn create_utc_domain(req CreateUtcReq) ! {
 // if req.path == '' {
 // 	return error('path is required')
@@ -44,7 +44,7 @@ pub fn create_utc_usecase(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
 // }
 // }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct CreateUtcReq {
 	id              string @[json: 'id']
 	sort            ?int   @[json: 'sort']
@@ -58,7 +58,7 @@ pub struct CreateUtcResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn create_utc_repo(mut ctx Context, req CreateUtcReq) !CreateUtcResp {
 	// time_now := time.now()
 	base_utc := BaseUtc{

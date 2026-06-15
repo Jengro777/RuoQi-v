@@ -9,7 +9,7 @@ import structs.schema_base { BaseRegionAdmDiv }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/create'; post]
 pub fn (app &RegionAdmDiv) create_adm_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -25,13 +25,13 @@ pub fn (app &RegionAdmDiv) create_adm_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn create_adm_usecase(mut ctx Context, req CreateAdmReq) !CreateAdmResp {
 	// create_adm_domain(req)!
 	return create_adm_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 // fn create_adm_domain(req CreateAdmReq) ! {
 // if req.path == '' {
 // 	return error('path is required')
@@ -44,7 +44,7 @@ pub fn create_adm_usecase(mut ctx Context, req CreateAdmReq) !CreateAdmResp {
 // }
 // }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct CreateAdmReq {
 	parent_id       string  @[json: 'parentId']
 	region_id       string  @[json: 'regionId']
@@ -77,7 +77,7 @@ pub struct CreateAdmResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn create_adm_repo(mut ctx Context, req CreateAdmReq) !CreateAdmResp {
 	time_now := time.now()
 	base_region := BaseRegionAdmDiv{

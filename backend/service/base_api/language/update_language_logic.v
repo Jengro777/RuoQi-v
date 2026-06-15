@@ -8,7 +8,7 @@ import structs.schema_base { BaseLanguage }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/update'; post]
 pub fn (app &Language) update_language_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,7 +24,7 @@ pub fn (app &Language) update_language_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn update_language_usecase(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageResp {
 	// Domain 校验
 	update_language_domain(req)!
@@ -33,14 +33,14 @@ pub fn update_language_usecase(mut ctx Context, req UpdateLanguageReq) !UpdateLa
 	return update_language_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn update_language_domain(req UpdateLanguageReq) ! {
 	if req.id == '' {
 		return error('language id is required')
 	}
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct UpdateLanguageReq {
 	id                       string  @[json: 'id']
 	language_self_proclaimed ?string @[json: 'languageSelfProclaimed']
@@ -57,7 +57,7 @@ pub struct UpdateLanguageResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn update_language_repo(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }

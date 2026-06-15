@@ -13,16 +13,16 @@ A new module in `sys_admin_api` named `audit_log` creates these files:
 
 ```
 backend/
-├── structs/schema_sys/sys_audit_log.v    # ORM schema struct
+├── structs/schema_sys/sys_audit_log.v       # ORM schema struct
 ├── service/sys_admin_api/audit_log/
-│   ├── app_struct.v                       # Module struct (embeds structs.App)
-│   ├── create_audit_log_logic.v           # POST: handler + usecase + domain + DTO + repo
-│   ├── get_audit_log_list_logic.v         # POST: paginated list query
-│   ├── get_audit_log_by_id_logic.v        # POST: single record by ID
-│   ├── update_audit_log_logic.v           # POST: update
-│   ├── delete_audit_log_logic.v           # POST: soft-delete
-│   └── audit_log_test.v                   # Test file
-└── route/route_sys_admin.v               # Register the module route
+│   ├── app_struct.v                         # Module struct (embeds structs.App)
+│   ├── create_audit_log_logic.v             # POST: handler + usecase + domain + DTO + repo
+│   ├── find_audit_log_all_logic.v           # POST: list query
+│   ├── find_audit_log_by_id_logic.v         # POST: single record by ID
+│   ├── update_audit_log_logic.v             # POST: update
+│   ├── delete_audit_log_logic.v             # POST: soft-delete
+│   └── audit_log_test.v                     # Test file
+└── route/route_sys_admin.v                 # Register the module route
 ```
 
 ## Step-by-step workflow
@@ -39,33 +39,26 @@ Key rules:
 
 ### Step 2: Create the module directory and app_struct.v
 
-Create `backend/service/<api_group>/<module_name>/`. Copy [app-struct-template.v](references/app-struct-template.v) as `app_struct.v`. The struct embeds `structs.App` — named after the module, without any suffix (e.g., `pub struct AuditLog { App }`).
+Create `backend/service/<api_group>/<module_name>/`. Create `app_struct.v`. The struct embeds `structs.App` — named after the module, without any suffix (e.g., `pub struct AuditLog { App }`).
 
 ### Step 3: Create CRUD logic files
 
 Create one file per operation. Each file contains all layers inline (handler, usecase, domain, DTO, repository) within the same `module` namespace. Files in the same directory share the module and do **not** import each other.
 
+**One file = one API route.** A file must have exactly one `@['/xxx'; post]` handler.
+
 **Naming:** `{action}_{module_name}_logic.v`
 
-| Action   | File name               | HTTP | URL pattern          |
-|----------|--------------------------|------|----------------------|
-| Create   | `create_xxx_logic.v`     | POST | `/xxx/create`       |
-| List     | `get_xxx_list_logic.v`   | POST | `/xxx/list`         |
-| GetById  | `get_xxx_by_id_logic.v`  | POST | `/xxx/by_id`        |
-| Update   | `update_xxx_logic.v`     | POST | `/xxx/update`       |
-| Delete   | `delete_xxx_logic.v`     | POST | `/xxx/delete`       |
+| Action   | File name                   | HTTP | URL pattern                |
+|----------|-----------------------------|------|----------------------------|
+| Create   | `create_xxx_logic.v`        | POST | `/create_xxx`              |
+| List     | `find_xxx_all_logic.v`      | POST | `/find_xxx_all`            |
+| FindById | `find_xxx_by_id_logic.v`    | POST | `/find_xxx_by_id`          |
+| Update   | `update_xxx_logic.v`        | POST | `/update_xxx`              |
+| Delete   | `delete_xxx_logic.v`        | POST | `/delete_xxx`              |
 
-**Start from templates:** [logic-create-template.v](references/logic-create-template.v) and [logic-list-template.v](references/logic-list-template.v). For Update/Delete, adapt the Create pattern — Update uses `update ... set ... where`, Delete sets `del_flag = 1`.
+**See the complete example and file structure in [ddd-conventions.md §5](references/ddd-conventions.md).**
 
-**Layered structure per file:**
-
-```
-1. Handler — @['/path'; post], json.decode req, calls usecase, returns ApiSuccessResponse/ApiErrorResponse
-2. Usecase — pub fn, orchestrates: domain validation → repository
-3. Domain — fn, validates business rules, returns ! on violation
-4. DTO — pub struct Req/Resp with @[json: '...'] on every field
-5. Repository — fn: ctx.dbpool.acquire(), V ORM sql, defer ctx.dbpool.release()
-```
 
 **DB access pattern (every repository function):**
 ```v
@@ -81,7 +74,7 @@ defer {
 
 ### Step 4: Register the route
 
-In the appropriate `backend/route/route_<scope>.v`, add the import and registration. See [route-template.v](references/route-template.v).
+In the appropriate `backend/route/route_<scope>.v`, add the import and registration. See the registration table above for the correct method.
 
 **API group → route file → registration method:**
 
@@ -133,7 +126,7 @@ fn test_create_audit_log() {
 |-------------|----------------------------------|-----------------------------|
 | Module dir  | `lower_snake_case`               | `audit_log`                |
 | App struct  | `PascalCase` (no suffix)         | `AuditLog`                 |
-| Handler fn  | `{module}_{action}_handler`      | `audit_log_create_handler` |
+| Handler fn  | `{action}_{module}_handler`      | `create_audit_log_handler` |
 | Usecase fn  | `{action}_{module}_usecase`      | `create_audit_log_usecase` |
 | Domain fn   | `{action}_{module}_domain`       | `create_audit_log_domain`  |
 | Repo fn     | `{action}_{module}_repo`         | `create_audit_log_repo`    |
@@ -143,8 +136,6 @@ fn test_create_audit_log() {
 | Schema struct| `{Domain}{Module}`              | `SysAuditLog`              |
 | Route file  | `route_<scope>.v`                | `route_sys_admin.v`        |
 | Test file   | `{module_name}_test.v`           | `audit_log_test.v`         |
-
-> **Note on usecase naming:** AGENTS.md lists `get_xxx_usecase` / `find_xxx_usecase` / `save_xxx_usecase` as conventions, but actual code uses CRUD-verb-first (`create_xxx_usecase`, `update_xxx_usecase`, `get_xxx_list_usecase`). Follow the codebase pattern — verb first, module second.
 
 ## Directories to NOT modify
 
@@ -165,3 +156,5 @@ These directories are code-generated or infrastructure-only, per AGENTS.md. Neve
 - **Schema location:** Schema structs go in `structs/schema_<domain>/`, not in the service directory
 - **Soft delete:** Delete operations set `del_flag = 1`; never issue a physical `DELETE`
 - **UUIDs:** Use `rand.uuid_v7()` for all primary key generation
+- **One API per file:** Each `*_logic.v` must contain exactly one `@['/xxx'; post]` handler — never bundle multiple routes in one file
+- **Section comments:** Every `*_logic.v` must annotate layers with `// ═══ xxx ═══` comments in the order: Handler → Usecase → Domain → DTO → Repository

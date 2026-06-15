@@ -10,6 +10,7 @@ import structs.schema_iam { IamUser, IamUserRole }
 import common.api
 import common.encrypt
 
+// ═══ Handler ═══
 @['/create_user'; post]
 pub fn (app &User) create_user_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -22,14 +23,49 @@ pub fn (app &User) create_user_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
+// ═══ Use Case ═══
 pub fn create_user_usecase(mut ctx Context, req CreateUserReq) !CreateUserResp {
-	if req.username == '' || req.password == '' {
-		return error('username and password cannot be empty')
-	}
+	create_user_domain(req)!
 	user_id := rand.uuid_v7()
 	password_hash := encrypt.bcrypt_hash(req.password) or {
 		return error('Failed to hash password')
 	}
+	create_user_repo(mut ctx, req, user_id, password_hash)!
+	return CreateUserResp{
+		msg: 'User created successfully'
+	}
+}
+
+// ═══ Domain ═══
+fn create_user_domain(req CreateUserReq) ! {
+	if req.username == '' || req.password == '' {
+		return error('username and password cannot be empty')
+	}
+}
+
+// ═══ DTO ═══
+pub struct CreateUserReq {
+	avatar       string    @[json: 'avatar']
+	description  string    @[json: 'description']
+	mobile       string    @[json: 'mobile']
+	email        string    @[json: 'email']
+	home_path    string    @[json: 'homePath']
+	nickname     string    @[json: 'nickname']
+	password     string    @[json: 'password']
+	status       u8        @[json: 'status']
+	username     string    @[json: 'username']
+	position_ids []string  @[json: 'positionIds']
+	role_ids     []string  @[json: 'roleIds']
+	created_at   time.Time @[json: 'createdAt']
+	updated_at   time.Time @[json: 'updatedAt']
+}
+
+pub struct CreateUserResp {
+	msg string @[json: 'msg']
+}
+
+// ═══ Repository ═══
+fn create_user_repo(mut ctx Context, req CreateUserReq, user_id string, password_hash string) ! {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	user := IamUser{
@@ -59,27 +95,4 @@ pub fn create_user_usecase(mut ctx Context, req CreateUserReq) !CreateUserResp {
 			insert ur into IamUserRole
 		}!
 	}
-	return CreateUserResp{
-		msg: 'User created successfully'
-	}
-}
-
-pub struct CreateUserReq {
-	avatar       string    @[json: 'avatar']
-	description  string    @[json: 'description']
-	mobile       string    @[json: 'mobile']
-	email        string    @[json: 'email']
-	home_path    string    @[json: 'homePath']
-	nickname     string    @[json: 'nickname']
-	password     string    @[json: 'password']
-	status       u8        @[json: 'status']
-	username     string    @[json: 'username']
-	position_ids []string  @[json: 'positionIds']
-	role_ids     []string  @[json: 'roleIds']
-	created_at   time.Time @[json: 'createdAt']
-	updated_at   time.Time @[json: 'updatedAt']
-}
-
-pub struct CreateUserResp {
-	msg string @[json: 'msg']
 }

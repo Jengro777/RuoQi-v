@@ -127,7 +127,7 @@ find_products_by_category_usecase
 | `delete` / `remove` | 移除聚合 |
 | `find` | 条件查询，结果**可能为空** |
 | `get` | 查询，结果**必定存在**（否则异常） |
-| `find_xxx_all` | 分页/列表查询 |
+| `find_xxx_all` | 列表/分页查询 |
 
 ### Application Service
 
@@ -148,19 +148,20 @@ find_products_by_category_usecase
 ```
 create_user_handler
 find_user_by_id_handler
+find_user_all_handler
 update_user_handler
 delete_user_handler
 ```
 
 **Handler 动作词:**
 
-| 动作 | HTTP | URL |
-|------|------|-----|
-| `create` | POST | `/xxx/create` |
-| `update` | POST | `/xxx/update` |
-| `delete` | POST | `/xxx/delete` |
-| `find_by_id` | POST | `/xxx/by_id` |
-| `find_list` | POST | `/xxx/list` |
+| 动作 | HTTP | URL 模式 | 示例 |
+|------|------|----------|------|
+| `create` | POST | `/{动作}_{资源}` | `/create_user` |
+| `update` | POST | `/{动作}_{资源}` | `/update_user` |
+| `delete` | POST | `/{动作}_{资源}` | `/delete_user` |
+| `find_by_id` | POST | `/{动作}_{资源}` | `/find_user_by_id` |
+| `find_all` | POST | `/{动作}_{资源}` | `/find_user_all` |
 
 ### DTO (Data Transfer Object)
 
@@ -172,7 +173,7 @@ delete_user_handler
 CreateUserReq          CreateUserResp
 UpdateUserReq          UpdateUserResp
 FindUserByIdReq        FindUserByIdResp
-FindUserListReq        FindUserListResp
+FindUserAllReq         FindUserAllResp
 ```
 
 > 每个字段必须标注 `@[json: 'field_name']`
@@ -214,33 +215,45 @@ delete_user_repo
 **数据库访问固定模式:**
 
 ```
-db, conn := ctx.dbpool.acquire() or { return error('...') }
-defer { ctx.dbpool.release(conn) or {} }
+db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 // V ORM: sql db { select/insert/update from/into Xxx }
 ```
 
 ---
 
-## 五、完整示例
+## 五、单个 *_logic.v 文件规范
+
+### 基本原则
+
+- 一个文件只能包含**一个 API 路由**（一个 `@['/xxx'; post]`）
+- 所有函数（handler / usecase / domain / repo）放在同一个 `module` 命名空间下
+- 同一目录下的文件**不互相 import**，通过 module 共享 pub 结构体
+
+### 代码组织顺序
+
+每个 `*_logic.v` 文件必须按以下顺序组织代码，并用 `// ═══` 注释标注分区：
+
+```
+1. ═══ Handler ═══
+2. ═══ Use Case ═══
+3. ═══ Domain ═══
+4. ═══ DTO ═══
+5. ═══ Repository ═══
+```
+
+- 如果某一层没有对应代码（如只读查询可能无 Domain 校验，或无需 DTO），则**跳过该注释**，不写空分区
+
+### 完整示例
 
 以"按 ID 查询用户"为例:
 
 ```
 文件: find_user_by_id_logic.v
-──────────────────────────────
+────────────────────────────────────────────────────
 
-// ═══ DTO ═══
-pub struct FindUserByIdReq {
-    id string @[json: 'id']
-}
-pub struct FindUserByIdResp {
-    id       string @[json: 'id']
-    username string @[json: 'username']
-    email    string @[json: 'email']
-}
-
-// ═══ Interfaces / Handler ═══
-@['/user/by_id'; post]
+// ═══ Handler ═══
+@['/find_user_by_id'; post]
 pub fn (app &User) find_user_by_id_handler(mut ctx Context) veb.Result {
     req := json.decode[FindUserByIdReq](ctx.req.data) or {
         return ctx.json(api.json_error_400(err.msg()))
@@ -251,11 +264,9 @@ pub fn (app &User) find_user_by_id_handler(mut ctx Context) veb.Result {
     return ctx.json(api.json_success_200(result))
 }
 
-// ═══ Application / Use Case ═══
+// ═══ Use Case ═══
 pub fn find_user_by_id_usecase(mut ctx Context, req FindUserByIdReq) !FindUserByIdResp {
-    // Domain 校验
     find_user_by_id_domain(req)!
-    // 调用 Repository
     return find_user_by_id_repo(mut ctx, req)
 }
 
@@ -266,10 +277,21 @@ fn find_user_by_id_domain(req FindUserByIdReq) ! {
     }
 }
 
-// ═══ Infrastructure / Repository ═══
+// ═══ DTO ═══
+pub struct FindUserByIdReq {
+    id string @[json: 'id']
+}
+
+pub struct FindUserByIdResp {
+    id       string @[json: 'id']
+    username string @[json: 'username']
+    email    string @[json: 'email']
+}
+
+// ═══ Repository ═══
 fn find_user_by_id_repo(mut ctx Context, req FindUserByIdReq) !FindUserByIdResp {
-    db, conn := ctx.dbpool.acquire() or { return error('DB conn: ${err}') }
-    defer { ctx.dbpool.release(conn) or {} }
+    db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+    defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
     rows := sql db {
         select from User where id == req.id && del_flag == 0
@@ -286,6 +308,15 @@ fn find_user_by_id_repo(mut ctx Context, req FindUserByIdReq) !FindUserByIdResp 
     }
 }
 ```
+
+### 各层函数命名总结
+
+| 层 | 可见性 | 命名模式 | 示例 |
+|------|--------|----------|------|
+| Handler | `pub fn` | `{动作}_{资源}_handler` | `find_user_by_id_handler` |
+| Usecase | `pub fn` | `{动作}_{资源}_usecase` | `find_user_by_id_usecase` |
+| Domain | `fn` | `{动作}_{资源}_domain` | `find_user_by_id_domain` |
+| Repository | `fn` | `{动作}_{资源}_repo` | `find_user_by_id_repo` |
 
 ---
 
@@ -305,24 +336,7 @@ fn find_user_by_id_repo(mut ctx Context, req FindUserByIdReq) !FindUserByIdResp 
 
 ---
 
-## 七、Repository 动词速查
-
-| 方法 | 返回 | 含义 |
-|------|------|------|
-| `find_by_id(id)` | T \| none | 按 ID 查，可能为空 |
-| `find_all()` | []T | 全量 |
-| `find_by_xxx(v)` | []T | 条件查 |
-| `find_one_by_xxx(v)` | T \| none | 条件查单条 |
-| `exists_by_xxx(v)` | bool | 存在性判断 |
-| `save(entity)` | void | 新增或更新（upsert） |
-| `save_all(entities)` | void | 批量保存 |
-| `delete(entity)` | void | 软删除 |
-| `delete_by_id(id)` | void | 按 ID 软删 |
-| `count()` | int | 计数 |
-
----
-
-## 八、Use Case 文件命名
+## 七、Use Case 文件命名
 
 | 操作 | 文件名 | Handler | Usecase | Domain | Repo |
 |------|--------|---------|---------|--------|------|
@@ -334,6 +348,6 @@ fn find_user_by_id_repo(mut ctx Context, req FindUserByIdReq) !FindUserByIdResp 
 | Upsert | `save_user_logic.v` | `save_user_handler` | `save_user_usecase` | `save_user_domain` | `save_user_repo` |
 
 **关键规律:**
-- Handler: `{动作}_{资源}_handler`（资源在前，语义是"资源的某个动作"）
+- Handler: `{动作}_{资源}_handler`（动作在前，语义是"对资源执行某个动作"）
 - Usecase/Domain/Repo: `{动作}_{资源}_{后缀}`（动作在前，语义是"对资源的某种操作"）
 - 文件名: `{动作}_{资源}_logic.v`

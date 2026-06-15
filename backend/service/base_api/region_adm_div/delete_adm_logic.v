@@ -7,7 +7,7 @@ import structs.schema_base { BaseRegionAdmDiv }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/delete'; post]
 pub fn (app &RegionAdmDiv) delete_adm_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,7 +24,7 @@ pub fn (app &RegionAdmDiv) delete_adm_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn delete_adm_usecase(mut ctx Context, req DeleteAdmReq) !DeleteAdmResp {
 	// Domain 校验
 	delete_adm_domain(req)!
@@ -33,14 +33,14 @@ pub fn delete_adm_usecase(mut ctx Context, req DeleteAdmReq) !DeleteAdmResp {
 	return delete_adm_repo(mut ctx, req.adm_ids)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn delete_adm_domain(req DeleteAdmReq) ! {
 	if req.adm_ids.len == 0 {
 		return error('No Adm ids provided')
 	}
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct DeleteAdmReq {
 	adm_ids []string @[json: 'ids']
 }
@@ -49,7 +49,7 @@ pub struct DeleteAdmResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn delete_adm_repo(mut ctx Context, adm_ids []string) !DeleteAdmResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }

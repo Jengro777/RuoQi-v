@@ -7,7 +7,7 @@ import structs.schema_base { BaseUtc }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/all'; get]
 pub fn (app &Utc) find_utc_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -19,17 +19,17 @@ pub fn (app &Utc) find_utc_all_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn find_utc_all_usecase(mut ctx Context) !UtcListResp {
 	find_utc_all_domain()
 	return find_utc_all_repo(mut ctx)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn find_utc_all_domain() {
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct UtcListReq {
 }
 
@@ -47,7 +47,7 @@ pub struct UtcListResp {
 	data  []UtcData
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn find_utc_all_repo(mut ctx Context) !UtcListResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {

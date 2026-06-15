@@ -7,7 +7,7 @@ import structs.schema_base { BaseUtc }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/delete'; post]
 pub fn (app &Utc) delete_utc_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,7 +24,7 @@ pub fn (app &Utc) delete_utc_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn delete_utc_usecase(mut ctx Context, req DeleteUtcReq) !DeleteUtcResp {
 	// Domain 校验
 	delete_utc_domain(req)!
@@ -33,14 +33,14 @@ pub fn delete_utc_usecase(mut ctx Context, req DeleteUtcReq) !DeleteUtcResp {
 	return delete_utc_repo(mut ctx, req.utc_ids)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn delete_utc_domain(req DeleteUtcReq) ! {
 	if req.utc_ids.len == 0 {
 		return error('No Currency ids provided')
 	}
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct DeleteUtcReq {
 	utc_ids []string @[json: 'ids']
 }
@@ -49,7 +49,7 @@ pub struct DeleteUtcResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn delete_utc_repo(mut ctx Context, utc_ids []string) !DeleteUtcResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }

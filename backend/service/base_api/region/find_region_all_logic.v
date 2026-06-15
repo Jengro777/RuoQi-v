@@ -8,7 +8,7 @@ import common.api
 import structs { Context }
 import x.json2 as json
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/all'; get]
 pub fn (app &Region) find_region_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,17 +24,17 @@ pub fn (app &Region) find_region_all_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn find_region_all_usecase(mut ctx Context, req RegionListReq) !RegionListResp {
 	find_region_all_domain()
 	return find_region_all_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn find_region_all_domain() {
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct RegionListReq {
 	page                 int    @[json: 'page']
 	page_size            int    @[json: 'pageSize']
@@ -93,7 +93,7 @@ pub struct RegionListResp {
 	data  []RegionData
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn find_region_all_repo(mut ctx Context, req RegionListReq) !RegionListResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {

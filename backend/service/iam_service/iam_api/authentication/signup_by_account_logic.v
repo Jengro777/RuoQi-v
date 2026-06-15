@@ -11,6 +11,7 @@ import common.api
 import common.jwt
 import common.encrypt
 
+// ═══ Handler ═══
 @['/signup_by_account'; post]
 pub fn (app &Authentication) signup_by_account_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -23,10 +24,37 @@ pub fn (app &Authentication) signup_by_account_handler(mut ctx Context) veb.Resu
 	return ctx.json(api.json_success_200(result))
 }
 
+// ═══ Use Case ═══
 pub fn signup_by_account_usecase(mut ctx Context, req SignupByAccountReq) !SignupByAccountResp {
+	signup_by_account_domain(req)!
+	return signup_by_account_repo(mut ctx, req)
+}
+
+// ═══ Domain ═══
+fn signup_by_account_domain(req SignupByAccountReq) ! {
 	if req.username == '' { return error('username is required') }
 	if req.password == '' { return error('password is required') }
 	if req.captcha_id == '' || req.captcha_text == '' { return error('captcha is required') }
+}
+
+// ═══ DTO ═══
+pub struct SignupByAccountReq {
+	username     string @[json: 'username']
+	password     string @[json: 'password']
+	nickname     string @[json: 'nickname']
+	email        string @[json: 'email']
+	mobile       string @[json: 'mobile']
+	captcha_text string @[json: 'captcha_text']
+	captcha_id   string @[json: 'captcha_id']
+}
+
+pub struct SignupByAccountResp {
+	user_id string @[json: 'user_id']
+	msg     string @[json: 'msg']
+}
+
+// ═══ Repository ═══
+fn signup_by_account_repo(mut ctx Context, req SignupByAccountReq) !SignupByAccountResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	if !jwt.captcha_verify(req.captcha_id, req.captcha_text) { return error('Captcha error') }
@@ -57,19 +85,4 @@ pub fn signup_by_account_usecase(mut ctx Context, req SignupByAccountReq) !Signu
 		user_id: user_id
 		msg:     'Signup successful'
 	}
-}
-
-pub struct SignupByAccountReq {
-	username     string @[json: 'username']
-	password     string @[json: 'password']
-	nickname     string @[json: 'nickname']
-	email        string @[json: 'email']
-	mobile       string @[json: 'mobile']
-	captcha_text string @[json: 'captcha_text']
-	captcha_id   string @[json: 'captcha_id']
-}
-
-pub struct SignupByAccountResp {
-	user_id string @[json: 'user_id']
-	msg     string @[json: 'msg']
 }

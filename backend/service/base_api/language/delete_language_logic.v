@@ -7,7 +7,7 @@ import structs.schema_base { BaseLanguage }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/delete'; post]
 pub fn (app &Language) delete_language_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,7 +24,7 @@ pub fn (app &Language) delete_language_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn delete_language_usecase(mut ctx Context, req DeleteLanguageReq) !DeleteLanguageResp {
 	// Domain 校验
 	delete_language_domain(req)!
@@ -33,14 +33,14 @@ pub fn delete_language_usecase(mut ctx Context, req DeleteLanguageReq) !DeleteLa
 	return delete_language_repo(mut ctx, req.language_ids)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn delete_language_domain(req DeleteLanguageReq) ! {
 	if req.language_ids.len == 0 {
 		return error('No Language ids provided')
 	}
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct DeleteLanguageReq {
 	language_ids []string @[json: 'ids']
 }
@@ -49,7 +49,7 @@ pub struct DeleteLanguageResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn delete_language_repo(mut ctx Context, language_ids []string) !DeleteLanguageResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }

@@ -8,7 +8,7 @@ import structs.schema_base { BaseRegionAdmDiv }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/update'; post]
 pub fn (app &RegionAdmDiv) update_adm_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,7 +24,7 @@ pub fn (app &RegionAdmDiv) update_adm_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn update_adm_usecase(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
 	// Domain 校验
 	update_adm_domain(req)!
@@ -33,14 +33,14 @@ pub fn update_adm_usecase(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
 	return update_adm_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn update_adm_domain(req UpdateAdmReq) ! {
 	if req.id == '' {
 		return error('Adm id is required')
 	}
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct UpdateAdmReq {
 	id              string  @[json: 'id']
 	parent_id       ?string @[json: 'parentId']
@@ -72,7 +72,7 @@ pub struct UpdateAdmResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn update_adm_repo(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }

@@ -11,6 +11,7 @@ import common.api
 import common.jwt
 import service.iam_service.iam_api.token
 
+// ═══ Handler ═══
 @['/login_by_sms'; post]
 pub fn (app &Authentication) login_by_sms_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -23,9 +24,37 @@ pub fn (app &Authentication) login_by_sms_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
+// ═══ Use Case ═══
 pub fn login_by_sms_usecase(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp {
+	login_by_sms_domain(req)!
+	return login_by_sms_repo(mut ctx, req)
+}
+
+// ═══ Domain ═══
+fn login_by_sms_domain(req LoginBySmsReq) ! {
 	if req.mobile == '' { return error('mobile is required') }
 	if req.opt_num == '' || req.opt_token == '' { return error('OTP is required') }
+}
+
+// ═══ DTO ═══
+pub struct LoginBySmsReq {
+	status    u8     @[json: 'status']
+	mobile    string @[json: 'mobile']
+	opt_num   string @[json: 'optNum']
+	opt_token string @[json: 'optToken']
+	source    string @[json: 'source']
+	login_ip  string @[json: 'loginIp']
+	device_id string @[json: 'deviceId']
+}
+
+pub struct LoginBySmsResp {
+	expired_at string @[json: 'expire']
+	user_id    string @[json: 'userId']
+	token_jwt  string @[json: 'tokenJwt']
+}
+
+// ═══ Repository ═══
+fn login_by_sms_repo(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	if !jwt.opt_verify(req.opt_token, req.opt_num) { return error('OTP error') }
@@ -55,20 +84,4 @@ pub fn login_by_sms_usecase(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp 
 		user_id:    user_info[0].id
 		token_jwt:  token_jwt
 	}
-}
-
-pub struct LoginBySmsReq {
-	status    u8     @[json: 'status']
-	mobile    string @[json: 'mobile']
-	opt_num   string @[json: 'optNum']
-	opt_token string @[json: 'optToken']
-	source    string @[json: 'source']
-	login_ip  string @[json: 'loginIp']
-	device_id string @[json: 'deviceId']
-}
-
-pub struct LoginBySmsResp {
-	expired_at string @[json: 'expire']
-	user_id    string @[json: 'userId']
-	token_jwt  string @[json: 'tokenJwt']
 }

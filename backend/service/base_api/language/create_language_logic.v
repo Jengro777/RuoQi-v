@@ -9,7 +9,7 @@ import structs.schema_base { BaseLanguage }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/create'; post]
 pub fn (app &Language) create_language_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -25,13 +25,13 @@ pub fn (app &Language) create_language_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn create_language_usecase(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
 	// create_language_domain(req)!
 	return create_language_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 // fn create_language_domain(req CreateLanguageReq) ! {
 // if req.path == '' {
 // 	return error('path is required')
@@ -44,7 +44,7 @@ pub fn create_language_usecase(mut ctx Context, req CreateLanguageReq) !CreateLa
 // }
 // }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct CreateLanguageReq {
 	language_self_proclaimed string @[json: 'languageSelfProclaimed']
 	language_code            string @[json: 'languageCode']
@@ -60,7 +60,7 @@ pub struct CreateLanguageResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn create_language_repo(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
 	time_now := time.now()
 	base_language := BaseLanguage{

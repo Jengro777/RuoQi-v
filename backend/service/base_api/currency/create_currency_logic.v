@@ -9,7 +9,7 @@ import structs.schema_base { BaseCurrency }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/create'; post]
 pub fn (app &Currency) create_currency_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -25,13 +25,13 @@ pub fn (app &Currency) create_currency_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn create_currency_usecase(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
 	// create_currency_domain(req)!
 	return create_currency_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 // fn create_currency_domain(req CreateCurrencyReq) ! {
 // if req.path == '' {
 // 	return error('path is required')
@@ -44,7 +44,7 @@ pub fn create_currency_usecase(mut ctx Context, req CreateCurrencyReq) !CreateCu
 // }
 // }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct CreateCurrencyReq {
 	english_name              string @[json: 'englishName']
 	simplified_name           string @[json: 'simplifiedName']
@@ -62,7 +62,7 @@ pub struct CreateCurrencyResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn create_currency_repo(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
 	time_now := time.now()
 	base_currency := BaseCurrency{

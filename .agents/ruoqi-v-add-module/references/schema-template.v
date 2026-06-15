@@ -1,22 +1,21 @@
-// TEMPLATE: Schema struct — copy to structs/schema_xxx/xxx.v
+// TEMPLATE: Schema struct — copy to backend/structs/schema_xxx/xxx.v
 // Replace Xxx, xxx with actual names.
-// Schema defines the database table mapping for V ORM.
+// Defines the database table mapping for V ORM.
 import time
 
-@[comment: 'Description of this entity']
+@[comment: 'xxx 表 | Xxx Table']
 @[table: 'xxx']
 pub struct Xxx {
 pub:
-	id   string @[comment: 'Primary key UUID'; immutable; primary; required; sql_type: 'CHAR(36)'; unique]
-	name string @[comment: 'Name'; required; sql_type: 'VARCHAR(100)']
-	// Add domain-specific fields here
+	id string @[comment: 'UUID 主键 | Primary Key UUID'; primary; sql_type: 'CHAR(36)']
 
-	// Standard lifecycle fields (required for soft-delete)
-	status     u8         @[comment: 'Status, 0:inactive 1:active'; default: 0; sql_type: 'tinyint(1)']
-	updater_id ?string    @[comment: 'Updater ID'; omitempty; sql_type: 'CHAR(36)']
-	updated_at time.Time  @[comment: 'Update Time'; omitempty; sql_type: 'TIMESTAMP']
-	creator_id ?string    @[comment: 'Creator ID'; immutable; omitempty; sql_type: 'CHAR(36)']
-	created_at time.Time  @[comment: 'Create Time'; immutable; omitempty; sql_type: 'TIMESTAMP']
-	del_flag   u8         @[comment: 'Delete flag, 0:not deleted 1:deleted'; default: 0; omitempty; sql_type: 'tinyint(1)']
-	deleted_at ?time.Time @[comment: 'Delete Time'; omitempty; sql_type: 'TIMESTAMP']
+	// ... domain-specific fields ...
+	// Standard lifecycle fields (soft-delete)
+	status     u8         @[comment: '状态 | 0正常 1禁用 | Status: 0 active, 1 disabled'; default: 0; sql_type: 'tinyint']
+	updater_id string     @[comment: '修改者ID | Updater ID'; sql_type: 'CHAR(36)']
+	updated_at time.Time  @[comment: '修改日期 | Updated At'; sql_type: 'TIMESTAMP']
+	creator_id string     @[comment: '创建者ID | Creator ID'; immutable; sql_type: 'CHAR(36)']
+	created_at time.Time  @[comment: '创建日期 | Created At'; immutable; sql_type: 'TIMESTAMP']
+	del_flag   u8         @[comment: '删除标记 | 0未删除 1已删除 | Delete Flag'; default: 0; sql_type: 'tinyint(1)']
+	deleted_at ?time.Time @[comment: '删除日期 | Deleted At'; sql_type: 'TIMESTAMP']
 }

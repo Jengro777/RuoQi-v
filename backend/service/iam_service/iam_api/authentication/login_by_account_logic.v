@@ -12,6 +12,7 @@ import common.api
 import common.jwt
 import common.encrypt
 
+// ═══ Handler ═══
 @['/login_by_account'; post]
 pub fn (app &Authentication) login_by_account_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,10 +25,39 @@ pub fn (app &Authentication) login_by_account_handler(mut ctx Context) veb.Resul
 	return ctx.json(api.json_success_200(result))
 }
 
+// ═══ Use Case ═══
 pub fn login_by_account_usecase(mut ctx Context, req LoginByAccountReq) !LoginByAccountResp {
+	login_by_account_domain(req)!
+	return login_by_account_repo(mut ctx, req)
+}
+
+// ═══ Domain ═══
+fn login_by_account_domain(req LoginByAccountReq) ! {
 	if req.username == '' { return error('username is required') }
 	if req.password == '' { return error('password is required') }
 	if req.captcha_id == '' || req.captcha_text == '' { return error('captcha error') }
+}
+
+// ═══ DTO ═══
+pub struct LoginByAccountReq {
+	username     string  @[json: 'username']
+	password     string  @[json: 'password']
+	captcha_text string  @[json: 'captcha_text']
+	captcha_id   string  @[json: 'captcha_id']
+	status       u8      @[json: 'status']
+	source       string  @[json: 'source']
+	login_ip     ?string @[json: 'login_ip']
+	device_id    ?string @[json: 'device_id']
+}
+
+pub struct LoginByAccountResp {
+	expired_at string @[json: 'expired_at']
+	user_id    string @[json: 'user_id']
+	token_jwt  string @[json: 'token_jwt']
+}
+
+// ═══ Repository ═══
+fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccountResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	if !jwt.captcha_verify(req.captcha_id, req.captcha_text) { return error('Captcha error') }
@@ -61,21 +91,4 @@ pub fn login_by_account_usecase(mut ctx Context, req LoginByAccountReq) !LoginBy
 		user_id:    user_info[0].id
 		token_jwt:  token_jwt
 	}
-}
-
-pub struct LoginByAccountReq {
-	username     string  @[json: 'username']
-	password     string  @[json: 'password']
-	captcha_text string  @[json: 'captcha_text']
-	captcha_id   string  @[json: 'captcha_id']
-	status       u8      @[json: 'status']
-	source       string  @[json: 'source']
-	login_ip     ?string @[json: 'login_ip']
-	device_id    ?string @[json: 'device_id']
-}
-
-pub struct LoginByAccountResp {
-	expired_at string @[json: 'expired_at']
-	user_id    string @[json: 'user_id']
-	token_jwt  string @[json: 'token_jwt']
 }

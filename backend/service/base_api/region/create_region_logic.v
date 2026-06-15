@@ -9,7 +9,7 @@ import structs.schema_base { BaseRegion }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/create'; post]
 pub fn (app &Region) create_region_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -25,13 +25,13 @@ pub fn (app &Region) create_region_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn create_region_usecase(mut ctx Context, req CreateRegionReq) !CreateRegionResp {
 	// create_region_domain(req)!
 	return create_region_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 // fn create_region_domain(req CreateRegionReq) ! {
 // if req.path == '' {
 // 	return error('path is required')
@@ -44,7 +44,7 @@ pub fn create_region_usecase(mut ctx Context, req CreateRegionReq) !CreateRegion
 // }
 // }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct CreateRegionReq {
 	sys_region_code      string  @[json: 'sysRegionCode']
 	sys_region_name      string  @[json: 'sysRegionName']
@@ -74,7 +74,7 @@ pub struct CreateRegionResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn create_region_repo(mut ctx Context, req CreateRegionReq) !CreateRegionResp {
 	time_now := time.now()
 	base_region := BaseRegion{

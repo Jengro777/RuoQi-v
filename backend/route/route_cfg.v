@@ -13,10 +13,10 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	$if iam ? {
 		log.warn('routes_ifdef - Core')
 		app.routes_iam(mut ctx)
+		app.routes_workspace(mut ctx)
 	}
 	$if core ? {
 		log.warn('routes_ifdef - Core')
-		app.routes_core_tenant(mut ctx)
 	}
 	$if job ? {
 		log.warn('routes_ifdef - Job')
@@ -29,15 +29,13 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	}
 	$if sys ? {
 		log.warn('routes_ifdef - Sys')
-		app.routes_sys_admin(mut ctx)
-		app.routes_core_admin(mut ctx)
+		app.routes_platform(mut ctx)
 	} $else {
 		log.warn('routes_ifdef - All')
 		app.routes_db(mut ctx)
 		app.routes_sys_base(mut ctx)
-		app.routes_sys_admin(mut ctx)
-		app.routes_core_admin(mut ctx)
-		app.routes_core_tenant(mut ctx)
 		app.routes_iam(mut ctx)
+		app.routes_platform(mut ctx)
+		app.routes_workspace(mut ctx)
 	}
 }

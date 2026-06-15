@@ -8,6 +8,7 @@ import structs { Context }
 import structs.schema_iam { IamUser }
 import common.api
 
+// ═══ Handler ═══
 @['/update_profile'; post]
 pub fn (app &Profile) update_profile_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -20,18 +21,23 @@ pub fn (app &Profile) update_profile_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
+// ═══ Use Case ═══
 pub fn update_profile_usecase(mut ctx Context, req UpdateProfileReq) !UpdateProfileResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn') }
-	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn') } }
-	sql db {
-		update IamUser set nickname = req.nickname, email = req.email, mobile = req.mobile,
-		avatar = req.avatar, description = req.description, updated_at = time.now() where id == ctx.svc_iam.user_id
-	}!
+	update_profile_domain(mut ctx)!
+	update_profile_repo(mut ctx, req)!
 	return UpdateProfileResp{
 		msg: 'Profile updated successfully'
 	}
 }
 
+// ═══ Domain ═══
+fn update_profile_domain(mut ctx Context) ! {
+	if ctx.svc_iam.user_id == '' {
+		return error('user not authenticated')
+	}
+}
+
+// ═══ DTO ═══
 pub struct UpdateProfileReq {
 	nickname    string @[json: 'nickname']
 	email       string @[json: 'email']
@@ -42,4 +48,14 @@ pub struct UpdateProfileReq {
 
 pub struct UpdateProfileResp {
 	msg string @[json: 'msg']
+}
+
+// ═══ Repository ═══
+fn update_profile_repo(mut ctx Context, req UpdateProfileReq) ! {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
+	sql db {
+		update IamUser set nickname = req.nickname, email = req.email, mobile = req.mobile,
+		avatar = req.avatar, description = req.description, updated_at = time.now() where id == ctx.svc_iam.user_id
+	}!
 }

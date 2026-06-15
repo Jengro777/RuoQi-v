@@ -8,7 +8,7 @@ import structs.schema_base { BaseRegionAdmDiv }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/all'; get]
 pub fn (app &RegionAdmDiv) find_region_adm_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,17 +24,17 @@ pub fn (app &RegionAdmDiv) find_region_adm_all_handler(mut ctx Context) veb.Resu
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application Service | Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn find_region_adm_all_usecase(mut ctx Context, req RegionAdmListReq) !RegionAdmListResp {
 	find_region_adm_all_domain()
 	return find_region_adm_all_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn find_region_adm_all_domain() {
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct RegionAdmListReq {
 	region_id string @[json: 'regionId']
 }
@@ -76,7 +76,7 @@ pub struct RegionAdmListResp {
 	data  []RegionAdmData
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn find_region_adm_all_repo(mut ctx Context, req RegionAdmListReq) !RegionAdmListResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {

@@ -8,7 +8,7 @@ import structs.schema_base { BaseCurrency }
 import common.api
 import structs { Context }
 
-// ----------------- Handler 层 -----------------
+// ═══ Handler ═══
 @['/update'; post]
 pub fn (app &Currency) update_currency_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -24,7 +24,7 @@ pub fn (app &Currency) update_currency_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Usecase 层 -----------------
+// ═══ Use Case ═══
 pub fn update_currency_usecase(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyResp {
 	// Domain 校验
 	update_currency_domain(req)!
@@ -33,14 +33,14 @@ pub fn update_currency_usecase(mut ctx Context, req UpdateCurrencyReq) !UpdateCu
 	return update_currency_repo(mut ctx, req)
 }
 
-// ----------------- Domain 层 -----------------
+// ═══ Domain ═══
 fn update_currency_domain(req UpdateCurrencyReq) ! {
 	if req.id == '' {
 		return error('currency id is required')
 	}
 }
 
-// ----------------- DTO 层 -----------------
+// ═══ DTO ═══
 pub struct UpdateCurrencyReq {
 	id                        string  @[json: 'id']
 	english_name              ?string @[json: 'englishName']
@@ -59,7 +59,7 @@ pub struct UpdateCurrencyResp {
 	msg string @[json: 'msg']
 }
 
-// ----------------- Repository 层 -----------------
+// ═══ Repository ═══
 fn update_currency_repo(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }

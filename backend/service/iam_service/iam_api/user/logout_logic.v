@@ -6,6 +6,7 @@ import structs { Context }
 import structs.schema_iam { IamToken }
 import common.api
 
+// ═══ Handler ═══
 @['/logout'; get; post]
 pub fn (app &User) logout_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -13,17 +14,24 @@ pub fn (app &User) logout_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
+// ═══ Use Case ═══
 pub fn logout_usecase(mut ctx Context) !LogoutResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
-	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	sql db {
-		update IamToken set status = 1 where user_id == ctx.svc_iam.user_id
-	}!
+	logout_repo(mut ctx)!
 	return LogoutResp{
 		msg: 'Logout successful'
 	}
 }
 
+// ═══ DTO ═══
 pub struct LogoutResp {
 	msg string @[json: 'msg']
+}
+
+// ═══ Repository ═══
+fn logout_repo(mut ctx Context) ! {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
+	sql db {
+		update IamToken set status = 1 where user_id == ctx.svc_iam.user_id
+	}!
 }
