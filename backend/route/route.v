@@ -21,19 +21,28 @@ fn (mut app AliasApp) register_routes_no_auth[T, U](mut ctrl T, url_path string,
 	ctrl.route_use('${url_path}/*', veb.encode_auto[Context]())
 }
 
-fn (mut app AliasApp) register_routes_sys[T, U](mut ctrl T, url_path string, mut ctx Context) {
+fn (mut app AliasApp) register_routes_pay[T, U](mut ctrl T, url_path string, mut ctx Context) {
+	app.common_middleware[T, U](mut ctrl, mut ctx)
+	ctrl.use(middleware.iam_middleware())
+	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
+	ctrl.route_use('${url_path}/*', veb.encode_auto[Context]())
+}
+
+fn (mut app AliasApp) register_routes_platform[T, U](mut ctrl T, url_path string, mut ctx Context) {
+	ctrl.use(middleware.iam_middleware())
 	app.common_middleware[T, U](mut ctrl, mut ctx)
 	ctrl.use(middleware.datascope_middleware(ScopeConfig{ enabled_dims: []ScopeDim{} }))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	ctrl.route_use('${url_path}/*', veb.encode_auto[Context]())
 }
 
-fn (mut app AliasApp) register_routes_iam[T, U](mut ctrl T, url_path string, mut ctx Context) {
+fn (mut app AliasApp) register_routes_workspace[T, U](mut ctrl T, url_path string, mut ctx Context) {
 	app.common_middleware[T, U](mut ctrl, mut ctx)
 	ctrl.use(middleware.iam_middleware())
 	ctrl.use(middleware.datascope_middleware(ScopeConfig{
 		enabled_dims: [
 			ScopeDim.tenant_id,
+			ScopeDim.workspace_id,
 		]
 	}))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }

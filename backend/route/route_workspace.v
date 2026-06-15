@@ -14,14 +14,14 @@ fn (mut app AliasApp) routes_workspace(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 工作区 CRUD + 成员 + 权限
-	app.register_routes_iam[WorkspaceCore, Context](mut &WorkspaceCore{}, '/workspace/core', mut
+	app.register_routes_workspace[WorkspaceCore, Context](mut &WorkspaceCore{}, '/workspace/core', mut
 		ctx)
 
 	// 部门管理
-	app.register_routes_iam[WorkspaceDepartment, Context](mut &WorkspaceDepartment{},
+	app.register_routes_workspace[WorkspaceDepartment, Context](mut &WorkspaceDepartment{},
 		'/workspace/department', mut ctx)
 
 	// 岗位管理
-	app.register_routes_iam[WorkspacePosition, Context](mut &WorkspacePosition{},
+	app.register_routes_workspace[WorkspacePosition, Context](mut &WorkspacePosition{},
 		'/workspace/position', mut ctx)
 }

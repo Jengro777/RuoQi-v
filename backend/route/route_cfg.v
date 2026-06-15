@@ -15,9 +15,6 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 		app.routes_iam(mut ctx)
 		app.routes_workspace(mut ctx)
 	}
-	$if core ? {
-		log.warn('routes_ifdef - Core')
-	}
 	$if job ? {
 		log.warn('routes_ifdef - Job')
 	}
@@ -27,7 +24,7 @@ pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	$if pay ? {
 		log.warn('routes_ifdef - Pay')
 	}
-	$if sys ? {
+	$if platform ? {
 		log.warn('routes_ifdef - Sys')
 		app.routes_platform(mut ctx)
 	} $else {

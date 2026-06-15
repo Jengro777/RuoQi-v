@@ -81,12 +81,12 @@ In the appropriate `backend/route/route_<scope>.v`, add the import and registrat
 | API group          | Route file              | Method                    | Auth required       |
 |--------------------|-------------------------|---------------------------|---------------------|
 | `base_api`         | `route_base.v`          | `register_routes_no_auth` | None                |
-| `sys_admin_api`    | `route_sys_admin.v`     | `register_routes_sys`     | System admin JWT    |
-| `core_admin_api`   | `route_core_admin.v`    | `register_routes_sys`     | System admin JWT    |
+| `sys_admin_api`    | `route_sys_admin.v`     | `register_routes_platform`     | System admin JWT    |
+| `core_admin_api`   | `route_core_admin.v`    | `register_routes_platform`     | System admin JWT    |
 | `core_tenant_api`  | `route_core_tenant.v`   | `register_routes_core`    | Core business JWT   |
 | `fms_api`          | (file API route)         | `register_routes_core`    | Core business JWT   |
-| `job_api`          | (job API route)          | `register_routes_sys`     | System admin JWT    |
-| `msg_api`          | (msg API route)          | `register_routes_sys`     | System admin JWT    |
+| `job_api`          | (job API route)          | `register_routes_platform`     | System admin JWT    |
+| `msg_api`          | (msg API route)          | `register_routes_platform`     | System admin JWT    |
 | `pay_api`          | (pay API route)          | `register_routes_core`    | Core business JWT   |
 
 Example:
@@ -94,7 +94,7 @@ Example:
 import service.sys_admin_api.audit_log { AuditLog }
 
 fn (mut app AliasApp) routes_sys_admin(mut ctx Context) {
-    app.register_routes_sys[AuditLog, Context](mut &AuditLog{}, '/audit_log', mut ctx)
+    app.register_routes_platform[AuditLog, Context](mut &AuditLog{}, '/audit_log', mut ctx)
 }
 ```
 

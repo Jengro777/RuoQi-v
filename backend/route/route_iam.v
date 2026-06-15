@@ -26,9 +26,9 @@ fn (mut app AliasApp) routes_iam(mut ctx Context) {
 		ctx)
 
 	// 需要 IAM 认证 —— 用户 / 角色 / 权限 / Token 管理
-	app.register_routes_iam[User, Context](mut &User{}, '/iam/user', mut ctx)
-	app.register_routes_iam[Profile, Context](mut &Profile{}, '/iam/profile', mut ctx)
-	app.register_routes_iam[Role, Context](mut &Role{}, '/iam/role', mut ctx)
-	app.register_routes_iam[Permission, Context](mut &Permission{}, '/iam/permission', mut ctx)
-	app.register_routes_iam[Token, Context](mut &Token{}, '/iam/token', mut ctx)
+	app.register_routes_platform[User, Context](mut &User{}, '/iam/user', mut ctx)
+	app.register_routes_platform[Profile, Context](mut &Profile{}, '/iam/profile', mut ctx)
+	app.register_routes_platform[Role, Context](mut &Role{}, '/iam/role', mut ctx)
+	app.register_routes_platform[Permission, Context](mut &Permission{}, '/iam/permission', mut ctx)
+	app.register_routes_platform[Token, Context](mut &Token{}, '/iam/token', mut ctx)
 }
