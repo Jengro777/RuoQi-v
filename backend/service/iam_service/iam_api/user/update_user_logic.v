@@ -63,7 +63,7 @@ pub struct UpdateUserResp {
 
 // ═══ Repository ═══
 fn update_user_repo(mut ctx Context, req UpdateUserReq, password_hash string) ! {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	up_expr := {
 		if nickname := req.nickname { nickname == nickname },

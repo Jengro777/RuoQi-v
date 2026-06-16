@@ -31,7 +31,7 @@ fn find_user_perm_code_domain(mut ctx Context) ! {
 
 // ═══ Repository ═══
 fn find_user_perm_code_repo(mut ctx Context) ![]string {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	roles := sql db {
 		select from IamUserRole where user_id == ctx.svc_iam.user_id

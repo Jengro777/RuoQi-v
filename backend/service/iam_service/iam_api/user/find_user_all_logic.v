@@ -21,7 +21,7 @@ pub fn find_user_all_usecase(mut ctx Context) ![]IamUser {
 
 // ═══ Repository ═══
 fn find_user_all_repo(mut ctx Context) ![]IamUser {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	users := sql db {
 		select from IamUser

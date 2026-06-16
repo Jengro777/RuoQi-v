@@ -66,7 +66,7 @@ pub struct CreateUserResp {
 
 // ═══ Repository ═══
 fn create_user_repo(mut ctx Context, req CreateUserReq, user_id string, password_hash string) ! {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	user := IamUser{
 		id:          user_id

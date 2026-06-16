@@ -47,7 +47,7 @@ pub struct ResetPasswordResp {
 
 // ═══ Repository ═══
 fn reset_password_repo(mut ctx Context, req ResetPasswordReq) !ResetPasswordResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	user := sql db {
 		select from IamUser where id == req.user_id limit 1

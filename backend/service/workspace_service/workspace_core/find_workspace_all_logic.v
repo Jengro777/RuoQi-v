@@ -22,7 +22,7 @@ pub fn find_workspace_all_usecase(mut ctx Context) ![]WsWorkspace {
 
 // ═══ Repository ═══
 fn find_workspace_all_repo(mut ctx Context) ![]WsWorkspace {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	return sql db {
 		select from WsWorkspace where del_flag == 0

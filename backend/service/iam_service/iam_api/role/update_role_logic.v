@@ -49,7 +49,7 @@ pub struct UpdateRoleReq {
 
 // ═══ Repository ═══
 fn update_role_repo(mut ctx Context, req UpdateRoleReq) ! {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	sql db {
 		update IamRole set name = req.name, code = req.code, remark = req.remark, sort = req.sort,

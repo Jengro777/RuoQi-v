@@ -25,7 +25,7 @@ fn refresh_token_usecase(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp
 	device_id := ctx.req.header.get_custom('X-Device-ID') or { '' }
 	token_jwt :=
 		generate_iam_token(mut ctx, ctx.svc_iam.user_id, req.username, login_ip, device_id)!
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn') } }
 	sql db {
 		update IamToken set token = token_jwt, updated_at = time.now(), expired_at = time.now().add_days(30)

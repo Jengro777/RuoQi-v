@@ -43,7 +43,7 @@ pub struct UserProfileResp {
 
 // ═══ Repository ═══
 fn find_user_profile_repo(mut ctx Context) !UserProfileResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	user := sql db {
 		select from IamUser where id == ctx.svc_iam.user_id limit 1

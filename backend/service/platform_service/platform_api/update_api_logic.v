@@ -49,8 +49,8 @@ pub struct UpdateApiResp {
 
 // ═══ Repository ═══
 fn update_api_repo(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
-	sr := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
-	defer { ctx.dbpool.release(sr.conn) or { log.warn('Failed to release conn: ${err}') } }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
+	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	up_expr := {
 		if path := req.path { path == path },
 		if description := req.description { description == description },
@@ -60,7 +60,7 @@ fn update_api_repo(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 		if is_required := req.is_required { is_required == is_required },
 		if status := req.status { status == status }
 	}
-	sql sr.db {
+	sql db {
 		dynamic update PfApi set up_expr where id == req.id
 	}!
 	return UpdateApiResp{

@@ -21,9 +21,9 @@ pub fn find_api_all_usecase(mut ctx Context) ![]PfApi {
 
 // ═══ Repository ═══
 fn find_api_all_repo(mut ctx Context) ![]PfApi {
-	sr := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
-	defer { ctx.dbpool.release(sr.conn) or { log.warn('Failed to release conn: ${err}') } }
-	apis := sql sr.db {
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
+	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
+	apis := sql db {
 		select from PfApi where del_flag == 0
 	} or { return error('Failed: ${err}') }
 	return apis

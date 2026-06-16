@@ -50,8 +50,8 @@ pub struct CreateApiResp {
 
 // ═══ Repository ═══
 fn create_api_repo(mut ctx Context, req CreateApiReq) !CreateApiResp {
-	sr := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
-	defer { ctx.dbpool.release(sr.conn) or { log.warn('Failed to release conn: ${err}') } }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
+	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	api := PfApi{
 		id:           rand.uuid_v7()
 		path:         req.path
@@ -64,7 +64,7 @@ fn create_api_repo(mut ctx Context, req CreateApiReq) !CreateApiResp {
 		created_at:   time.now()
 		updated_at:   time.now()
 	}
-	sql sr.db {
+	sql db {
 		insert api into PfApi
 	} or { return error('Failed: ${err}') }
 	return CreateApiResp{

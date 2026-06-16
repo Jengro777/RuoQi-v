@@ -21,14 +21,13 @@ pub fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	if tokens.len != 1 { return error('Token not found') }
 
 	user_id := tokens[0].user_id
-	ctx.svc_sys.user_id = user_id
 
 	// 查询用户角色
 	roles := sql db {
 		select from IamUserRole where user_id == user_id
 	}!
 	role_ids := roles.map(it.role_id)
-	ctx.svc_sys.role_ids = role_ids
+	ctx.scope_sc.svc_sys_role_ids = role_ids
 
 	// 返回角色 ID 列表作为权限码
 	return role_ids

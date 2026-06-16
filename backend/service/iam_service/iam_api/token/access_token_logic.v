@@ -28,5 +28,5 @@ pub fn verify_iam_token_and_populate_ctx(mut ctx Context, token_str string) ! {
 	}
 	ctx.svc_iam.user_id = payload.sub
 	ctx.svc_iam.token_jwt = token_str
-	ctx.svc_iam.role_ids = payload.role_ids
+	ctx.svc_iam.iam_role_ids = payload.role_ids
 }

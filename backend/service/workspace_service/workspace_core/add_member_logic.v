@@ -45,7 +45,8 @@ pub struct AddMemberResp {
 
 // ═══ Repository ═══
 fn add_member_repo(mut ctx Context, req AddMemberReq) !AddMemberResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	ctx.scope_sc.workspace_id = req.workspace_id
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	m := WsMember{
 		workspace_id: req.workspace_id

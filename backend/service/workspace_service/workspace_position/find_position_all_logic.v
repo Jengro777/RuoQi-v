@@ -32,7 +32,8 @@ pub struct FindPositionAllReq {
 
 // ═══ Repository ═══
 fn find_position_all_repo(mut ctx Context, req FindPositionAllReq) ![]WsPosition {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	ctx.scope_sc.workspace_id = req.workspace_id
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	return sql db {
 		select from WsPosition where workspace_id == req.workspace_id && del_flag == 0 order by sort

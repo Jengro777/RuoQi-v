@@ -40,7 +40,7 @@ pub struct FindByIdReq {
 
 // ═══ Repository ═══
 fn find_user_by_id_repo(mut ctx Context, req FindByIdReq) !IamUser {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	users := sql db {
 		select from IamUser where id == req.id limit 1

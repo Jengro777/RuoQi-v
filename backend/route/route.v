@@ -3,7 +3,7 @@ module route
 import log
 import veb
 import structs { Context }
-import adapter.datascope { ScopeConfig, ScopeDim }
+import adapter.datascope { ScopeConfig, ScopeField }
 import middleware
 
 // 通用中间件设置函数 - 减少代码重复
@@ -31,7 +31,7 @@ fn (mut app AliasApp) register_routes_pay[T, U](mut ctrl T, url_path string, mut
 fn (mut app AliasApp) register_routes_platform[T, U](mut ctrl T, url_path string, mut ctx Context) {
 	ctrl.use(middleware.iam_middleware())
 	app.common_middleware[T, U](mut ctrl, mut ctx)
-	ctrl.use(middleware.datascope_middleware(ScopeConfig{ enabled_dims: []ScopeDim{} }))
+	ctrl.use(middleware.datascope_middleware(ScopeConfig{ enabled_fields: []ScopeField{} }))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	ctrl.route_use('${url_path}/*', veb.encode_auto[Context]())
 }
@@ -40,9 +40,9 @@ fn (mut app AliasApp) register_routes_workspace[T, U](mut ctrl T, url_path strin
 	app.common_middleware[T, U](mut ctrl, mut ctx)
 	ctrl.use(middleware.iam_middleware())
 	ctrl.use(middleware.datascope_middleware(ScopeConfig{
-		enabled_dims: [
-			ScopeDim.tenant_id,
-			ScopeDim.workspace_id,
+		enabled_fields: [
+			ScopeField.tenant_id,
+			ScopeField.workspace_id,
 		]
 	}))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }

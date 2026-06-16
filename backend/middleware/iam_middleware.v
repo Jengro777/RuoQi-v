@@ -8,8 +8,8 @@ import log
 // =============================================================================
 // IAM 统一认证中间件
 //
-// 验证 JWT → 提取 realm/user_id/role_ids → 注入 ctx.iam
-// 中台和外部共用同一个中间件，realm 来自 JWT payload
+// 验证 JWT → 提取 user_id/role_ids → 注入 ctx.iam
+// 中台和外部共用同一个中间件
 // TODO: 安全增强 —— sys 和 external 应使用不同的 JWT secret
 // =============================================================================
 
@@ -45,10 +45,8 @@ fn iam_jwt_verify(mut ctx Context) bool {
 	// 注入 IAM 上下文
 	ctx.svc_iam.user_id = payload.sub
 	ctx.svc_iam.token_jwt = req_token
-	ctx.svc_iam.role_ids = payload.role_ids
+	ctx.svc_iam.iam_role_ids = payload.role_ids
 
-	// TODO: 后续根据 realm + role_ids 校验当前请求 URL 的访问权限
-	// user_api_list := middle.get_userapilist_from_iam(mut ctx, req_token, payload.realm) or { return false }
 	// if ctx.req.url !in user_api_list { ... return false }
 
 	return true

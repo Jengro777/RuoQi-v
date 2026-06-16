@@ -38,9 +38,9 @@ pub struct FindApiByIdReq {
 
 // ═══ Repository ═══
 fn find_api_by_id_repo(mut ctx Context, req FindApiByIdReq) !PfApi {
-	sr := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
-	defer { ctx.dbpool.release(sr.conn) or { log.warn('Failed to release conn: ${err}') } }
-	apis := sql sr.db {
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
+	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
+	apis := sql db {
 		select from PfApi where id == req.id && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
 	if apis.len == 0 { return error('API not found') }

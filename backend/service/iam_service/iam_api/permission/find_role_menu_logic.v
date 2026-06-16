@@ -38,7 +38,8 @@ fn find_role_menu_domain(req FindRolePermReq) ! {
 
 // ═══ Repository ═══
 fn find_role_menu_repo(mut ctx Context, req FindRolePermReq) ![]WsRoleMenu {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	ctx.scope_sc.workspace_id = req.workspace_id
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	result := sql db {
 		select from WsRoleMenu where workspace_id == req.workspace_id && role_id == req.role_id

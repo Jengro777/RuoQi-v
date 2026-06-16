@@ -51,7 +51,7 @@ pub struct DeleteCurrencyResp {
 
 // ═══ Repository ═══
 fn delete_currency_repo(mut ctx Context, currency_ids []string) !DeleteCurrencyResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
 	sql db {

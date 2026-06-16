@@ -77,7 +77,7 @@ fn create_language_repo(mut ctx Context, req CreateLanguageReq) !CreateLanguageR
 		updated_at:               time_now
 	}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') }
 	}

@@ -14,6 +14,11 @@ fn (app &Base) init_all(mut ctx Context) veb.Result {
 	app.init_mcms(mut ctx)
 	app.init_pay(mut ctx)
 
+	app.init_iam(mut ctx)
+	app.init_platform(mut ctx)
+	app.init_tenant(mut ctx)
+	app.init_workspace(mut ctx)
+
 	log.debug('Database init_all success')
 	return ctx.json(api.json_success_200('all database init Successfull'))
 }

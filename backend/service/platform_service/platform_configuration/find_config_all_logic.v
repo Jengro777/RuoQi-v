@@ -21,7 +21,7 @@ pub fn find_config_all_usecase(mut ctx Context) ![]PfConfiguration {
 
 // ═══ Repository ═══
 fn find_config_all_repo(mut ctx Context) ![]PfConfiguration {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	configs := sql db {
 		select from PfConfiguration where del_flag == 0

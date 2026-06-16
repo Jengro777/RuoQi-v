@@ -29,7 +29,7 @@ pub struct LogoutResp {
 
 // ═══ Repository ═══
 fn logout_repo(mut ctx Context) ! {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	sql db {
 		update IamToken set status = 1 where user_id == ctx.svc_iam.user_id

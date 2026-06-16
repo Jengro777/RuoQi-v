@@ -74,7 +74,7 @@ pub struct UpdateAdmResp {
 
 // ═══ Repository ═══
 fn update_adm_repo(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
 	up_expr := {

@@ -58,7 +58,7 @@ pub struct LoginByAccountResp {
 
 // ═══ Repository ═══
 fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccountResp {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	if !jwt.captcha_verify(req.captcha_id, req.captcha_text) { return error('Captcha error') }
 	user_info := sql db {

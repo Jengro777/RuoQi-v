@@ -38,7 +38,7 @@ pub struct FindMenuByIdReq {
 
 // ═══ Repository ═══
 fn find_menu_by_id_repo(mut ctx Context, req FindMenuByIdReq) !PfMenu {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	menus := sql db {
 		select from PfMenu where id == req.id && del_flag == 0 limit 1

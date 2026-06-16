@@ -38,7 +38,7 @@ pub struct FindDetailByDictReq {
 
 // ═══ Repository ═══
 fn find_detail_by_dict_repo(mut ctx Context, req FindDetailByDictReq) ![]PfDictionaryDetail {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB conn: ${err}') }
+	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	details := sql db {
 		select from PfDictionaryDetail where dictionary_id == req.dictionary_id && del_flag == 0 order by sort
