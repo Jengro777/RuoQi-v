@@ -37,11 +37,14 @@ pub mut:
 // ----- IAM 统一上下文 ---
 pub struct ServiceContextIam {
 pub mut:
-	user_id       string
-	token_jwt     string
-	iam_role_ids  []string
-	tenant_ids    []string
-	workspace_ids []string
+	user_id        string
+	token_jwt      string
+	iam_role_ids   []string
+	tenant_ids     []string
+	subproduct_ids []string
+	subportal_ids  []string
+	apikey_id      string
+	workspace_ids  []string
 }
 
 // acquire_scoped 将 ctx 上的 svc 上下文填充到 ScopeContext，委托 adapter.datascope 获取带数据范围的 DB 连接

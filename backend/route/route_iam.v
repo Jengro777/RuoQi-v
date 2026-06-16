@@ -9,6 +9,7 @@ import service.iam_service.iam_api.profile { Profile }
 import service.iam_service.iam_api.role { Role }
 import service.iam_service.iam_api.permission { Permission }
 import service.iam_service.iam_api.token { Token }
+import service.iam_service.iam_api.apikey { ApiKey }
 
 // =============================================================================
 // IAM 路由注册
@@ -31,4 +32,5 @@ fn (mut app AliasApp) routes_iam(mut ctx Context) {
 	app.register_routes_platform[Role, Context](mut &Role{}, '/iam/role', mut ctx)
 	app.register_routes_platform[Permission, Context](mut &Permission{}, '/iam/permission', mut ctx)
 	app.register_routes_platform[Token, Context](mut &Token{}, '/iam/token', mut ctx)
+	app.register_routes_platform[ApiKey, Context](mut &ApiKey{}, '/iam/apikey', mut ctx)
 }
