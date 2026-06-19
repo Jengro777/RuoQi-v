@@ -16,7 +16,7 @@ jobs:
     container:
       image: thevlang/vlang:alpine-dev
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Check V version
         run: v up && v version
       - name: Install dependencies
@@ -37,7 +37,7 @@ jobs:
     container:
       image: thevlang/vlang:alpine-dev
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Check V version
         run: v up && v version
       - name: Install dependencies
