@@ -10,7 +10,7 @@ import structs.schema_workspace
 pub fn (app &Base) init_workspace(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	db, conn := ctx.dbpool.acquire() or {
+	mut db, conn := ctx.dbpool.acquire() or {
 		return ctx.json(api.json_error_500('获取的连接无效: ${err}'))
 	}
 	defer {
@@ -28,6 +28,15 @@ pub fn (app &Base) init_workspace(mut ctx Context) veb.Result {
 		create table schema_workspace.WsPosition
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.info('schema_workspace init success')
+
+	log.info('insert sys data')
+	sql_commands := [ws_workspace, ws_member, ws_department, ws_position]
+	for cmd in sql_commands {
+		db.execute(cmd) or {
+			return ctx.json(api.json_error_500('执行 ${cmd} SQL失败: ${err}'))
+		}
+		log.info('${cmd} init_sys_data success')
+	}
 
 	return ctx.json(api.json_success_200('Workspace database init Successfull'))
 }
