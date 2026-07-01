@@ -1,6 +1,6 @@
 module dbpool
 
-const config = DatabaseConfig{
+const config_mysql = DatabaseConfig{
 	type:     'mysql'
 	host:     'mysql2.sqlpub.com'
 	port:     3307
@@ -18,14 +18,8 @@ const config_pg = DatabaseConfig{
 	dbname:   'vcore_test'
 }
 
-fn test_new_db_pool() {
-	mut pool := new_db_pool(config)!
-	defer { pool.close() }
-	assert true
-}
-
-fn test_acquire() {
-	mut pool := new_db_pool(config) or { panic(err) }
+fn test_acquire_mysql() {
+	mut pool := new_db_pool(config_mysql) or { panic(err) }
 	mut db, conn := pool.acquire() or { panic(err) }
 	rows := db.execute('SELECT 1') or { panic(err) }
 	dump(rows)
@@ -36,8 +30,8 @@ fn test_acquire() {
 	assert true
 }
 
-fn test_acquire_raw() {
-	mut pool := new_mysql_pool(config) or { panic(err) }
+fn test_acquire_raw_mysql() {
+	mut pool := new_mysql_pool(config_mysql) or { panic(err) }
 	mut db, conn := pool.acquire_raw() or { panic(err) }
 	rows := db.exec('SELECT 1') or { panic(err) }
 	dump(rows)
