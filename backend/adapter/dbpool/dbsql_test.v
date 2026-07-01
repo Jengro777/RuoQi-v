@@ -9,6 +9,15 @@ const config = DatabaseConfig{
 	dbname:   'vcore_test'
 }
 
+const config_pg = DatabaseConfig{
+	type:     'pgsql'
+	host:     'ep-wandering-king-akw206lc-pooler.c-3.us-west-2.aws.neon.tech'
+	port:     5432
+	username: 'neondb_owner'
+	password: 'npg_U4j7sqBcgIMO'
+	dbname:   'vcore_test'
+}
+
 fn test_new_db_pool() {
 	mut pool := new_db_pool(config)!
 	defer { pool.close() }
