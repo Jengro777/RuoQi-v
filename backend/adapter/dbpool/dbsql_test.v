@@ -18,17 +18,43 @@ fn test_new_db_pool() {
 fn test_acquire() {
 	mut pool := new_db_pool(config) or { panic(err) }
 	_, conn := pool.acquire() or { panic(err) }
-	pool.release(conn) or {}
-	pool.close()
+	defer {
+		pool.release(conn) or {}
+		pool.close()
+	}
 	assert true
 }
 
 fn test_acquire_raw() {
 	mut pool := new_mysql_pool(config) or { panic(err) }
-	db, conn := pool.acquire_raw() or { panic(err) }
-	// 跳过 release/close: V pool ⚡ v_stable_sort bug
+	mut db, conn := pool.acquire_raw() or { panic(err) }
 	rows := db.exec('SELECT 1') or { panic(err) }
 	dump(rows)
+	// defer {
+	// 	pool.release(conn) or {}
+	// 	pool.close()
+	// }
 	assert true
-	_ := conn
 }
+
+// fn test_acquire_pg() {
+// 	mut pool := new_db_pool(config_pg) or { panic(err) }
+// 	_, conn := pool.acquire() or { panic(err) }
+// 	// defer {
+// 	// 	pool.release(conn) or {}
+// 	// 	pool.close()
+// 	// }
+// 	assert true
+// }
+
+// fn test_acquire_raw_pg() {
+// 	mut pool := new_pgsql_pool(config_pg) or { panic(err) }
+// 	db, conn := pool.acquire_raw() or { panic(err) }
+// 	rows := db.exec('SELECT 1') or { panic(err) }
+// 	dump(rows)
+// 	// defer {
+// 	// 	pool.release(conn) or {}
+// 	// 	pool.close()
+// 	// }
+// 	assert true
+// }
