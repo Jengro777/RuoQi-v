@@ -26,7 +26,9 @@ fn test_new_db_pool() {
 
 fn test_acquire() {
 	mut pool := new_db_pool(config) or { panic(err) }
-	_, conn := pool.acquire() or { panic(err) }
+	mut db, conn := pool.acquire() or { panic(err) }
+	rows := db.execute('SELECT 1') or { panic(err) }
+	dump(rows)
 	defer {
 		pool.release(conn) or {}
 		pool.close()
@@ -49,17 +51,19 @@ fn test_acquire_raw() {
 
 // fn test_acquire_pg() {
 // 	mut pool := new_db_pool(config_pg) or { panic(err) }
-// 	_, conn := pool.acquire() or { panic(err) }
-// 	// defer {
-// 	// 	pool.release(conn) or {}
-// 	// 	pool.close()
-// 	// }
+// 	mut db, conn := pool.acquire() or { panic(err) }
+// 	rows := db.execute('SELECT 1') or { panic(err) }
+// 	dump(rows)
+// 	defer {
+// 		pool.release(conn) or {}
+// 		pool.close()
+// 	}
 // 	assert true
 // }
 
 // fn test_acquire_raw_pg() {
 // 	mut pool := new_pgsql_pool(config_pg) or { panic(err) }
-// 	db, conn := pool.acquire_raw() or { panic(err) }
+// 	mut db, conn := pool.acquire_raw() or { panic(err) }
 // 	rows := db.exec('SELECT 1') or { panic(err) }
 // 	dump(rows)
 // 	mut p := &DatabasePoolable(pool) //必须这样转换,不然release/close方法无法调用
