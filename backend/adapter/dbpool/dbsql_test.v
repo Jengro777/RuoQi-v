@@ -39,10 +39,11 @@ fn test_acquire_raw() {
 	mut db, conn := pool.acquire_raw() or { panic(err) }
 	rows := db.exec('SELECT 1') or { panic(err) }
 	dump(rows)
-	// defer {
-	// 	pool.release(conn) or {}
-	// 	pool.close()
-	// }
+	mut p := &DatabasePoolable(pool) //必须这样转换,不然release/close方法无法调用
+	defer {
+		p.release(conn) or {}
+		p.close()
+	}
 	assert true
 }
 
@@ -61,9 +62,10 @@ fn test_acquire_raw() {
 // 	db, conn := pool.acquire_raw() or { panic(err) }
 // 	rows := db.exec('SELECT 1') or { panic(err) }
 // 	dump(rows)
-// 	// defer {
-// 	// 	pool.release(conn) or {}
-// 	// 	pool.close()
-// 	// }
+// 	mut p := &DatabasePoolable(pool) //必须这样转换,不然release/close方法无法调用
+// 	defer {
+// 		p.release(conn) or {}
+// 		p.close()
+// 	}
 // 	assert true
 // }
