@@ -1,5 +1,7 @@
 module dbpool
 
+import os
+
 const config_mysql = DatabaseConfig{
 	type:     'mysql'
 	host:     'mysql2.sqlpub.com'
@@ -9,15 +11,18 @@ const config_mysql = DatabaseConfig{
 	dbname:   'vcore_test'
 }
 
-const config_tidb = DatabaseConfig{
-	type:       'mysql'
-	host:       'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
-	port:       4000
-	username:   'xfQRtLXKTtPHsUi.root'
-	password:   'GkFU6Q3uvt0O9F0A'
-	dbname:     'vcore'
-	ssl_verify: true
-	ssl_ca:     '../../etc/client-cert.pem'
+fn config_tidb() DatabaseConfig {
+	cert_path := os.join_path(os.dir(@FILE), '../../etc/client-cert.pem')
+	return DatabaseConfig{
+		type:       'mysql'
+		host:       'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
+		port:       4000
+		username:   'xfQRtLXKTtPHsUi.root'
+		password:   'GkFU6Q3uvt0O9F0A'
+		dbname:     'vcore'
+		ssl_verify: true
+		ssl_ca:     cert_path
+	}
 }
 
 const config_pg = DatabaseConfig{
@@ -55,7 +60,7 @@ fn test_acquire_raw_mysql() {
 }
 
 fn test_acquire_tidb() {
-	mut pool := new_db_pool(config_tidb) or { panic(err) }
+	mut pool := new_db_pool(config_tidb()) or { panic(err) }
 	mut db, conn := pool.acquire() or { panic(err) }
 	rows := db.execute('SELECT 1') or { panic(err) }
 	dump(rows)

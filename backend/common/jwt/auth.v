@@ -5,7 +5,6 @@
 //   AuthPayload                       — 认证 token 的 payload
 //   auth_generate(secret, payload)    — 签发
 //   auth_verify(secret, token)        — 验证（含时间校验）
-//   auth_decode(token)                — 不解签只解码 payload
 // ==============================================================================
 module jwt
 

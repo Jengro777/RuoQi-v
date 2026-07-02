@@ -13,7 +13,7 @@ pub fn new_db_pool_with_connect(config DatabaseConfig) !&DatabasePool {
 			password: config.password
 			dbname:   config.dbname
 		})!
-		return &db
+		return db
 	}
 
 	pool_conf := pool.ConnectionPoolConfig{
@@ -62,7 +62,7 @@ pub fn new_db_pool_with_conninfo(config DatabaseConfig) !&DatabasePool {
 		// 使用 pg.connect_with_conninfo() 构建包含 SSL 参数的连接字符串
 		// 这是 pg 模块唯一支持 SSL 的方法
 		mut db := pg.connect_with_conninfo(conninfo)!
-		return &db
+		return db
 	}
 
 	pool_conf := pool.ConnectionPoolConfig{

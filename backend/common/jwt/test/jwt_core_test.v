@@ -1,5 +1,5 @@
 // ==============================================================================
-// core_test.v — 共享基础设施测试
+// jwt_core_test.v — 共享基础设施测试
 // 对应 jwt_core.v：JwtHeader / constant_time_compare / sign_payload / verify_and_decode
 // ==============================================================================
 module test
@@ -69,4 +69,36 @@ fn test_verify_and_decode_expired() {
 		return
 	}
 	assert false, 'verify_and_decode should fail for expired token'
+}
+
+// ---- jwt_decode ------------------------------------------------------------
+
+fn test_jwt_decode() {
+	now := time.now().unix()
+	secret := 'decode-secret'
+	payload := jwt.AuthPayload{
+		BasePayload: jwt.BasePayload{
+			iss: 'ruoqi-v'
+			sub: 'decode-test'
+			exp: now + 3600
+			nbf: now
+			iat: now
+			jti: 'jti-decode'
+		}
+		role_ids:    ['admin', 'user']
+		client_ip:   '192.168.1.1'
+	}
+	token := jwt.auth_generate(secret, payload)
+	decoded := jwt.jwt_decode(token)!
+	assert decoded.sub == payload.sub
+	assert decoded.role_ids == payload.role_ids
+	assert decoded.client_ip == payload.client_ip
+}
+
+fn test_jwt_decode_invalid() {
+	_ := jwt.jwt_decode('not.a.valid.token') or {
+		assert true
+		return
+	}
+	assert false, 'expected error for invalid token'
 }
