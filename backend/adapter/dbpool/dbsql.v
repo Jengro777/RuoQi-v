@@ -30,7 +30,7 @@ fn new_pgsql_pool(config DatabaseConfig) !&DatabasePool[pg.DB] {
 			password: config.password
 			dbname:   config.dbname
 		})!
-		return &db
+		return db
 	}
 	pool_conf := pool.ConnectionPoolConfig{
 		max_conns:      config.max_conns

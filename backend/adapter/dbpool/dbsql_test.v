@@ -57,7 +57,7 @@ fn test_acquire_raw_mysql() {
 fn test_acquire_tidb() {
 	mut pool := new_db_pool(config_tidb) or { panic(err) }
 	mut db, conn := pool.acquire() or { panic(err) }
-	rows := db.execute('SELECT * from sys_user') or { panic(err) }
+	rows := db.execute('SELECT 1') or { panic(err) }
 	dump(rows)
 	defer {
 		pool.release(conn) or {}
@@ -66,27 +66,27 @@ fn test_acquire_tidb() {
 	assert true
 }
 
-// fn test_acquire_pg() {
-// 	mut pool := new_db_pool(config_pg) or { panic(err) }
-// 	mut db, conn := pool.acquire() or { panic(err) }
-// 	rows := db.execute('SELECT 1') or { panic(err) }
-// 	dump(rows)
-// 	defer {
-// 		pool.release(conn) or {}
-// 		pool.close()
-// 	}
-// 	assert true
-// }
+fn test_acquire_pg() {
+	mut pool := new_db_pool(config_pg) or { panic(err) }
+	mut db, conn := pool.acquire() or { panic(err) }
+	rows := db.execute('SELECT 1') or { panic(err) }
+	dump(rows)
+	defer {
+		pool.release(conn) or {}
+		pool.close()
+	}
+	assert true
+}
 
-// fn test_acquire_raw_pg() {
-// 	mut pool := new_pgsql_pool(config_pg) or { panic(err) }
-// 	mut db, conn := pool.acquire_raw() or { panic(err) }
-// 	rows := db.exec('SELECT 1') or { panic(err) }
-// 	dump(rows)
-// 	mut p := &DatabasePoolable(pool) //必须这样转换,不然release/close方法无法调用
-// 	defer {
-// 		p.release(conn) or {}
-// 		p.close()
-// 	}
-// 	assert true
-// }
+fn test_acquire_raw_pg() {
+	mut pool := new_pgsql_pool(config_pg) or { panic(err) }
+	mut db, conn := pool.acquire_raw() or { panic(err) }
+	rows := db.exec('SELECT 1') or { panic(err) }
+	dump(rows)
+	mut p := &DatabasePoolable(pool) //必须这样转换,不然release/close方法无法调用
+	defer {
+		p.release(conn) or {}
+		p.close()
+	}
+	assert true
+}
