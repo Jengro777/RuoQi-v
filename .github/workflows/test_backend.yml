@@ -21,7 +21,7 @@ jobs:
         run: v up && v version
       - name: Install dependencies
         run: |
-          apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev mbedtls-dev gcc musl-dev
+          apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev mbedtls-dev
           # apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev  libatomic musl-dev build-base
 
       - name: Format check
@@ -29,7 +29,7 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: v -stats -cc gcc test .
+        run: v -stats  test .
 
   build:
     name: Build Application
@@ -42,7 +42,7 @@ jobs:
         run: v up && v version
       - name: Install dependencies
         run: |
-          apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev mbedtls-dev gcc musl-dev
+          apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev mbedtls-dev
           # apk add --no-cache mariadb-connector-c-dev postgresql-dev sqlite-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
