@@ -9,6 +9,17 @@ const config_mysql = DatabaseConfig{
 	dbname:   'vcore_test'
 }
 
+const config_tidb = DatabaseConfig{
+	type:       'mysql'
+	host:       'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
+	port:       4000
+	username:   'xfQRtLXKTtPHsUi.root'
+	password:   'GkFU6Q3uvt0O9F0A'
+	dbname:     'vcore'
+	ssl_verify: true
+	ssl_ca:     '../../etc/client-cert.pem'
+}
+
 const config_pg = DatabaseConfig{
 	type:     'pgsql'
 	host:     'ep-wandering-king-akw206lc-pooler.c-3.us-west-2.aws.neon.tech'
@@ -39,6 +50,18 @@ fn test_acquire_raw_mysql() {
 	defer {
 		p.release(conn) or {}
 		p.close()
+	}
+	assert true
+}
+
+fn test_acquire_tidb() {
+	mut pool := new_db_pool(config_tidb) or { panic(err) }
+	mut db, conn := pool.acquire() or { panic(err) }
+	rows := db.execute('SELECT * from sys_user') or { panic(err) }
+	dump(rows)
+	defer {
+		pool.release(conn) or {}
+		pool.close()
 	}
 	assert true
 }

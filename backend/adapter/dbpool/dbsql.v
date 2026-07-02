@@ -7,7 +7,7 @@ import db.pg
 
 pub fn new_db_pool(config DatabaseConfig) !&DatabasePoolable {
 	match config.type {
-		'mysql' {
+		'mysql', 'tidb' {
 			p := new_mysql_pool(config)!
 			return &DatabasePoolable(p)
 		}
@@ -44,13 +44,30 @@ fn new_pgsql_pool(config DatabaseConfig) !&DatabasePool[pg.DB] {
 
 fn new_mysql_pool(config DatabaseConfig) !&DatabasePool[mysql.DB] {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
-		mut db := mysql.connect(mysql.Config{
+		mut cfg := mysql.Config{
 			host:     config.host
 			port:     config.port
 			username: config.username
 			password: config.password
 			dbname:   config.dbname
-		})!
+		}
+
+		if config.ssl_verify || config.ssl_key != '' || config.ssl_cert != '' || config.ssl_ca != ''
+			|| config.ssl_capath != '' || config.ssl_cipher != '' {
+			cfg.flag = .client_ssl
+			if config.ssl_verify {
+				cfg.ssl_mode = .verify_identity
+			} else {
+				cfg.ssl_mode = .required
+			}
+			cfg.ssl_key = config.ssl_key
+			cfg.ssl_cert = config.ssl_cert
+			cfg.ssl_ca = config.ssl_ca
+			cfg.ssl_capath = config.ssl_capath
+			cfg.ssl_cipher = config.ssl_cipher
+		}
+
+		mut db := mysql.connect(cfg)!
 		return &db
 	}
 	pool_conf := pool.ConnectionPoolConfig{
