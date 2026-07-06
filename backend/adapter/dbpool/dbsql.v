@@ -23,13 +23,25 @@ pub fn new_db_pool(config DatabaseConfig) !&DatabasePoolable {
 
 fn new_pgsql_pool(config DatabaseConfig) !&DatabasePool[pg.DB] {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
-		mut db := pg.connect(pg.Config{
+		ssl_on := config.ssl_verify || config.ssl_key != '' || config.ssl_cert != ''
+			|| config.ssl_ca != ''
+		ssl_mode_val := if ssl_on {
+			if config.ssl_verify { pg.SslMode.verify_full } else { pg.SslMode.require }
+		} else {
+			pg.SslMode.unset
+		}
+		cfg := pg.Config{
 			host:     config.host
 			port:     int(config.port)
 			user:     config.username
 			password: config.password
 			dbname:   config.dbname
-		})!
+			ssl_key:  config.ssl_key
+			ssl_cert: config.ssl_cert
+			ssl_ca:   config.ssl_ca
+			ssl_mode: ssl_mode_val
+		}
+		mut db := pg.connect(cfg)!
 		return db
 	}
 	pool_conf := pool.ConnectionPoolConfig{
