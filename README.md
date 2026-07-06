@@ -54,15 +54,15 @@ v -d autofree -prod -o app ./main
 
 - [x] HTTP1 (HTTP2 and HTTP3 future)
 - [x] Logging Middleware
-- [x] Autherity Middleware(JWT)
-- [x] Cores Middleware
-- [ ] Data permission middleware
+- [x] Authority Middleware (JWT + AK/SK)
+- [x] CORS Middleware
+- [x] Data permission middleware
 - [x] Config Middleware
-- [x] Database connections pool Middleware(Mysql,Postgres)
+- [x] Database Connection Pool Middleware (MySQL, PostgreSQL)
 - [x] i18n
-- [x] Multitenancy (tenant resolution) [多租户、多团队、多应用]
-- [x] Support OpenAPI, generate OpenAPI data automatic (openapi_generate.vsh)
-- [x] Permission: RBAC permission control
+- [x] Multitenancy (tenant / subproduct / subportal / workspace isolation) [租户 → 应用 → 门户 → 空间]
+- [x] OpenAPI: automatic spec generation (openapi_generate.vsh)
+- [x] RBAC Permission Control
 
 ---
 
