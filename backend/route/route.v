@@ -12,7 +12,7 @@ pub fn (mut app AliasApp) common_middleware[T, U](mut ctrl T, mut ctx Context) {
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.config_middle(ctx.config))
 	ctrl.use(middleware.db_middleware(ctx.dbpool))
-	ctrl.use(middleware.i18n_middleware(ctx.i18n))
+	ctrl.use(middleware.locale_middleware(ctx.locale))
 }
 
 fn (mut app AliasApp) register_routes_no_auth[T, U](mut ctrl T, url_path string, mut ctx Context) {

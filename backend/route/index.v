@@ -82,14 +82,14 @@ fn (mut app AliasApp) index(mut ctx Context) veb.Result {
 	return ctx.html(final_html)
 }
 
-// curl -H "Accept-Language: en" --compressed http://localhost:9009/i18n
-// curl -H "Accept-Language: zh" --compressed http://localhost:9009/i18n
-@['/i18n'; get]
-pub fn (app &AliasApp) i18n(mut ctx Context) veb.Result {
+// curl -H "Accept-Language: en" --compressed http://localhost:9009/locale
+// curl -H "Accept-Language: zh" --compressed http://localhost:9009/locale
+@['/locale'; get]
+pub fn (app &AliasApp) locale(mut ctx Context) veb.Result {
 	result := {
-		'success':        ctx.i18n.t('common.success')
-		'create_success': ctx.i18n.t('common.createSuccess')
-		'init':           ctx.i18n.t('init.alreadyInit')
+		'success':        ctx.locale.t('common.success')
+		'create_success': ctx.locale.t('common.createSuccess')
+		'init':           ctx.locale.t('init.alreadyInit')
 	}
 	return ctx.json(result)
 }
@@ -137,17 +137,17 @@ fn (mut app AliasApp) openapi_json(mut ctx Context) veb.Result {
 	return ctx.text(content)
 }
 
-// curl -H "Accept-Language: zh" --compressed http://localhost:9009/i18n/debug
-@['/i18n/debug'; get]
-pub fn (app &AliasApp) i18n_debug(mut ctx Context) veb.Result {
+// curl -H "Accept-Language: zh" --compressed http://localhost:9009/locale/debug
+@['/locale/debug'; get]
+pub fn (app &AliasApp) locale_debug(mut ctx Context) veb.Result {
 	// 获取语言，如果请求头中没有语言，则回退到默认语言
-	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
+	lang := ctx.extra_locale['lang'] or { ctx.locale.default_lang }
 
 	// 获取当前语言的翻译数据，如果语言不存在则回退到默认语言
-	translations := if lang in ctx.i18n.translations {
-		ctx.i18n.translations[lang]
+	translations := if lang in ctx.locale.translations {
+		ctx.locale.translations[lang]
 	} else {
-		ctx.i18n.translations[ctx.i18n.default_lang]
+		ctx.locale.translations[ctx.locale.default_lang]
 	}
 
 	// 构造结果并返回

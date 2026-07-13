@@ -1,38 +1,38 @@
-module i18n
+module locale
 
 import os
 import time
 import x.json2 as json
 
-// ------------------------- 测试 new_i18n -------------------------
-fn test_new_i18n() {
+// ------------------------- 测试 new_locale -------------------------
+fn test_new_locale() {
 	tmpdir := os.temp_dir()
-	mut dir := os.join_path(tmpdir, 'i18n_test')
+	mut dir := os.join_path(tmpdir, 'locale_test')
 	os.mkdir_all(dir) or {}
 
 	// 写入一个示例翻译文件
 	os.write_file(os.join_path(dir, 'en.json'), '{"hello": "Hello"}') or {}
 
-	// 创建 I18nStore
-	i18n_info := new_i18n(dir, 'en') or {
-		assert false, 'failed to create i18n store: ${err}'
+	// 创建 LocaleStore
+	locale_info := new_locale(dir, 'en') or {
+		assert false, 'failed to create locale store: ${err}'
 		return
 	}
 	// 验证默认语言和翻译内容
-	assert i18n_info.default_lang == 'en'
-	assert 'hello' in i18n_info.translations['en']
-	assert i18n_info.translations['en']['hello'] == 'Hello'
+	assert locale_info.default_lang == 'en'
+	assert 'hello' in locale_info.translations['en']
+	assert locale_info.translations['en']['hello'] == 'Hello'
 }
 
 // ------------------------- 测试 maybe_reload -------------------------
 fn test_maybe_reload() {
 	tmpdir := os.temp_dir()
-	mut dir := os.join_path(tmpdir, 'i18n_reload')
+	mut dir := os.join_path(tmpdir, 'locale_reload')
 	os.mkdir_all(dir) or {}
 
 	// 写入初始翻译文件
 	os.write_file(os.join_path(dir, 'en.json'), '{"hi": "Hi"}') or {}
-	mut store := new_i18n(dir, 'en') or { panic(err) }
+	mut store := new_locale(dir, 'en') or { panic(err) }
 
 	// 等待一段时间后修改翻译文件
 	time.sleep(1001 * time.millisecond)
@@ -50,12 +50,12 @@ fn test_maybe_reload() {
 // ------------------------- 测试 load_translations -------------------------
 fn test_load_translations() {
 	tmpdir := os.temp_dir()
-	mut dir := os.join_path(tmpdir, 'i18n_load')
+	mut dir := os.join_path(tmpdir, 'locale_load')
 	os.mkdir_all(dir) or {}
 
 	// 写入中文翻译文件
 	os.write_file(os.join_path(dir, 'zh.json'), '{"a": "你好"}') or {}
-	mut store := &I18nStore{
+	mut store := &LocaleStore{
 		dir:          dir
 		default_lang: 'zh'
 	}
@@ -68,7 +68,7 @@ fn test_load_translations() {
 
 // ------------------------- 测试 t (翻译查询) -------------------------
 fn test_t() {
-	mut store := &I18nStore{
+	mut store := &LocaleStore{
 		default_lang: 'en'
 		translations: {
 			'en': {

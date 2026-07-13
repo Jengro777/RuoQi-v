@@ -164,7 +164,7 @@ v_project/
 │   ├── openapi.json                 # 生成的 OpenAPI 3.0.3 规范
 │   └── locales/                    # 语言资源目录
 │
-└── i18n/                           # 国际化资源
+└── locale/                         # 国际化资源
 │   ├── en.v
 │   └── zh.v
 

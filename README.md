@@ -59,7 +59,7 @@ v -d autofree -prod -o app ./main
 - [x] Data permission middleware
 - [x] Config Middleware
 - [x] Database Connection Pool Middleware (MySQL, PostgreSQL)
-- [x] i18n
+- [x] locale
 - [x] Multitenancy (tenant / subproduct / subportal / workspace isolation) [租户 → 应用 → 门户 → 空间]
 - [x] OpenAPI: automatic spec generation (openapi_generate.vsh)
 - [x] RBAC Permission Control

@@ -8,7 +8,7 @@ import orm
 import pool
 import adapter.datascope { ScopeContext }
 import config
-import i18n
+import locale
 
 pub struct App {
 	veb.Middleware[Context]
@@ -23,13 +23,13 @@ pub mut:
 pub struct Context {
 	veb.Context
 pub mut:
-	scope_sc    ScopeContext
-	dbpool      &dbpool.DatabasePoolable @[noinit]
-	cache_pool  &cache_pool.CachePool
-	config      &config.GlobalConfig
-	jwt_payload ?AuthPayload
-	i18n        &i18n.I18nStore
-	extra_i18n  map[string]string = map[string]string{}
+	scope_sc     ScopeContext
+	dbpool       &dbpool.DatabasePoolable @[noinit]
+	cache_pool   &cache_pool.CachePool
+	config       &config.GlobalConfig
+	jwt_payload  ?AuthPayload
+	locale       &locale.LocaleStore
+	extra_locale map[string]string = map[string]string{}
 
 	svc_iam ServiceContextIam
 }

@@ -7,7 +7,7 @@ import time
 import structs { Context }
 import middleware
 import config
-import i18n
+import locale
 import route { AliasApp }
 
 fn serve_http(mut app AliasApp, port int, request_timeout int) {
@@ -37,7 +37,7 @@ fn setup_app_middleware(mut app AliasApp, ctx &Context) {
 	app.use(middleware.config_middle(ctx.config))
 	// app.use(middleware.db_middleware(ctx.cache_pool))
 	app.use(middleware.db_middleware(ctx.dbpool))
-	app.use(middleware.i18n_middleware(ctx.i18n))
+	app.use(middleware.locale_middleware(ctx.locale))
 	app.use(veb.encode_auto[Context]())
 }
 
@@ -58,7 +58,7 @@ pub fn new_app() {
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
 
 	// 2. 初始化国际化资源。
-	i18n_app := i18n.new_i18n('./etc/locales', 'zh') or { return }
+	locale_app := locale.new_locale('./etc/locales', 'zh') or { return }
 
 	// 3. 初始化数据库连接池；函数退出时关闭连接池。
 	log.debug('init_db_pool()')
@@ -94,7 +94,7 @@ pub fn new_app() {
 		cache_pool: conn_cache
 		dbpool:     conn_db
 		config:     doc
-		i18n:       i18n_app
+		locale:     locale_app
 	}
 
 	// 7. 注册全局中间件，仅作用于非子路由。

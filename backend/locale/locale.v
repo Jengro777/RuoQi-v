@@ -1,13 +1,13 @@
-module i18n
+module locale
 
 import time
 import os
 import log
 import x.json2 as json
 
-// ------------------------- I18n -------------------------
+// ------------------------- Locale -------------------------
 @[heap]
-pub struct I18nStore {
+pub struct LocaleStore {
 pub:
 	default_lang string
 	dir          string
@@ -19,11 +19,11 @@ pub mut:
 	check_interval i64 = 2000 // 毫秒
 }
 
-// 创建 I18nStore
-pub fn new_i18n(dir string, default_lang string) !&I18nStore {
+// 创建 LocaleStore
+pub fn new_locale(dir string, default_lang string) !&LocaleStore {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut s := &I18nStore{
+	mut s := &LocaleStore{
 		dir:          dir
 		default_lang: default_lang
 		translations: map[string]map[string]string{}
@@ -36,7 +36,7 @@ pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 }
 
 // ------------------------- 动态加载 + JSON 校验 + 日志 -------------------------
-pub fn maybe_reload(mut s I18nStore) {
+pub fn maybe_reload(mut s LocaleStore) {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	now := time.now().unix()
@@ -44,10 +44,10 @@ pub fn maybe_reload(mut s I18nStore) {
 		return
 	}
 	s.last_check = now
-	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
+	load_translations(mut s) or { eprintln('locale load failed: ${err}') }
 }
 
-pub fn load_translations(mut s I18nStore) ! {
+pub fn load_translations(mut s LocaleStore) ! {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	if !os.exists(s.dir) {
@@ -68,7 +68,7 @@ pub fn load_translations(mut s I18nStore) ! {
 
 		// JSON 解码，失败则跳过文件
 		data := json.decode[map[string]json.Any](content) or {
-			log.warn('i18n load failed for ${file}: ${err}')
+			log.warn('locale load failed for ${file}: ${err}')
 			continue
 		}
 
@@ -88,12 +88,12 @@ pub fn load_translations(mut s I18nStore) ! {
 		s.mod_times[file] = mod_time
 
 		// 打印加载日志
-		log.debug('i18n loaded: ${lang}, keys: ${s.translations[lang].len}, new: ${is_new}')
+		log.debug('locale loaded: ${lang}, keys: ${s.translations[lang].len}, new: ${is_new}')
 	}
 }
 
 // 查询翻译，支持 fallback，只传入 key 参数
-pub fn (s &I18nStore) t(key string) string {
+pub fn (s &LocaleStore) t(key string) string {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 使用当前缓存语言或默认语言
@@ -113,7 +113,7 @@ pub fn (s &I18nStore) t(key string) string {
 
 // 设置当前语言
 // 当语言切换时更新 current_lang
-pub fn (mut s I18nStore) set_language(lang string) {
+pub fn (mut s LocaleStore) set_language(lang string) {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 检查语言是否已经加载

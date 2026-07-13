@@ -8,7 +8,7 @@ shutdown_timeout = 30 # 优雅关闭等待时间,单位:秒
 [logging]
 log_level = 'info' # 默认info [debug info warn error fatal]
 
-[i18nconf]
+[localeconf]
 Dir = './internal/i18n'
 
 # [dbconf]
