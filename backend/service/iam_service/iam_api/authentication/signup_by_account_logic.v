@@ -8,7 +8,7 @@ import json2 as json
 import structs { Context }
 import structs.schema_iam { IamUser }
 import common.api
-import common.jwt
+import common.crypt
 import common.encrypt
 
 // ═══ Handler ═══
@@ -57,7 +57,9 @@ pub struct SignupByAccountResp {
 fn signup_by_account_repo(mut ctx Context, req SignupByAccountReq) !SignupByAccountResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	if !jwt.captcha_verify(req.captcha_id, req.captcha_text) { return error('Captcha error') }
+	if !crypt.captcha_verify(ctx.config.jwt.secret, req.captcha_id, req.captcha_text) {
+		return error('Captcha error')
+	}
 	dup := sql db {
 		select from IamUser where username == req.username limit 1
 	} or { return error('Failed: ${err}') }

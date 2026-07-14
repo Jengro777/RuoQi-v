@@ -2,7 +2,7 @@ module authentication
 
 import veb
 import log
-import common.jwt
+import common.crypt
 import common.api
 import structs { Context }
 
@@ -10,7 +10,7 @@ import structs { Context }
 @['/captcha'; get; post]
 pub fn (app &Authentication) find_image_captcha_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	captcha_token, captcha_image, _ := jwt.captcha_generate() or {
+	captcha_token, captcha_image, _ := crypt.captcha_generate(ctx.config.jwt.secret) or {
 		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 	return ctx.json(api.json_success(

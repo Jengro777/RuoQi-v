@@ -4,7 +4,7 @@
 // ==============================================================================
 module test
 
-import common.jwt
+import common.crypt
 import time
 
 // ---- auth_generate ----------------------------------------------------------
@@ -12,8 +12,8 @@ import time
 fn test_auth_generate() {
 	now := time.now().unix()
 	secret := 'test-auth-secret'
-	payload := jwt.AuthPayload{
-		BasePayload: jwt.BasePayload{
+	payload := crypt.AuthPayload{
+		BasePayload: crypt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'user-123'
 			exp: now + 3600
@@ -25,7 +25,7 @@ fn test_auth_generate() {
 		client_ip:   '10.0.0.1'
 		device_id:   'dev-a'
 	}
-	token := jwt.auth_generate(secret, payload)
+	token := crypt.auth_generate(secret, payload)
 	dump(token)
 	assert typeof(token).name == 'string'
 	assert token != ''
@@ -37,8 +37,8 @@ fn test_auth_generate() {
 fn test_auth_verify() {
 	now := time.now().unix()
 	secret := 'test-auth-secret'
-	payload := jwt.AuthPayload{
-		BasePayload: jwt.BasePayload{
+	payload := crypt.AuthPayload{
+		BasePayload: crypt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'user-123'
 			exp: now + 3600
@@ -47,14 +47,14 @@ fn test_auth_verify() {
 			jti: 'jti-ver'
 		}
 	}
-	token := jwt.auth_generate(secret, payload)
-	assert jwt.auth_verify(secret, token) == true
+	token := crypt.auth_generate(secret, payload)
+	assert crypt.auth_verify(secret, token) == true
 }
 
 fn test_auth_verify_wrong_secret() {
 	now := time.now().unix()
-	payload := jwt.AuthPayload{
-		BasePayload: jwt.BasePayload{
+	payload := crypt.AuthPayload{
+		BasePayload: crypt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'u1'
 			exp: now + 3600
@@ -63,14 +63,14 @@ fn test_auth_verify_wrong_secret() {
 			jti: 'j1'
 		}
 	}
-	token := jwt.auth_generate('secret-a', payload)
-	assert jwt.auth_verify('secret-b', token) == false
+	token := crypt.auth_generate('secret-a', payload)
+	assert crypt.auth_verify('secret-b', token) == false
 }
 
 fn test_auth_verify_expired() {
 	now := time.now().unix()
-	payload := jwt.AuthPayload{
-		BasePayload: jwt.BasePayload{
+	payload := crypt.AuthPayload{
+		BasePayload: crypt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'u1'
 			exp: now - 1
@@ -79,6 +79,6 @@ fn test_auth_verify_expired() {
 			jti: 'j1'
 		}
 	}
-	token := jwt.auth_generate('secret', payload)
-	assert jwt.auth_verify('secret', token) == false
+	token := crypt.auth_generate('secret', payload)
+	assert crypt.auth_verify('secret', token) == false
 }

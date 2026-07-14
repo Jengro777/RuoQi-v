@@ -6,7 +6,7 @@
 //   opt_generate() (string, string) — 签发，返回 (token, opt_num)
 //   opt_verify(token, opt_num)      — 验证
 // ==============================================================================
-module jwt
+module crypt
 
 import time
 import rand
@@ -19,7 +19,7 @@ pub:
 }
 
 // opt_generate 生成有效期 120 秒的 OTP JWT token。
-pub fn opt_generate() (string, string) {
+pub fn opt_generate(secret string) (string, string) {
 	opt_num := random_num().str()
 	now := time.now()
 	payload := OptPayload{
@@ -33,13 +33,13 @@ pub fn opt_generate() (string, string) {
 		}
 		opt_text:    opt_num
 	}
-	token := sign_payload[OptPayload](jwt_secret, payload)
+	token := sign_payload[OptPayload](secret, payload)
 	return token, opt_num
 }
 
 // opt_verify 验证 OTP JWT token 并比对验证码值。
-pub fn opt_verify(token string, opt_num string) bool {
-	payload := verify_and_decode[OptPayload](jwt_secret, token) or { return false }
+pub fn opt_verify(secret string, token string, opt_num string) bool {
+	payload := verify_and_decode[OptPayload](secret, token) or { return false }
 	return payload.opt_text == opt_num
 }
 

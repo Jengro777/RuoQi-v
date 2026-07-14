@@ -1,28 +1,14 @@
 // ==============================================================================
-// jwt_core.v — 共享 JWT 函数
+// jwt.v — JWT 协议：签发 / 验证 / 解析（基于 crypt 模块底层原语）
 //
-// 数据结构定义见 struct.v。
+// 底层依赖 core.v：hmac_sign, constant_time_compare
+// 数据结构定义见 jwt_struct.v。
 // ==============================================================================
-module jwt
+module crypt
 
-import crypto.hmac
-import crypto.sha256
 import encoding.base64
 import json2 as json
 import time
-
-// ---- 常量时间比较（防时序攻击）------------------------------------------------
-
-pub fn constant_time_compare(a string, b string) bool {
-	mut diff := a.len ^ b.len
-	max_len := if a.len > b.len { a.len } else { b.len }
-	for i in 0 .. max_len {
-		a_char := if i < a.len { a[i] } else { u8(0) }
-		b_char := if i < b.len { b[i] } else { u8(0) }
-		diff |= int(a_char) ^ int(b_char)
-	}
-	return diff == 0
-}
 
 // ---- 泛型签发 ----------------------------------------------------------------
 
@@ -35,8 +21,8 @@ pub fn sign_payload[T](secret string, payload T) string {
 	}))
 	playload_b64 := base64.url_encode_str(json.encode(payload))
 	message := '${header_b64}.${playload_b64}'
-	signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 64)
-	return '${header_b64}.${playload_b64}.${base64.url_encode_str(signature.bytestr())}'
+	sig_b64 := base64.url_encode_str(hmac_sign(secret, message).bytestr())
+	return '${header_b64}.${playload_b64}.${sig_b64}'
 }
 
 // ---- 泛型验证管道 -------------------------------------------------------------
@@ -64,8 +50,7 @@ pub fn verify_and_decode[T](secret string, token string) !T {
 
 	// 2. 校验签名
 	message := '${parts[0]}.${parts[1]}'
-	real_sig := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 64)
-	expected_sig := base64.url_encode_str(real_sig.bytestr())
+	expected_sig := base64.url_encode_str(hmac_sign(secret, message).bytestr())
 	if !constant_time_compare(parts[2], expected_sig) {
 		return error('JWT: signature mismatch')
 	}
@@ -87,14 +72,14 @@ pub fn verify_and_decode[T](secret string, token string) !T {
 	return payload
 }
 
-// 解析 JWT token（不验证签名，只解析 payload）
-pub fn jwt_decode(token string) !AuthPayload {
+// decode_payload 解析 JWT payload（不验证签名）。
+// 只适合在调用方已经完成签名验证后使用，或者用于非信任场景的调试解析。
+pub fn decode_payload[T](token string) !T {
 	parts := token.split('.')
 	if parts.len != 3 {
 		return error('Invalid JWT format: expected 3 parts, got ${parts.len}')
 	}
-	// 解析 JSON
-	payload := json.decode[AuthPayload](base64.url_decode_str(parts[1])) or {
+	payload := json.decode[T](base64.url_decode_str(parts[1])) or {
 		return error('Failed to parse JWT payload JSON: ${err}')
 	}
 	return payload

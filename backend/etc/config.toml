@@ -3,8 +3,9 @@ port = 9009
 request_timeout = 30  # web请求超时时间,单位:秒
 shutdown_timeout = 30 # 优雅关闭等待时间,单位:秒
 
-[jwt]
+[crypt]
 secret = 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
+# master_key = ''  # API Key SK 加密主密钥，为空则复用 secret
 
 
 [logging]

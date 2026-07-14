@@ -5,11 +5,11 @@ import log
 import time
 import rand
 import crypto.rand as crand
-import crypto.sha256
 import json2 as json
 import structs { Context }
 import structs.schema_iam { IamApiKey }
 import common.api
+import common.crypt
 
 pub struct CreateApiKeyReq {
 	name           string   @[json: 'name']
@@ -56,6 +56,11 @@ fn create_apikey_usecase(mut ctx Context, req CreateApiKeyReq) !CreateApiKeyResp
 	ak := 'ak-${ak_bytes.hex()}'
 	sk := 'sk-${sk_bytes.hex()}'
 
+	master_key := ctx.config.jwt.effective_master_key()
+	sk_cipher := crypt.aes_encrypt(sk, master_key) or {
+		return error('Failed to encrypt SK: ${err}')
+	}
+
 	tenant_ids_json := json.encode(req.tenant_ids)
 	subproduct_ids_json := json.encode(req.subproduct_ids)
 	subportal_ids_json := json.encode(req.subportal_ids)
@@ -71,23 +76,23 @@ fn create_apikey_usecase(mut ctx Context, req CreateApiKeyReq) !CreateApiKeyResp
 	now := time.now()
 
 	rec := IamApiKey{
-		id:             id
-		user_id:        ctx.svc_iam.user_id
-		name:           req.name
-		access_key_id:  ak
-		key_prefix:     ak[..10]
-		key_hash:       sha256.hexhash(sk)
-		key_last_four:  sk[sk.len - 4..]
-		tenant_ids:     tenant_ids_json
-		subproduct_ids: subproduct_ids_json
-		subportal_ids:  subportal_ids_json
-		scopes:         scopes_json
-		status:         0
-		expired_at:     expired_at
-		creator_id:     ctx.svc_iam.user_id
-		created_at:     now
-		updater_id:     ctx.svc_iam.user_id
-		updated_at:     now
+		id:                id
+		user_id:           ctx.svc_iam.user_id
+		name:              req.name
+		access_key_id:     ak
+		key_prefix:        ak[..10]
+		key_last_four:     sk[sk.len - 4..]
+		secret_key_cipher: sk_cipher
+		tenant_ids:        tenant_ids_json
+		subproduct_ids:    subproduct_ids_json
+		subportal_ids:     subportal_ids_json
+		scopes:            scopes_json
+		status:            0
+		expired_at:        expired_at
+		creator_id:        ctx.svc_iam.user_id
+		created_at:        now
+		updater_id:        ctx.svc_iam.user_id
+		updated_at:        now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

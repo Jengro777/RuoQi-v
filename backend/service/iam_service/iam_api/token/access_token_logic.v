@@ -3,11 +3,11 @@ module token
 import time
 import rand
 import structs { Context }
-import common.jwt
+import common.crypt
 
 pub fn generate_iam_token(mut ctx Context, user_id string, username string, login_ip string, device_id string) !string {
-	payload := jwt.AuthPayload{
-		BasePayload: jwt.BasePayload{
+	payload := crypt.AuthPayload{
+		BasePayload: crypt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: user_id
 			exp: time.now().add_days(30).unix()
@@ -19,11 +19,11 @@ pub fn generate_iam_token(mut ctx Context, user_id string, username string, logi
 		client_ip:   login_ip
 		device_id:   device_id
 	}
-	return jwt.auth_generate(ctx.config.jwt.secret, payload)
+	return crypt.auth_generate(ctx.config.jwt.secret, payload)
 }
 
 pub fn verify_iam_token_and_populate_ctx(mut ctx Context, token_str string) ! {
-	payload := jwt.verify_and_decode[jwt.AuthPayload](ctx.config.jwt.secret, token_str) or {
+	payload := crypt.verify_and_decode[crypt.AuthPayload](ctx.config.jwt.secret, token_str) or {
 		return error('JWT verification failed')
 	}
 	ctx.svc_iam.user_id = payload.sub

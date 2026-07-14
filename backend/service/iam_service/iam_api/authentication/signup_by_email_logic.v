@@ -8,7 +8,7 @@ import json2 as json
 import structs { Context }
 import structs.schema_iam { IamUser }
 import common.api
-import common.jwt
+import common.crypt
 import common.encrypt
 
 // ═══ Handler ═══
@@ -56,7 +56,9 @@ pub struct SignupByEmailResp {
 fn signup_by_email_repo(mut ctx Context, req SignupByEmailReq) !SignupByEmailResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	if !jwt.opt_verify(req.opt_token, req.opt_num) { return error('OTP error') }
+	if !crypt.opt_verify(ctx.config.jwt.secret, req.opt_token, req.opt_num) {
+		return error('OTP error')
+	}
 	dup := sql db {
 		select from IamUser where email == req.email limit 1
 	} or { return error('Failed: ${err}') }

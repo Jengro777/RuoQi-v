@@ -4,11 +4,13 @@
 // ==============================================================================
 module test
 
-import common.jwt
+import common.crypt
 import time
 
+const test_jwt_secret = 'test-jwt-secret'
+
 fn test_opt_generate() {
-	token, opt_num := jwt.opt_generate()
+	token, opt_num := crypt.opt_generate(test_jwt_secret)
 	dump(token)
 	dump(opt_num)
 	assert typeof(token).name == 'string'
@@ -17,27 +19,27 @@ fn test_opt_generate() {
 }
 
 fn test_opt_verify() {
-	token, opt := jwt.opt_generate()
-	verify := jwt.opt_verify(token, opt)
+	token, opt := crypt.opt_generate(test_jwt_secret)
+	verify := crypt.opt_verify(test_jwt_secret, token, opt)
 	assert verify == true
 }
 
 fn test_opt_verify_wrong_code() {
-	token, _ := jwt.opt_generate()
-	assert jwt.opt_verify(token, '00000') == false
+	token, _ := crypt.opt_generate(test_jwt_secret)
+	assert crypt.opt_verify(test_jwt_secret, token, '00000') == false
 }
 
 fn test_opt_verify_tampered_token() {
-	token, opt_num := jwt.opt_generate()
+	token, opt_num := crypt.opt_generate(test_jwt_secret)
 	parts := token.split('.')
 	tampered := '${parts[0]}.${parts[1]}.INVALIDSIGNATURE'
-	assert jwt.opt_verify(tampered, opt_num) == false
+	assert crypt.opt_verify(test_jwt_secret, tampered, opt_num) == false
 }
 
 fn test_opt_verify_expired_token() {
 	now := time.now().unix()
-	payload := jwt.OptPayload{
-		BasePayload: jwt.BasePayload{
+	payload := crypt.OptPayload{
+		BasePayload: crypt.BasePayload{
 			iss: 'ruoqi-v'
 			sub: 'opt'
 			exp: now - 1
@@ -47,6 +49,6 @@ fn test_opt_verify_expired_token() {
 		}
 		opt_text:    '12345'
 	}
-	token := jwt.sign_payload[jwt.OptPayload](jwt.jwt_secret, payload)
-	assert jwt.opt_verify(token, '12345') == false
+	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
+	assert crypt.opt_verify(test_jwt_secret, token, '12345') == false
 }

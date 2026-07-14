@@ -104,9 +104,10 @@ pub fn parse_data() !GlobalConfig {
 		get_timeout: doc.value('redisconf.get_timeout').int()
 	}
 
-	// 解析 jwt 配置节
+	// 解析 crypt 配置节
 	jwt_config := JwtConf{
-		secret: doc.value('jwt.secret').string()
+		secret:     doc.value('crypt.secret').string()
+		master_key: doc.value('crypt.master_key').string()
 	}
 
 	// 构建完整配置对象

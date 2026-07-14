@@ -7,7 +7,7 @@
 //   captcha_generate() !(string, string, string) — 签发，返回 (token, image, text)
 //   captcha_verify(token, captcha_text)        — 验证
 // ==============================================================================
-module jwt
+module crypt
 
 import time
 import rand
@@ -22,7 +22,7 @@ pub:
 }
 
 // captcha_generate 生成有效期 120 秒的图形验证码 JWT token。
-pub fn captcha_generate() !(string, string, string) {
+pub fn captcha_generate(secret string) !(string, string, string) {
 	captch_obj := generate_captcha()
 	now := time.now()
 	payload := CaptchaPayload{
@@ -36,13 +36,13 @@ pub fn captcha_generate() !(string, string, string) {
 		}
 		captcha_text: captch_obj.text
 	}
-	token := sign_payload[CaptchaPayload](jwt_secret, payload)
+	token := sign_payload[CaptchaPayload](secret, payload)
 	return token, captch_obj.image, captch_obj.text
 }
 
 // captcha_verify 验证 captcha JWT token 并比对用户输入。
-pub fn captcha_verify(token string, captcha_text string) bool {
-	payload := verify_and_decode[CaptchaPayload](jwt_secret, token) or { return false }
+pub fn captcha_verify(secret string, token string, captcha_text string) bool {
+	payload := verify_and_decode[CaptchaPayload](secret, token) or { return false }
 	return payload.captcha_text == captcha_text
 }
 

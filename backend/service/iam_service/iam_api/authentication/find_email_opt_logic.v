@@ -2,7 +2,7 @@ module authentication
 
 import veb
 import log
-import common.jwt
+import common.crypt
 import common.api
 import structs { Context }
 
@@ -10,7 +10,7 @@ import structs { Context }
 @['/email_opt'; post]
 pub fn (app &Authentication) find_email_opt_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	_, opt_token := jwt.opt_generate()
+	_, opt_token := crypt.opt_generate(ctx.config.jwt.secret)
 	return ctx.json(api.json_success(
 		code:   200
 		status: 200

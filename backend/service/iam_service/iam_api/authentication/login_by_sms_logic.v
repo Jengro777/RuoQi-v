@@ -8,7 +8,7 @@ import json2 as json
 import structs { Context }
 import structs.schema_iam { IamToken, IamUser }
 import common.api
-import common.jwt
+import common.crypt
 import service.iam_service.iam_api.token
 
 // ═══ Handler ═══
@@ -57,7 +57,9 @@ pub struct LoginBySmsResp {
 fn login_by_sms_repo(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	if !jwt.opt_verify(req.opt_token, req.opt_num) { return error('OTP error') }
+	if !crypt.opt_verify(ctx.config.jwt.secret, req.opt_token, req.opt_num) {
+		return error('OTP error')
+	}
 	user_info := sql db {
 		select id, username, mobile, status from IamUser where mobile == req.mobile limit 1
 	} or { return error('Failed: ${err}') }

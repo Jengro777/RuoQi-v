@@ -10,16 +10,16 @@ pub:
 	user_id string @[comment: '所属用户ID'; sql_type: 'CHAR(36)']
 	name    string @[comment: '密钥名称/备注'; sql_type: 'VARCHAR(255)']
 
-	access_key_id string @[comment: 'Access Key ID'; sql_type: 'VARCHAR(64)'; unique]
-	key_prefix    string @[comment: 'AK 显示前缀, 如"ak-ce995"'; sql_type: 'VARCHAR(16)']
-	key_hash      string @[comment: 'SK 的 SHA256 哈希'; sql_type: 'CHAR(64)']
-	key_last_four string @[comment: 'SK 末4位, UI 辅助识别'; sql_type: 'VARCHAR(4)']
+	access_key_id     string @[comment: 'Access Key ID'; sql_type: 'VARCHAR(64)'; unique]
+	key_prefix        string @[comment: 'AK 显示前缀, 如"ak-ce995"'; sql_type: 'VARCHAR(16)']
+	key_last_four     string @[comment: 'SK 末4位, UI 辅助识别'; sql_type: 'VARCHAR(4)']
+	secret_key_cipher string @[comment: 'SK 密文（AES-256-CTR），用于 HMAC 签名验证'; sql_type: 'VARCHAR(512)']
 
 	tenant_ids     string @[comment: '租户ID列表(JSON), 空=不限'; default: '[]'; sql_type: 'VARCHAR(1000)']
 	subproduct_ids string @[comment: '订阅的产品ID列表(JSON), 空=不限'; default: '[]'; sql_type: 'VARCHAR(1000)']
 	subportal_ids  string @[comment: '订阅产品的订阅门户ID列表(JSON), 空=不限'; default: '[]'; sql_type: 'VARCHAR(1000)']
 
-	scopes       string     @[comment: 'API权限范围(JSON)'; default: '["all"]'; sql_type: 'VARCHAR(1000)']
+	scopes       string     @[comment: 'API权限范围(JSON), ["all"]=不限'; default: '["all"]'; sql_type: 'VARCHAR(1000)']
 	status       u8         @[comment: '0正常 1禁用 2已撤销'; default: 0; sql_type: 'tinyint']
 	last_used_at ?time.Time @[comment: '最后使用时间'; sql_type: 'TIMESTAMP']
 	expired_at   ?time.Time @[comment: '过期时间, null=永不过期'; sql_type: 'TIMESTAMP']

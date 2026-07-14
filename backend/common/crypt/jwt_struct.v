@@ -1,12 +1,11 @@
 // ==============================================================================
-// struct.v — jwts 模块的共享类型与常量
+// jwt_struct.v — JWT 模块的共享类型与常量
 //
 //   JwtHeader        — JWT 头部（RFC 7515 §4.1）
 //   BasePayload      — JWT 注册声明（RFC 7519 §4.1）
 //   JwtTimeBounded   — 时间校验接口（供 verify_and_decode 泛型使用）
-//   jwt_secret       — opt / captcha 签名密钥
 // ==============================================================================
-module jwt
+module crypt
 
 pub struct JwtHeader {
 pub:
@@ -34,8 +33,3 @@ pub interface JwtTimeBounded {
 	exp i64
 	nbf i64
 }
-
-// ---- 密钥 --------------------------------------------------------------------
-// TODO: 后续从配置读取。
-
-pub const jwt_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c'
