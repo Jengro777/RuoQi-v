@@ -4,7 +4,7 @@ module auth
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
-import x.json2 as json
+import json2 as json
 import time
 
 // JWT 头部固定使用HS256算法 [使用这种方式，编译器会产生c错误]

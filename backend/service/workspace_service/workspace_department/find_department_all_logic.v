@@ -2,7 +2,7 @@ module workspace_department
 
 import veb
 import log
-import x.json2 as json
+import json2 as json
 import structs { Context }
 import structs.schema_workspace { WsDepartment }
 import common.api

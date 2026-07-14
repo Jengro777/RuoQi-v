@@ -6,7 +6,7 @@ import time
 import structs.schema_base { BaseRegion }
 import common.api
 import structs { Context }
-import x.json2 as json
+import json2 as json
 
 // ═══ Handler ═══
 @['/all'; get]

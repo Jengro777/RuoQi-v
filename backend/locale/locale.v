@@ -3,7 +3,7 @@ module locale
 import time
 import os
 import log
-import x.json2 as json
+import json2 as json
 
 // ------------------------- Locale -------------------------
 @[heap]

@@ -4,7 +4,7 @@ import veb
 import log
 import time
 import rand
-import x.json2 as json
+import json2 as json
 import structs.schema_base { BaseCurrency }
 import common.api
 import structs { Context }

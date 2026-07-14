@@ -4,7 +4,7 @@ module opt
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
-import x.json2 as json
+import json2 as json
 import time
 import rand
 

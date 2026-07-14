@@ -1,7 +1,7 @@
 module main
 
 import os
-import x.json2 as json
+import json2 as json
 import veb
 import time
 

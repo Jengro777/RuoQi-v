@@ -1,5 +1,5 @@
 // ==================== adapter/tos - Tospino Mall 外部认证客户端 ====================
-// 底层依赖: crypto.aes / crypto.cipher / encoding.base64 / net.http / x.json2 / common.api
+// 底层依赖: crypto.aes / crypto.cipher / encoding.base64 / net.http / json2 / common.api
 // 职责: 封装与 Tospino OAuth2 服务的 HTTP 通信，提供登录接口
 
 module tos
@@ -9,7 +9,7 @@ import crypto.aes
 import crypto.cipher
 import encoding.base64
 import net.http
-import x.json2 as json
+import json2 as json
 
 // ----------------- 常量 -----------------
 

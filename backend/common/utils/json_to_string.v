@@ -1,6 +1,6 @@
 module utils
 
-import x.json2 as json
+import json2 as json
 
 // json 转换为 string(处理嵌套的 map[string]json2.Any 结构，并将其转换为字符串)
 pub fn json_to_string_nesting(data map[string]json.Any) string {

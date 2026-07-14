@@ -2,7 +2,7 @@ module region
 
 import veb
 import log
-import x.json2 as json
+import json2 as json
 import structs.schema_base { BaseRegion }
 import common.api
 import structs { Context }

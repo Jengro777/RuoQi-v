@@ -3,7 +3,7 @@ module region_adm_div
 import veb
 import log
 import time
-import x.json2 as json
+import json2 as json
 import structs.schema_base { BaseRegionAdmDiv }
 import common.api
 import structs { Context }

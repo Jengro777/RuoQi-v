@@ -6,7 +6,7 @@ import time
 import rand
 import crypto.rand as crand
 import crypto.sha256
-import x.json2 as json
+import json2 as json
 import structs { Context }
 import structs.schema_iam { IamApiKey }
 import common.api

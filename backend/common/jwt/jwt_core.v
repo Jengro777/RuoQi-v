@@ -8,7 +8,7 @@ module jwt
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
-import x.json2 as json
+import json2 as json
 import time
 
 // ---- 常量时间比较（防时序攻击）------------------------------------------------

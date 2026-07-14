@@ -4,7 +4,7 @@ import veb
 import log
 import time
 import rand
-import x.json2 as json
+import json2 as json
 import structs { Context }
 import structs.schema_iam { IamRole }
 import common.api

@@ -2,7 +2,7 @@ module apikey
 
 import veb
 import log
-import x.json2 as json
+import json2 as json
 import structs { Context }
 import common.api
 import structs.schema_iam { IamApiKey }

@@ -1,6 +1,6 @@
 module utils
 
-import x.json2 as json
+import json2 as json
 import log
 
 pub type Any = []Any

@@ -2,7 +2,7 @@ module locale
 
 import os
 import time
-import x.json2 as json
+import json2 as json
 
 // ------------------------- 测试 new_locale -------------------------
 fn test_new_locale() {

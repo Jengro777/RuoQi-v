@@ -1,7 +1,7 @@
 module utils
 
 import log
-import x.json2 as json
+import json2 as json
 
 fn test_encode_any() {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')

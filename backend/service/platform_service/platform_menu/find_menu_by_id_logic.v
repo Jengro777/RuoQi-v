@@ -2,7 +2,7 @@ module platform_menu
 
 import veb
 import log
-import x.json2 as json
+import json2 as json
 import structs { Context }
 import structs.schema_platform { PfMenu }
 import common.api
