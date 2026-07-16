@@ -12,9 +12,12 @@ import adapter.repository.middle
 
 const sig_skew_seconds = i64(300) // ±5 分钟时间戳偏差
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 鉴权入口 — 按请求头分流
-// ═══════════════════════════════════════════════════════════════════════════════
+// Debug 硬编码 AK/SK — 拥有全部权限，跳过数据库查询和 scope/isolation 校验
+// $if debug 确保仅在 v run / debug 模式下编译，v -prod 生产构建自动排除
+$if debug {
+	const debug_ak = 'DEBUG-FULL-ACCESS-KEY'
+	const debug_sk = 'DEBUG-FULL-SECRET-KEY'
+}
 
 // iam_auth_dispatch — 鉴权入口，按请求头分流到对应策略：
 //   Bearer <token>                → JWT
@@ -86,10 +89,14 @@ fn authenticate_jwt(mut ctx Context, token string) bool {
 
 // authenticate_aksk_signature — HMAC 签名模式: X-Access-Key + X-Timestamp + X-Signature
 fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
-	key := middle.find_apis_by_aksk(mut ctx, ak) or {
-		ctx.json(api.json_error_401())
-		return false
+	// Debug 硬编码 AK — 跳过数据库，直接验证 HMAC 签名并赋予全部权限
+	$if debug {
+		if ak == debug_ak {
+			return authenticate_debug_aksk(mut ctx)
+		}
 	}
+
+	key := middle.find_apikey_by_ak(mut ctx, ak) or { return reject(mut ctx, api.json_error_401()) }
 
 	timestamp := ctx.req.header.get_custom(crypt.sig_header_timestamp) or { '' }
 	sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
@@ -235,6 +242,45 @@ fn scope_match(scope string, method string, url string) bool {
 
 	// 路径前缀匹配
 	return url.starts_with(pattern)
+}
+
+// authenticate_debug_aksk — 调试用硬编码 AK/SK 认证，拥有全部权限（仅 debug 模式编译）
+$if debug {
+	fn authenticate_debug_aksk(mut ctx Context) bool {
+		timestamp := ctx.req.header.get_custom(crypt.sig_header_timestamp) or { '' }
+		sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
+		if timestamp == '' || sig == '' {
+			return reject(mut ctx, api.json_error(
+				code:   1
+				status: 401
+				error:  'Missing X-Timestamp or X-Signature header'
+			))
+		}
+
+		path := ctx.req.url.all_before('?')
+		crypt.verify_apisign(debug_sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig,
+			sig_skew_seconds) or {
+			return reject(mut ctx, api.json_error(
+				code:   1
+				status: 401
+				error:  err.msg()
+			))
+		}
+
+		// 赋予全部权限 — tenant_ids/subproduct_ids/subportal_ids 为空表示不限隔离
+		ctx.svc_iam.user_id = 'debug-admin'
+		ctx.svc_iam.apikey_id = 'debug-apikey-id'
+		ctx.svc_iam.tenant_ids = []
+		ctx.svc_iam.subproduct_ids = []
+		ctx.svc_iam.subportal_ids = []
+		ctx.svc_iam.iam_role_ids = ['admin']
+		return true
+	}
+}
+
+fn reject(mut ctx Context, err api.ApiErrorResponse) bool {
+	ctx.json(err)
+	return false
 }
 
 pub fn iam_middleware() veb.MiddlewareOptions[Context] {
