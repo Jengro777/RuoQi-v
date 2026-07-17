@@ -44,18 +44,14 @@ fn iam_auth_dispatch(mut ctx Context) bool {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // JWT 鉴权路径
-//   身份: JWT 验签 (crypt.auth_verify)
+//   身份: JWT 验签 (crypt.verify_and_decode)
 //   权限: IamToken → IamUserRole → WsRoleApi → PfApi → scope 匹配
 //   数据隔离: datascope (SQL WHERE 行级过滤)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 fn authenticate_jwt(mut ctx Context, token string) bool {
 	secret := ctx.config.jwt.secret
-	if !crypt.auth_verify(secret, token) {
-		ctx.json(api.json_error_401())
-		return false
-	}
-	payload := crypt.auth_decode(token) or {
+	payload := crypt.verify_and_decode[crypt.AuthPayload](secret, token) or {
 		ctx.json(api.json_error_401())
 		return false
 	}
@@ -96,8 +92,6 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 		}
 	}
 
-	key := middle.find_apikey_by_ak(mut ctx, ak) or { return reject(mut ctx, api.json_error_401()) }
-
 	timestamp := ctx.req.header.get_custom(crypt.sig_header_timestamp) or { '' }
 	sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
 	if timestamp == '' || sig == '' {
@@ -108,6 +102,8 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 		))
 		return false
 	}
+
+	key := middle.find_apis_by_aksk(mut ctx, ak) or { return reject(mut ctx, api.json_error_401()) }
 
 	master_key := ctx.config.jwt.effective_master_key()
 	sk := crypt.aes_decrypt(key.secret_key_cipher, master_key) or {
@@ -175,25 +171,24 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 
 // check_isolation — AK/SK 专用: 校验 API Key 的租户/产品/门户隔离白名单
 fn check_isolation(key IamApiKey, tenant_id string, subproduct_id string, subportal_id string) ! {
-	if key.tenant_ids == '[]' && key.subproduct_ids == '[]' && key.subportal_ids == '[]' { return }
-	if key.tenant_ids != '[]' {
-		allowed := json.decode[[]string](key.tenant_ids) or { return error('invalid tenant_ids') }
+	// 解析 JSON，解析失败或空视为无隔离限制
+	tenants := json.decode[[]string](key.tenant_ids) or { [] }
+	subproducts := json.decode[[]string](key.subproduct_ids) or { [] }
+	subportals := json.decode[[]string](key.subportal_ids) or { [] }
+
+	if tenants.len == 0 && subproducts.len == 0 && subportals.len == 0 { return }
+
+	if tenants.len > 0 {
 		if tenant_id == '' { return error('X-Tenant-ID is required') }
-		if !allowed.contains(tenant_id) { return error('tenant not allowed') }
+		if !tenants.contains(tenant_id) { return error('tenant not allowed') }
 	}
-	if key.subproduct_ids != '[]' {
-		allowed := json.decode[[]string](key.subproduct_ids) or {
-			return error('invalid subproduct_ids')
-		}
+	if subproducts.len > 0 {
 		if subproduct_id == '' { return error('X-Subproduct-ID is required') }
-		if !allowed.contains(subproduct_id) { return error('subproduct not allowed') }
+		if !subproducts.contains(subproduct_id) { return error('subproduct not allowed') }
 	}
-	if key.subportal_ids != '[]' {
-		allowed := json.decode[[]string](key.subportal_ids) or {
-			return error('invalid subportal_ids')
-		}
+	if subportals.len > 0 {
 		if subportal_id == '' { return error('X-Subportal-ID is required') }
-		if !allowed.contains(subportal_id) { return error('subportal not allowed') }
+		if !subportals.contains(subportal_id) { return error('subportal not allowed') }
 	}
 }
 
@@ -221,6 +216,9 @@ fn check_scopes(allowed_scopes []string, method string, url string) ! {
 }
 
 fn scope_match(scope string, method string, url string) bool {
+	// 拒绝空 scope（空字符串会通配所有 URL）
+	if scope == '' { return false }
+
 	mut pattern := scope
 	mut required_method := ''
 
@@ -232,6 +230,8 @@ fn scope_match(scope string, method string, url string) bool {
 		if method_part.bytes().all(it.is_letter()) {
 			required_method = method_part
 			pattern = parts[1]
+			// 拒绝空路径（如 "POST:" 会通配所有 POST 请求）
+			if pattern == '' { return false }
 		}
 	}
 
@@ -240,8 +240,8 @@ fn scope_match(scope string, method string, url string) bool {
 		return false
 	}
 
-	// 路径前缀匹配
-	return url.starts_with(pattern)
+	// 路径前缀匹配 — 必须匹配到路径段边界，防止 /user 匹配 /user-mgmt
+	return url.starts_with(pattern + '/') || url == pattern
 }
 
 // authenticate_debug_aksk — 调试用硬编码 AK/SK 认证，拥有全部权限（仅 debug 模式编译）

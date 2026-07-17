@@ -26,12 +26,10 @@ pub:
 	master_key string // API Key SK 加密主密钥（32字节以上），为空则复用 secret
 }
 
-// effective_master_key 返回 API Key SK 加密主密钥；为空时回退到 secret。
+// effective_master_key 返回 API Key SK 加密主密钥。
+// 若未配置，返回空字符串——调用方应在启动时校验。
 pub fn (j JwtConf) effective_master_key() string {
-	if j.master_key != '' {
-		return j.master_key
-	}
-	return j.secret
+	return j.master_key
 }
 
 //[logging]
