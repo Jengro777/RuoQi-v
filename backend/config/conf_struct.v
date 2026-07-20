@@ -23,7 +23,7 @@ pub:
 pub struct JwtConf {
 pub:
 	secret     string // JWT 签名密钥
-	master_key string // API Key SK 加密主密钥（32字节以上），为空则复用 secret
+	master_key string // API Key SK 加密主密钥（32字节以上）
 }
 
 // effective_master_key 返回 API Key SK 加密主密钥。

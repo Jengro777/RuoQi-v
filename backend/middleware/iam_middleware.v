@@ -67,7 +67,7 @@ fn authenticate_jwt(mut ctx Context, token string) bool {
 			ctx.json(api.json_error_403())
 			return false
 		}
-		check_scopes(scopes, ctx.req.method.str(), ctx.req.url) or {
+		check_scopes(scopes, ctx.req.method.str(), ctx.req.url.all_before('?')) or {
 			ctx.json(api.json_error(code: 1, status: 403, error: err.msg()))
 			return false
 		}
@@ -143,7 +143,21 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 	subproduct_id := ctx.req.header.get_custom('X-Subproduct-ID') or { '' }
 	subportal_id := ctx.req.header.get_custom('X-Subportal-ID') or { '' }
 
-	check_isolation(key, tenant_id, subproduct_id, subportal_id) or {
+	// 解析隔离白名单（一次解码，check_isolation + ctx 写入共用）
+	tenants := json.decode[[]string](key.tenant_ids) or {
+		log.warn('invalid tenant_ids JSON for apikey ${key.id}: ${err}')
+		[]
+	}
+	subproducts := json.decode[[]string](key.subproduct_ids) or {
+		log.warn('invalid subproduct_ids JSON for apikey ${key.id}: ${err}')
+		[]
+	}
+	subportals := json.decode[[]string](key.subportal_ids) or {
+		log.warn('invalid subportal_ids JSON for apikey ${key.id}: ${err}')
+		[]
+	}
+
+	check_isolation(tenants, subproducts, subportals, tenant_id, subproduct_id, subportal_id) or {
 		ctx.json(api.json_error(code: 1, status: 403, error: err.msg()))
 		return false
 	}
@@ -152,16 +166,16 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid scopes JSON'))
 		return false
 	}
-	check_scopes(scopes, ctx.req.method.str(), ctx.req.url) or {
+	check_scopes(scopes, ctx.req.method.str(), ctx.req.url.all_before('?')) or {
 		ctx.json(api.json_error(code: 1, status: 403, error: err.msg()))
 		return false
 	}
 
 	ctx.svc_iam.user_id = key.user_id
 	ctx.svc_iam.apikey_id = key.id
-	ctx.svc_iam.tenant_ids = json.decode[[]string](key.tenant_ids) or { [] }
-	ctx.svc_iam.subproduct_ids = json.decode[[]string](key.subproduct_ids) or { [] }
-	ctx.svc_iam.subportal_ids = json.decode[[]string](key.subportal_ids) or { [] }
+	ctx.svc_iam.tenant_ids = tenants
+	ctx.svc_iam.subproduct_ids = subproducts
+	ctx.svc_iam.subportal_ids = subportals
 	ctx.svc_iam.active_tenant_id = tenant_id
 	ctx.svc_iam.active_subproduct_id = subproduct_id
 	ctx.svc_iam.active_subportal_id = subportal_id
@@ -170,12 +184,8 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 }
 
 // check_isolation — AK/SK 专用: 校验 API Key 的租户/产品/门户隔离白名单
-fn check_isolation(key IamApiKey, tenant_id string, subproduct_id string, subportal_id string) ! {
-	// 解析 JSON，解析失败或空视为无隔离限制
-	tenants := json.decode[[]string](key.tenant_ids) or { [] }
-	subproducts := json.decode[[]string](key.subproduct_ids) or { [] }
-	subportals := json.decode[[]string](key.subportal_ids) or { [] }
-
+// tenants/subproducts/subportals 应由调用方预先从 JSON 解码，解码失败视为空（无隔离限制）
+fn check_isolation(tenants []string, subproducts []string, subportals []string, tenant_id string, subproduct_id string, subportal_id string) ! {
 	if tenants.len == 0 && subproducts.len == 0 && subportals.len == 0 { return }
 
 	if tenants.len > 0 {
@@ -241,6 +251,8 @@ fn scope_match(scope string, method string, url string) bool {
 	}
 
 	// 路径前缀匹配 — 必须匹配到路径段边界，防止 /user 匹配 /user-mgmt
+	// 规范化：去除尾部斜杠，确保前缀匹配不受尾部斜杠影响
+	pattern = pattern.trim_string_right('/')
 	return url.starts_with(pattern + '/') || url == pattern
 }
 

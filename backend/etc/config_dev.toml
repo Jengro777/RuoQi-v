@@ -5,7 +5,7 @@ shutdown_timeout = 30 # 优雅关闭等待时间,单位:秒
 
 [crypt]
 secret = 'b17989d7-57d2-4ffa-88ab-f6987feb3eec'
-# master_key = ''  # API Key SK 加密主密钥，为空则复用 secret
+# master_key = ''  # API Key SK 加密主密钥（32字节以上）
 
 [logging]
 log_level = 'debug' # 默认info [debug info warn error fatal]

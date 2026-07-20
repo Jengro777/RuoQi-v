@@ -105,5 +105,13 @@ fn check_config_toml_data(doc toml.Doc) {
 		log.warn('配置数据：dbconf.ssl_verify 的值无效，应为true或false')
 	}
 
+	doc.value_opt('crypt.master_key') or {
+		log.fatal('必要配置数据：crypt.master_key 键无效或键没有值，请检查配置数据')
+	}
+	master_key := doc.value('crypt.master_key').string()
+	if master_key.len == 0 {
+		log.fatal('必要配置数据：crypt.master_key 不能为空，API Key SK 加密必须配置')
+	}
+
 	log.info('必要配置检测完毕')
 }
