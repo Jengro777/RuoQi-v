@@ -38,12 +38,23 @@ cd "$PROJECT_ROOT" || {
 echo "构建上下文: $(pwd)"
 echo "使用Containerfile: $SCRIPT_DIR/Containerfile"
 
+# 检测本地代理是否可用
+GIT_PROXY="${GIT_PROXY:-http://127.0.0.1:12334}"
+PROXY_ARG=""
+if curl -s --max-time 2 "$GIT_PROXY" > /dev/null 2>&1; then
+    echo "检测到代理: $GIT_PROXY"
+    PROXY_ARG="--build-arg GIT_PROXY=$GIT_PROXY"
+else
+    echo "代理不可用，直连构建"
+fi
+
 # 构建镜像
 podman build \
     --no-cache \
     --network=host \
     --rm=true \
     --tmpdir=/tmp/podman-tmp \
+    $PROXY_ARG \
     -f "$SCRIPT_DIR/Containerfile" \
     -t "$IMAGE_NAME" . || {
     echo "构建失败，执行清理..."

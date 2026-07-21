@@ -52,11 +52,22 @@ echo "构建上下文: $(pwd)"
 echo "使用Dockerfile: $SCRIPT_DIR/Dockerfile"
 
 # 构建镜像
+# 检测本地代理是否可用
+GIT_PROXY="${GIT_PROXY:-http://127.0.0.1:12334}"
+PROXY_ARG=""
+if curl -s --max-time 2 "$GIT_PROXY" > /dev/null 2>&1; then
+    echo "检测到代理: $GIT_PROXY"
+    PROXY_ARG="--build-arg GIT_PROXY=$GIT_PROXY"
+else
+    echo "代理不可用，直连构建"
+fi
+
 docker buildx build \
     --no-cache \
     --network=host \
     --rm=true \
     --progress=plain \
+    $PROXY_ARG \
     -f "$SCRIPT_DIR/Dockerfile" \
     -t "$IMAGE_NAME:latest" . || {
     echo "构建失败！执行清理..."
