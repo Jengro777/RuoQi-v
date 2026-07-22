@@ -144,17 +144,21 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 	subportal_id := ctx.req.header.get_custom('X-Subportal-ID') or { '' }
 
 	// 解析隔离白名单（一次解码，check_isolation + ctx 写入共用）
+	// 解码失败必须拒绝请求，不能静默回退为空（否则 JSON 损坏会导致隔离绕过）
 	tenants := json.decode[[]string](key.tenant_ids) or {
 		log.warn('invalid tenant_ids JSON for apikey ${key.id}: ${err}')
-		[]
+		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid tenant_ids'))
+		return false
 	}
 	subproducts := json.decode[[]string](key.subproduct_ids) or {
 		log.warn('invalid subproduct_ids JSON for apikey ${key.id}: ${err}')
-		[]
+		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid subproduct_ids'))
+		return false
 	}
 	subportals := json.decode[[]string](key.subportal_ids) or {
 		log.warn('invalid subportal_ids JSON for apikey ${key.id}: ${err}')
-		[]
+		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid subportal_ids'))
+		return false
 	}
 
 	check_isolation(tenants, subproducts, subportals, tenant_id, subproduct_id, subportal_id) or {

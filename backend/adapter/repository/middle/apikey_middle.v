@@ -2,7 +2,6 @@ module middle
 
 import time
 import log
-import json2 as json
 import structs { Context }
 import structs.schema_iam { IamApiKey }
 
@@ -22,10 +21,4 @@ pub fn touch_apikey_last_used(mut ctx Context, apikey_id string) ! {
 	sql db {
 		update IamApiKey set last_used_at = time.now() where id == apikey_id
 	}!
-}
-
-// find_user_apis_by_ak 根据 Access Key 查询用户可访问的 API 权限列表（AK/SK 路径）
-pub fn find_user_apis_by_ak(mut ctx Context, ak string) ![]string {
-	key := find_apis_by_aksk(mut ctx, ak)!
-	return json.decode[[]string](key.scopes) or { return error('invalid scopes JSON') }
 }
