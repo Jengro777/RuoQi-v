@@ -71,9 +71,12 @@ fn find_task_log_all_repo(mut ctx Context, req TaskLogListReq) !TaskLogListResp 
 	} or { return error('Failed to execute SQL query: ${err}') }
 
 	offset_num := (req.page - 1) * req.page_size
-	where_expr :=
-		sql {
-		}
+	// vfmt off
+	where_expr := {
+		del_flag == 0,
+		if req.result.len > 0 {result in req.result}
+	}
+	// vfmt on
 	rows := sql db {
 		dynamic select from JobTaskLog where where_expr limit req.page_size offset offset_num
 	} or { return error('Failed to execute SQL query: ${err}') }

@@ -65,7 +65,6 @@ fn update_config_repo(mut ctx Context, req UpdateConfigReq) !UpdateConfigResp {
 	} or { return error('Failed to query config: ${err}') }
 
 	if existing.len > 0 {
-		time_now := time.now()
 		up_expr :=
 			sql {
 			}
