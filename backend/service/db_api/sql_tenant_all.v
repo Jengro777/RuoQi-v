@@ -44,7 +44,7 @@ fn tn_member() []schema_tenant.TnMember {
 	t := time.parse('2027-01-01 00:00:00') or { time.now() }
 	// vfmt off
 	return [
-		schema_tenant.TnMember{ tenant_id: '00000000-0000-0000-0000-000000000001', user_id: '00000000-0000-0000-0000-000000000001', product_id: '00000000-0000-0000-0000-000000000002', portal_id: '00000000-0000-0000-0000-000000000003', status: 0, joined_at: t, updater_id: none, updated_at: t, creator_id: none, created_at: t, del_flag: 0, deleted_at: none },
+		schema_tenant.TnMember{ tenant_id: '00000000-0000-0000-0000-000000000001', user_id: '00000000-0000-0000-0000-000000000001', product_id: '00000000-0000-0000-0000-000000000002', portal_id: '00000000-0000-0000-0000-000000000003', status: 1, joined_at: t, updater_id: none, updated_at: t, creator_id: none, created_at: t, del_flag: 0, deleted_at: none },
 	]
 	// vfmt on
 }

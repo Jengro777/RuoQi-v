@@ -53,9 +53,9 @@ pub struct CreateLanguageReq {
 	two_letter_code          string @[json: 'twoLetterCode']
 	three_letter_code        string @[json: 'threeLetterCode']
 	utf8_encoding            string @[json: 'utf8Encoding']
-	sort                     ?int   @[json: 'sort']
-	status                   i16    @[json: 'status']
-	is_basic                 i16    @[json: 'isBasic']
+	sort                     ?int @[json: 'sort']
+	status                   u8 @[json: 'status']
+	is_basic                 u8 @[json: 'isBasic']
 }
 
 pub struct CreateLanguageResp {
@@ -66,17 +66,17 @@ pub struct CreateLanguageResp {
 fn create_language_repo(mut ctx Context, req CreateLanguageReq) !CreateLanguageResp {
 	time_now := time.now()
 	base_language := BaseLanguage{
-		id:                       rand.uuid_v7()
+		id: rand.uuid_v7()
 		language_self_proclaimed: req.language_self_proclaimed
-		language_code:            req.language_code
-		two_letter_code:          req.two_letter_code
-		three_letter_code:        req.three_letter_code
-		utf8_encoding:            req.utf8_encoding
-		sort:                     req.sort
-		status:                   req.status
-		is_basic:                 req.is_basic
-		created_at:               time_now
-		updated_at:               time_now
+		language_code: req.language_code
+		two_letter_code: req.two_letter_code
+		three_letter_code: req.three_letter_code
+		utf8_encoding: req.utf8_encoding
+		sort: req.sort
+		status: req.status
+		is_basic: req.is_basic
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

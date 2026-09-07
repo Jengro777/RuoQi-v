@@ -107,7 +107,7 @@ pub struct CreateTaskReq {
 	cron_expression string @[json: 'cronExpression']
 	pattern         string @[json: 'pattern']
 	payload         string @[json: 'payload']
-	status          i16    @[json: 'status']
+	status          u8 @[json: 'status']
 }
 
 pub struct CreateTaskResp {
@@ -118,17 +118,17 @@ pub struct CreateTaskResp {
 fn create_task_repo(mut ctx Context, req CreateTaskReq) !CreateTaskResp {
 	time_now := time.now()
 	task := JobTask{
-		id:              rand.uuid_v7()
-		name:            req.name
-		task_group:      req.task_group
+		id: rand.uuid_v7()
+		name: req.name
+		task_group: req.task_group
 		cron_expression: req.cron_expression
-		pattern:         req.pattern
-		payload:         req.payload
-		status:          req.status
-		creator_id:      ctx.svc_iam.user_id
-		updater_id:      ctx.svc_iam.user_id
-		created_at:      time_now
-		updated_at:      time_now
+		pattern: req.pattern
+		payload: req.payload
+		status: req.status
+		creator_id: ctx.svc_iam.user_id
+		updater_id: ctx.svc_iam.user_id
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

@@ -46,10 +46,10 @@ pub fn create_adm_usecase(mut ctx Context, req CreateAdmReq) !CreateAdmResp {
 
 // ═══ DTO ═══
 pub struct CreateAdmReq {
-	parent_id       string  @[json: 'parentId']
-	region_id       string  @[json: 'regionId']
-	sys_adm_code    string  @[json: 'sysAdmCode']
-	sys_adm_name    string  @[json: 'sysAdmName']
+	parent_id       string @[json: 'parentId']
+	region_id       string @[json: 'regionId']
+	sys_adm_code    string @[json: 'sysAdmCode']
+	sys_adm_name    string @[json: 'sysAdmName']
 	name_local      ?string @[json: 'nameLocal']
 	govt_code       ?string @[json: 'govtCode']
 	gid_zero        ?string @[json: 'gidZero']
@@ -58,15 +58,15 @@ pub struct CreateAdmReq {
 	iso_three       ?string @[json: 'isoThree']
 	numeric         ?string @[json: 'numeric']
 	postal_code     ?string @[json: 'postalCode']
-	level           i16     @[json: 'level']
-	tree_id         string  @[json: 'treeId']
+	level           u8 @[json: 'level']
+	tree_id         string @[json: 'treeId']
 	coord_bounds    ?string @[json: 'coordBounds']
-	sort            ?u64    @[json: 'sort']
-	status          i16     @[json: 'status']
+	sort            ?u64 @[json: 'sort']
+	status          u8 @[json: 'status']
 	adm_merger_name ?string @[json: 'admMergerName']
 	adm_short_name  ?string @[json: 'admShortName']
 	pinyin          ?string @[json: 'pinyin']
-	first           string  @[json: 'first']
+	first           string @[json: 'first']
 	name_en         ?string @[json: 'nameEn']
 	name_zh         ?string @[json: 'nameZh']
 	updater_id      ?string @[json: 'updaterId']
@@ -81,34 +81,34 @@ pub struct CreateAdmResp {
 fn create_adm_repo(mut ctx Context, req CreateAdmReq) !CreateAdmResp {
 	time_now := time.now()
 	base_region := BaseRegionAdmDiv{
-		id:              rand.uuid_v7()
-		parent_id:       req.parent_id
-		region_id:       req.region_id
-		sys_adm_code:    req.sys_adm_code
-		sys_adm_name:    req.sys_adm_name
-		name_local:      req.name_local
-		govt_code:       req.govt_code
-		gid_zero:        req.gid_zero
-		hasc:            req.hasc
-		iso_two:         req.iso_two
-		iso_three:       req.iso_three
-		numeric:         req.numeric
-		postal_code:     req.postal_code
-		level:           req.level
-		tree_id:         req.tree_id
-		coord_bounds:    req.coord_bounds
-		sort:            req.sort
-		status:          req.status
+		id: rand.uuid_v7()
+		parent_id: req.parent_id
+		region_id: req.region_id
+		sys_adm_code: req.sys_adm_code
+		sys_adm_name: req.sys_adm_name
+		name_local: req.name_local
+		govt_code: req.govt_code
+		gid_zero: req.gid_zero
+		hasc: req.hasc
+		iso_two: req.iso_two
+		iso_three: req.iso_three
+		numeric: req.numeric
+		postal_code: req.postal_code
+		level: req.level
+		tree_id: req.tree_id
+		coord_bounds: req.coord_bounds
+		sort: req.sort
+		status: req.status
 		adm_merger_name: req.adm_merger_name
-		adm_short_name:  req.adm_short_name
-		pinyin:          req.pinyin
-		first:           req.first
-		name_en:         req.name_en
-		name_zh:         req.name_zh
-		updater_id:      ctx.svc_iam.user_id
-		creator_id:      ctx.svc_iam.user_id
-		created_at:      time_now
-		updated_at:      time_now
+		adm_short_name: req.adm_short_name
+		pinyin: req.pinyin
+		first: req.first
+		name_en: req.name_en
+		name_zh: req.name_zh
+		updater_id: ctx.svc_iam.user_id
+		creator_id: ctx.svc_iam.user_id
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

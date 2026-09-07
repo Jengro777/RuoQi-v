@@ -45,7 +45,7 @@ fn create_sms_log_domain(req CreateSmsLogReq) ! {
 pub struct CreateSmsLogReq {
 	phone_number string @[json: 'phoneNumber']
 	content      string @[json: 'content']
-	send_status  i16    @[json: 'sendStatus']
+	send_status  u8 @[json: 'sendStatus']
 	provider     string @[json: 'provider']
 }
 
@@ -57,15 +57,15 @@ pub struct CreateSmsLogResp {
 fn create_sms_log_repo(mut ctx Context, req CreateSmsLogReq) !CreateSmsLogResp {
 	time_now := time.now()
 	sms_log := MsgSmsLog{
-		id:           rand.uuid_v7()
+		id: rand.uuid_v7()
 		phone_number: req.phone_number
-		content:      req.content
-		send_status:  req.send_status
-		provider:     req.provider
-		creator_id:   ctx.svc_iam.user_id
-		updater_id:   ctx.svc_iam.user_id
-		created_at:   time_now
-		updated_at:   time_now
+		content: req.content
+		send_status: req.send_status
+		provider: req.provider
+		creator_id: ctx.svc_iam.user_id
+		updater_id: ctx.svc_iam.user_id
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

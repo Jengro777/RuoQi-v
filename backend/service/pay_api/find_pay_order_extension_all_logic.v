@@ -32,35 +32,39 @@ pub fn find_pay_order_extension_all_usecase(mut ctx Context, req PayOrderExtensi
 
 // ═══ Domain ═══
 fn find_pay_order_extension_all_domain(req PayOrderExtensionListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 // ═══ DTO ═══
 pub struct PayOrderExtensionListReq {
-	page         int    @[json: 'page']
-	page_size    int    @[json: 'pageSize']
+	page         int @[json: 'page']
+	page_size    int @[json: 'pageSize']
 	order_id     string @[json: 'orderId']
 	channel_code string @[json: 'channelCode']
-	status       []i16  @[json: 'status']
+	status       []u8 @[json: 'status']
 }
 
 pub struct PayOrderExtensionData {
-	id                  string  @[json: 'id']
-	no                  string  @[json: 'no']
-	order_id            string  @[json: 'orderId']
-	channel_code        string  @[json: 'channelCode']
-	user_ip             string  @[json: 'userIp']
+	id                  string @[json: 'id']
+	no                  string @[json: 'no']
+	order_id            string @[json: 'orderId']
+	channel_code        string @[json: 'channelCode']
+	user_ip             string @[json: 'userIp']
 	channel_extras      ?string @[json: 'channelExtras']
 	channel_error_code  ?string @[json: 'channelErrorCode']
 	channel_error_msg   ?string @[json: 'channelErrorMsg']
 	channel_notify_data ?string @[json: 'channelNotifyData']
-	status              i16     @[json: 'status']
+	status              u8 @[json: 'status']
 	updater_id          ?string @[json: 'updaterId']
 	creator_id          ?string @[json: 'creatorId']
-	created_at          string  @[json: 'createdAt']
-	updated_at          string  @[json: 'updatedAt']
-	deleted_at          string  @[json: 'deletedAt']
+	created_at          string @[json: 'createdAt']
+	updated_at          string @[json: 'updatedAt']
+	deleted_at          string @[json: 'deletedAt']
 }
 
 pub struct PayOrderExtensionListResp {
@@ -95,26 +99,26 @@ fn find_pay_order_extension_all_repo(mut ctx Context, req PayOrderExtensionListR
 	mut datalist := []PayOrderExtensionData{}
 	for row in result {
 		datalist << PayOrderExtensionData{
-			id:                  row.id
-			no:                  row.no
-			order_id:            row.order_id
-			channel_code:        row.channel_code
-			user_ip:             row.user_ip
-			channel_extras:      row.channel_extras
-			channel_error_code:  row.channel_error_code
-			channel_error_msg:   row.channel_error_msg
+			id: row.id
+			no: row.no
+			order_id: row.order_id
+			channel_code: row.channel_code
+			user_ip: row.user_ip
+			channel_extras: row.channel_extras
+			channel_error_code: row.channel_error_code
+			channel_error_msg: row.channel_error_msg
 			channel_notify_data: row.channel_notify_data
-			status:              row.status
-			creator_id:          row.creator_id
-			updater_id:          row.updater_id
-			created_at:          row.created_at.format_ss()
-			updated_at:          row.updated_at.format_ss()
-			deleted_at:          (row.deleted_at or { time.Time{} }).format_ss()
+			status: row.status
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return PayOrderExtensionListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

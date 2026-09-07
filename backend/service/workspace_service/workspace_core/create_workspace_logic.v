@@ -30,8 +30,12 @@ pub fn create_workspace_usecase(mut ctx Context, req CreateWsReq) !CreateWsResp 
 
 // ═══ Domain ═══
 fn create_workspace_domain(req CreateWsReq) ! {
-	if req.name == '' { return error('name is required') }
-	if req.tenant_id == '' { return error('tenant_id is required') }
+	if req.name == '' {
+		return error('name is required')
+	}
+	if req.tenant_id == '' {
+		return error('tenant_id is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -51,19 +55,19 @@ fn create_workspace_repo(mut ctx Context, req CreateWsReq) !CreateWsResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	w := WsWorkspace{
-		id:          rand.uuid_v7()
-		tenant_id:   req.tenant_id
-		name:        req.name
+		id: rand.uuid_v7()
+		tenant_id: req.tenant_id
+		name: req.name
 		description: req.description
-		status:      0
-		created_at:  time.now()
-		updated_at:  time.now()
+		status: 1
+		created_at: time.now()
+		updated_at: time.now()
 	}
 	sql db {
 		insert w into WsWorkspace
 	} or { return error('Failed: ${err}') }
 	return CreateWsResp{
-		id:  w.id
+		id: w.id
 		msg: 'Workspace created'
 	}
 }

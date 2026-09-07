@@ -32,14 +32,20 @@ pub fn login_by_email_usecase(mut ctx Context, req LoginByEmailReq) !LoginByEmai
 
 // ═══ Domain ═══
 fn login_by_email_domain(req LoginByEmailReq) ! {
-	if req.email == '' { return error('email is required') }
-	if !req.email.contains('@') { return error('invalid email format') }
-	if req.opt_num == '' || req.opt_token == '' { return error('OTP is required') }
+	if req.email == '' {
+		return error('email is required')
+	}
+	if !req.email.contains('@') {
+		return error('invalid email format')
+	}
+	if req.opt_num == '' || req.opt_token == '' {
+		return error('OTP is required')
+	}
 }
 
 // ═══ DTO ═══
 pub struct LoginByEmailReq {
-	status    i16    @[json: 'status']
+	status    u8 @[json: 'status']
 	email     string @[json: 'email']
 	opt_num   string @[json: 'optNum']
 	opt_token string @[json: 'optToken']
@@ -64,17 +70,18 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 	user_info := sql db {
 		select id, username, email, status from IamUser where email == req.email && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
-	if user_info.len == 0 { return error('email not exist') }
+	if user_info.len == 0 {
+		return error('email not exist')
+	}
 	expired_at := time.now().add_days(30)
-	token_jwt := token.generate_iam_token(mut ctx, user_info[0].id, user_info[0].username,
-		req.login_ip, req.device_id) or { return error('Failed to generate token') }
+	token_jwt := token.generate_iam_token(mut ctx, user_info[0].id, user_info[0].username, req.login_ip, req.device_id) or { return error('Failed to generate token') }
 	t := IamToken{
-		id:         rand.uuid_v7()
-		status:     req.status
-		user_id:    user_info[0].id
-		username:   user_info[0].username
-		token:      token_jwt
-		source:     req.source
+		id: rand.uuid_v7()
+		status: req.status
+		user_id: user_info[0].id
+		username: user_info[0].username
+		token: token_jwt
+		source: req.source
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -84,7 +91,7 @@ fn login_by_email_repo(mut ctx Context, req LoginByEmailReq) !LoginByEmailResp {
 	} or { return error('Failed: ${err}') }
 	return LoginByEmailResp{
 		expired_at: expired_at.str()
-		user_id:    user_info[0].id
-		token_jwt:  token_jwt
+		user_id: user_info[0].id
+		token_jwt: token_jwt
 	}
 }

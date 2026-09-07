@@ -36,26 +36,26 @@ fn find_email_log_all_domain() {
 
 // ═══ DTO ═══
 pub struct EmailLogListReq {
-	page        int    @[json: 'page']
-	page_size   int    @[json: 'pageSize']
+	page        int @[json: 'page']
+	page_size   int @[json: 'pageSize']
 	target      string @[json: 'target']
 	subject     string @[json: 'subject']
 	provider    string @[json: 'provider']
-	send_status []i16  @[json: 'sendStatus']
+	send_status []u8 @[json: 'sendStatus']
 }
 
 pub struct EmailLogData {
-	id          string  @[json: 'id']
-	target      string  @[json: 'target']
-	subject     string  @[json: 'subject']
-	content     string  @[json: 'content']
-	send_status i16     @[json: 'sendStatus']
-	provider    string  @[json: 'provider']
+	id          string @[json: 'id']
+	target      string @[json: 'target']
+	subject     string @[json: 'subject']
+	content     string @[json: 'content']
+	send_status u8 @[json: 'sendStatus']
+	provider    string @[json: 'provider']
 	updater_id  ?string @[json: 'updaterId']
 	creator_id  ?string @[json: 'creatorId']
-	created_at  string  @[json: 'createdAt']
-	updated_at  string  @[json: 'updatedAt']
-	deleted_at  string  @[json: 'deletedAt']
+	created_at  string @[json: 'createdAt']
+	updated_at  string @[json: 'updatedAt']
+	deleted_at  string @[json: 'deletedAt']
 }
 
 pub struct EmailLogListResp {
@@ -90,22 +90,22 @@ fn find_email_log_all_repo(mut ctx Context, req EmailLogListReq) !EmailLogListRe
 	mut datalist := []EmailLogData{}
 	for row in result {
 		datalist << EmailLogData{
-			id:          row.id
-			target:      row.target
-			subject:     row.subject
-			content:     row.content
+			id: row.id
+			target: row.target
+			subject: row.subject
+			content: row.content
 			send_status: row.send_status
-			provider:    row.provider
-			creator_id:  row.creator_id
-			updater_id:  row.updater_id
-			created_at:  row.created_at.format_ss()
-			updated_at:  row.updated_at.format_ss()
-			deleted_at:  (row.deleted_at or { time.Time{} }).format_ss()
+			provider: row.provider
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return EmailLogListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

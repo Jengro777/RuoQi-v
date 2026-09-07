@@ -36,21 +36,21 @@ fn find_sms_provider_all_domain() {
 
 // ═══ DTO ═══
 pub struct SmsProviderListReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
+	page      int @[json: 'page']
+	page_size int @[json: 'pageSize']
 	name      string @[json: 'name']
 }
 
 pub struct SmsProviderData {
-	id         string  @[json: 'id']
-	name       string  @[json: 'name']
-	region     string  @[json: 'region']
-	is_default i16     @[json: 'isDefault']
+	id         string @[json: 'id']
+	name       string @[json: 'name']
+	region     string @[json: 'region']
+	is_default u8 @[json: 'isDefault']
 	updater_id ?string @[json: 'updaterId']
 	creator_id ?string @[json: 'creatorId']
-	created_at string  @[json: 'createdAt']
-	updated_at string  @[json: 'updatedAt']
-	deleted_at string  @[json: 'deletedAt']
+	created_at string @[json: 'createdAt']
+	updated_at string @[json: 'updatedAt']
+	deleted_at string @[json: 'deletedAt']
 }
 
 pub struct SmsProviderListResp {
@@ -82,9 +82,9 @@ fn find_sms_provider_all_repo(mut ctx Context, req SmsProviderListReq) !SmsProvi
 	mut datalist := []SmsProviderData{}
 	for row in result {
 		datalist << SmsProviderData{
-			id:         row.id
-			name:       row.name
-			region:     row.region
+			id: row.id
+			name: row.name
+			region: row.region
 			is_default: row.is_default
 			creator_id: row.creator_id
 			updater_id: row.updater_id
@@ -96,6 +96,6 @@ fn find_sms_provider_all_repo(mut ctx Context, req SmsProviderListReq) !SmsProvi
 
 	return SmsProviderListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

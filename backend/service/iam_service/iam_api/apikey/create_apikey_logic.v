@@ -12,27 +12,27 @@ import common.api
 import common.crypt
 
 pub struct CreateApiKeyReq {
-	name           string   @[json: 'name']
+	name           string @[json: 'name']
 	tenant_ids     []string @[json: 'tenant_ids']
 	subproduct_ids []string @[json: 'subproduct_ids']
 	subportal_ids  []string @[json: 'subportal_ids']
 	scopes         []string @[json: 'scopes']
-	expired_at     ?string  @[json: 'expired_at']
+	expired_at     ?string @[json: 'expired_at']
 }
 
 pub struct CreateApiKeyResp {
-	id             string   @[json: 'id']
-	name           string   @[json: 'name']
-	plain_sk       string   @[json: 'plain_sk']
-	access_key_id  string   @[json: 'access_key_id']
-	key_prefix     string   @[json: 'key_prefix']
-	key_last_four  string   @[json: 'key_last_four']
+	id             string @[json: 'id']
+	name           string @[json: 'name']
+	plain_sk       string @[json: 'plain_sk']
+	access_key_id  string @[json: 'access_key_id']
+	key_prefix     string @[json: 'key_prefix']
+	key_last_four  string @[json: 'key_last_four']
 	tenant_ids     []string @[json: 'tenant_ids']
 	subproduct_ids []string @[json: 'subproduct_ids']
 	subportal_ids  []string @[json: 'subportal_ids']
 	scopes         []string @[json: 'scopes']
-	expired_at     ?string  @[json: 'expired_at']
-	created_at     string   @[json: 'created_at']
+	expired_at     ?string @[json: 'expired_at']
+	created_at     string @[json: 'created_at']
 }
 
 @['/create'; post]
@@ -48,8 +48,12 @@ pub fn (app &ApiKey) create_apikey_handler(mut ctx Context) veb.Result {
 }
 
 fn create_apikey_usecase(mut ctx Context, req CreateApiKeyReq) !CreateApiKeyResp {
-	if req.name.len == 0 { return error('name is required') }
-	if req.name.len > 255 { return error('name too long, max 255') }
+	if req.name.len == 0 {
+		return error('name is required')
+	}
+	if req.name.len > 255 {
+		return error('name too long, max 255')
+	}
 
 	ak_bytes := crand.bytes(16)!
 	sk_bytes := crand.bytes(32)!
@@ -76,23 +80,23 @@ fn create_apikey_usecase(mut ctx Context, req CreateApiKeyReq) !CreateApiKeyResp
 	now := time.now()
 
 	rec := IamApiKey{
-		id:                id
-		user_id:           ctx.svc_iam.user_id
-		name:              req.name
-		access_key_id:     ak
-		key_prefix:        ak[..10]
-		key_last_four:     sk[sk.len - 4..]
+		id: id
+		user_id: ctx.svc_iam.user_id
+		name: req.name
+		access_key_id: ak
+		key_prefix: ak[..10]
+		key_last_four: sk[sk.len - 4..]
 		secret_key_cipher: sk_cipher
-		tenant_ids:        tenant_ids_json
-		subproduct_ids:    subproduct_ids_json
-		subportal_ids:     subportal_ids_json
-		scopes:            scopes_json
-		status:            0
-		expired_at:        expired_at
-		creator_id:        ctx.svc_iam.user_id
-		created_at:        now
-		updater_id:        ctx.svc_iam.user_id
-		updated_at:        now
+		tenant_ids: tenant_ids_json
+		subproduct_ids: subproduct_ids_json
+		subportal_ids: subportal_ids_json
+		scopes: scopes_json
+		status: 1
+		expired_at: expired_at
+		creator_id: ctx.svc_iam.user_id
+		created_at: now
+		updater_id: ctx.svc_iam.user_id
+		updated_at: now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
@@ -102,17 +106,17 @@ fn create_apikey_usecase(mut ctx Context, req CreateApiKeyReq) !CreateApiKeyResp
 	}!
 
 	return CreateApiKeyResp{
-		id:             id
-		name:           req.name
-		plain_sk:       sk
-		access_key_id:  ak
-		key_prefix:     ak[..10]
-		key_last_four:  sk[sk.len - 4..]
-		tenant_ids:     req.tenant_ids
+		id: id
+		name: req.name
+		plain_sk: sk
+		access_key_id: ak
+		key_prefix: ak[..10]
+		key_last_four: sk[sk.len - 4..]
+		tenant_ids: req.tenant_ids
 		subproduct_ids: req.subproduct_ids
-		subportal_ids:  req.subportal_ids
-		scopes:         if req.scopes.len > 0 { req.scopes } else { ['all'] }
-		expired_at:     req.expired_at
-		created_at:     now.format_ss()
+		subportal_ids: req.subportal_ids
+		scopes: if req.scopes.len > 0 { req.scopes } else { ['all'] }
+		expired_at: req.expired_at
+		created_at: now.format_ss()
 	}
 }

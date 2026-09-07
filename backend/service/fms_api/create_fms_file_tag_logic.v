@@ -43,9 +43,9 @@ fn create_fms_file_tag_domain(req CreateFmsFileTagReq) ! {
 
 // ═══ DTO ═══
 pub struct CreateFmsFileTagReq {
-	name   string  @[json: 'name']
+	name   string @[json: 'name']
 	remark ?string @[json: 'remark']
-	status i16     @[json: 'status']
+	status u8 @[json: 'status']
 }
 
 pub struct CreateFmsFileTagResp {
@@ -56,10 +56,10 @@ pub struct CreateFmsFileTagResp {
 fn create_fms_file_tag_repo(mut ctx Context, req CreateFmsFileTagReq) !CreateFmsFileTagResp {
 	time_now := time.now()
 	tag := FmsFileTag{
-		id:         rand.uuid_v7()
-		name:       req.name
-		remark:     req.remark
-		status:     req.status
+		id: rand.uuid_v7()
+		name: req.name
+		remark: req.remark
+		status: req.status
 		creator_id: ctx.svc_iam.user_id
 		updater_id: ctx.svc_iam.user_id
 		created_at: time_now

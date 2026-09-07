@@ -50,11 +50,11 @@ fn create_fms_file_domain(req CreateFmsFileReq) ! {
 // ═══ DTO ═══
 pub struct CreateFmsFileReq {
 	name      string @[json: 'name']
-	file_type i16    @[json: 'fileType']
-	size      u64    @[json: 'size']
+	file_type u8 @[json: 'fileType']
+	size      u64 @[json: 'size']
 	path      string @[json: 'path']
 	md5       string @[json: 'md5']
-	status    i16    @[json: 'status']
+	status    u8 @[json: 'status']
 }
 
 pub struct CreateFmsFileResp {
@@ -65,14 +65,14 @@ pub struct CreateFmsFileResp {
 fn create_fms_file_repo(mut ctx Context, req CreateFmsFileReq) !CreateFmsFileResp {
 	time_now := time.now()
 	file := FmsFile{
-		id:         rand.uuid_v7()
-		name:       req.name
-		file_type:  req.file_type
-		size:       req.size
-		path:       req.path
-		user_id:    ctx.svc_iam.user_id
-		md5:        req.md5
-		status:     req.status
+		id: rand.uuid_v7()
+		name: req.name
+		file_type: req.file_type
+		size: req.size
+		path: req.path
+		user_id: ctx.svc_iam.user_id
+		md5: req.md5
+		status: req.status
 		creator_id: ctx.svc_iam.user_id
 		updater_id: ctx.svc_iam.user_id
 		created_at: time_now

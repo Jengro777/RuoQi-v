@@ -44,7 +44,7 @@ pub struct CreatePositionReq {
 	name         string @[json: 'name']
 	code         string @[json: 'code']
 	description  string @[json: 'description']
-	sort         u32    @[json: 'sort']
+	sort         u32 @[json: 'sort']
 }
 
 pub struct CreatePositionResp {
@@ -58,21 +58,21 @@ fn create_position_repo(mut ctx Context, req CreatePositionReq) !CreatePositionR
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	p := WsPosition{
-		id:           rand.uuid_v7()
+		id: rand.uuid_v7()
 		workspace_id: req.workspace_id
-		name:         req.name
-		code:         req.code
-		description:  req.description
-		sort:         req.sort
-		status:       0
-		created_at:   time.now()
-		updated_at:   time.now()
+		name: req.name
+		code: req.code
+		description: req.description
+		sort: req.sort
+		status: 1
+		created_at: time.now()
+		updated_at: time.now()
 	}
 	sql db {
 		insert p into WsPosition
 	} or { return error('Failed: ${err}') }
 	return CreatePositionResp{
-		id:  p.id
+		id: p.id
 		msg: 'Position created'
 	}
 }

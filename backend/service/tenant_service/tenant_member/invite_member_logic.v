@@ -30,7 +30,9 @@ pub fn invite_member_usecase(mut ctx Context, req InviteMemberReq) !InviteMember
 
 // ═══ Domain ═══
 fn invite_member_domain(mut ctx Context, req InviteMemberReq) ! {
-	if req.user_id == '' { return error('userId is required') }
+	if req.user_id == '' {
+		return error('userId is required')
+	}
 	tenant_id := ctx.svc_iam.active_tenant_id
 	product_id := ctx.svc_iam.active_subproduct_id
 	portal_id := ctx.svc_iam.active_subportal_id
@@ -67,12 +69,12 @@ fn invite_member_repo(mut ctx Context, req InviteMemberReq) !InviteMemberResp {
 	}
 
 	member := TnMember{
-		tenant_id:  tenant_id
+		tenant_id: tenant_id
 		product_id: product_id
-		portal_id:  portal_id
-		user_id:    req.user_id
-		status:     0
-		joined_at:  time.now()
+		portal_id: portal_id
+		user_id: req.user_id
+		status: 1
+		joined_at: time.now()
 		creator_id: ctx.svc_iam.user_id
 		updater_id: ctx.svc_iam.user_id
 		created_at: time.now()

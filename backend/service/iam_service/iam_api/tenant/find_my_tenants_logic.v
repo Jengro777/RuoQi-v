@@ -38,12 +38,12 @@ pub struct PortalBrief {
 	portal_id    string @[json: 'portalId']
 	portal_code  string @[json: 'portalCode']
 	portal_name  string @[json: 'portalName']
-	portal_type  i16    @[json: 'portalType']
+	portal_type  u8 @[json: 'portalType']
 }
 
 pub struct MyTenantPortals {
-	tenant_id   string        @[json: 'tenantId']
-	tenant_name string        @[json: 'tenantName']
+	tenant_id   string @[json: 'tenantId']
+	tenant_name string @[json: 'tenantName']
 	portals     []PortalBrief @[json: 'portals']
 }
 
@@ -54,9 +54,11 @@ fn find_my_tenants_repo(mut ctx Context) ![]MyTenantPortals {
 
 	// 1. 查用户已入驻的产品+门户
 	members := sql db {
-		select from TnMember where user_id == ctx.svc_iam.user_id && status == 0 && del_flag == 0
+		select from TnMember where user_id == ctx.svc_iam.user_id && status == 1 && del_flag == 0
 	} or { return error('Failed to query member records: ${err}') }
-	if members.len == 0 { return []MyTenantPortals{} }
+	if members.len == 0 {
+		return []MyTenantPortals{}
+	}
 
 	tenant_ids := members.map(it.tenant_id)
 	product_ids := members.map(it.product_id)
@@ -91,13 +93,13 @@ fn find_my_tenants_repo(mut ctx Context) ![]MyTenantPortals {
 		pr := product_map[m.product_id] or { continue }
 		pp := portal_map[m.portal_id] or { continue }
 		tenant_portals[m.tenant_id] << PortalBrief{
-			product_id:   pr.id
+			product_id: pr.id
 			product_code: pr.product_code
 			product_name: pr.product_name
-			portal_id:    pp.id
-			portal_code:  pp.portal_code
-			portal_name:  pp.portal_name
-			portal_type:  pp.portal_type
+			portal_id: pp.id
+			portal_code: pp.portal_code
+			portal_name: pp.portal_name
+			portal_type: pp.portal_type
 		}
 	}
 
@@ -105,9 +107,9 @@ fn find_my_tenants_repo(mut ctx Context) ![]MyTenantPortals {
 	for t in tenants {
 		portal_list := tenant_portals[t.id] or { []PortalBrief{} }
 		result << MyTenantPortals{
-			tenant_id:   t.id
+			tenant_id: t.id
 			tenant_name: t.name
-			portals:     portal_list
+			portals: portal_list
 		}
 	}
 	return result

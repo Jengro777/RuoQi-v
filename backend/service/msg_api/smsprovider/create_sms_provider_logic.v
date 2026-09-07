@@ -50,7 +50,7 @@ pub struct CreateSmsProviderReq {
 	secret_id  string @[json: 'secretId']
 	secret_key string @[json: 'secretKey']
 	region     string @[json: 'region']
-	is_default i16    @[json: 'isDefault']
+	is_default u8 @[json: 'isDefault']
 }
 
 pub struct CreateSmsProviderResp {
@@ -61,11 +61,11 @@ pub struct CreateSmsProviderResp {
 fn create_sms_provider_repo(mut ctx Context, req CreateSmsProviderReq) !CreateSmsProviderResp {
 	time_now := time.now()
 	provider := MsgSmsProvider{
-		id:         rand.uuid_v7()
-		name:       req.name
-		secret_id:  req.secret_id
+		id: rand.uuid_v7()
+		name: req.name
+		secret_id: req.secret_id
 		secret_key: req.secret_key
-		region:     req.region
+		region: req.region
 		is_default: req.is_default
 		creator_id: ctx.svc_iam.user_id
 		updater_id: ctx.svc_iam.user_id

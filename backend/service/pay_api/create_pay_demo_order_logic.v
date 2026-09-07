@@ -41,10 +41,10 @@ fn create_pay_demo_order_domain(req CreatePayDemoOrderReq) ! {
 // ═══ DTO ═══
 pub struct CreatePayDemoOrderReq {
 	user_id    string @[json: 'userId']
-	spu_id     u64    @[json: 'spuId']
+	spu_id     u64 @[json: 'spuId']
 	spu_name   string @[json: 'spuName']
-	price      int    @[json: 'price']
-	pay_status i16    @[json: 'payStatus']
+	price      int @[json: 'price']
+	pay_status u8 @[json: 'payStatus']
 }
 
 pub struct CreatePayDemoOrderResp {
@@ -55,11 +55,11 @@ pub struct CreatePayDemoOrderResp {
 fn create_pay_demo_order_repo(mut ctx Context, req CreatePayDemoOrderReq) !CreatePayDemoOrderResp {
 	time_now := time.now()
 	order := PayDemoOrder{
-		id:         rand.uuid_v7()
-		user_id:    ctx.svc_iam.user_id
-		spu_id:     req.spu_id
-		spu_name:   req.spu_name
-		price:      req.price
+		id: rand.uuid_v7()
+		user_id: ctx.svc_iam.user_id
+		spu_id: req.spu_id
+		spu_name: req.spu_name
+		price: req.price
 		pay_status: req.pay_status
 		creator_id: ctx.svc_iam.user_id
 		updater_id: ctx.svc_iam.user_id

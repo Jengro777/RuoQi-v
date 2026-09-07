@@ -36,24 +36,24 @@ fn find_sms_log_all_domain() {
 
 // ═══ DTO ═══
 pub struct SmsLogListReq {
-	page         int    @[json: 'page']
-	page_size    int    @[json: 'pageSize']
+	page         int @[json: 'page']
+	page_size    int @[json: 'pageSize']
 	phone_number string @[json: 'phoneNumber']
 	provider     string @[json: 'provider']
-	send_status  []i16  @[json: 'sendStatus']
+	send_status  []u8 @[json: 'sendStatus']
 }
 
 pub struct SmsLogData {
-	id           string  @[json: 'id']
-	phone_number string  @[json: 'phoneNumber']
-	content      string  @[json: 'content']
-	send_status  i16     @[json: 'sendStatus']
-	provider     string  @[json: 'provider']
+	id           string @[json: 'id']
+	phone_number string @[json: 'phoneNumber']
+	content      string @[json: 'content']
+	send_status  u8 @[json: 'sendStatus']
+	provider     string @[json: 'provider']
 	updater_id   ?string @[json: 'updaterId']
 	creator_id   ?string @[json: 'creatorId']
-	created_at   string  @[json: 'createdAt']
-	updated_at   string  @[json: 'updatedAt']
-	deleted_at   string  @[json: 'deletedAt']
+	created_at   string @[json: 'createdAt']
+	updated_at   string @[json: 'updatedAt']
+	deleted_at   string @[json: 'deletedAt']
 }
 
 pub struct SmsLogListResp {
@@ -87,21 +87,21 @@ fn find_sms_log_all_repo(mut ctx Context, req SmsLogListReq) !SmsLogListResp {
 	mut datalist := []SmsLogData{}
 	for row in result {
 		datalist << SmsLogData{
-			id:           row.id
+			id: row.id
 			phone_number: row.phone_number
-			content:      row.content
-			send_status:  row.send_status
-			provider:     row.provider
-			creator_id:   row.creator_id
-			updater_id:   row.updater_id
-			created_at:   row.created_at.format_ss()
-			updated_at:   row.updated_at.format_ss()
-			deleted_at:   (row.deleted_at or { time.Time{} }).format_ss()
+			content: row.content
+			send_status: row.send_status
+			provider: row.provider
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return SmsLogListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

@@ -147,9 +147,9 @@ fn authorize_tenant_membership(mut ctx Context) bool {
 	portal_id := ctx.req.header.get_custom('X-Portal-ID') or { '' }
 	if tenant_id == '' || product_id == '' || portal_id == '' {
 		ctx.json(api.json_error(
-			code:   1
+			code: 1
 			status: 400
-			error:  'X-Tenant-ID, X-Product-ID and X-Portal-ID are required'
+			error: 'X-Tenant-ID, X-Product-ID and X-Portal-ID are required'
 		))
 		return false
 	}
@@ -164,16 +164,16 @@ fn authorize_tenant_membership(mut ctx Context) bool {
 
 	members := sql db {
 		select from TnMember where tenant_id == tenant_id && user_id == ctx.svc_iam.user_id
-		&& product_id == product_id && portal_id == portal_id && status == 0 && del_flag == 0 limit 1
+		&& product_id == product_id && portal_id == portal_id && status == 1 && del_flag == 0 limit 1
 	} or {
 		ctx.json(api.json_error_403())
 		return false
 	}
 	if members.len == 0 {
 		ctx.json(api.json_error(
-			code:   1
+			code: 1
 			status: 403
-			error:  'user not a member of this tenant/product/portal'
+			error: 'user not a member of this tenant/product/portal'
 		))
 		return false
 	}
@@ -206,9 +206,9 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 	sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
 	if timestamp == '' || sig == '' {
 		ctx.json(api.json_error(
-			code:   1
+			code: 1
 			status: 401
-			error:  'Missing X-Timestamp or X-Signature header'
+			error: 'Missing X-Timestamp or X-Signature header'
 		))
 		return false
 	}
@@ -223,12 +223,11 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 	}
 
 	path := ctx.req.url.all_before('?')
-	crypt.verify_apisign(sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig,
-		sig_skew_seconds) or {
+	crypt.verify_apisign(sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig, sig_skew_seconds) or {
 		ctx.json(api.json_error(
-			code:   1
+			code: 1
 			status: 401
-			error:  err.msg()
+			error: err.msg()
 		))
 		return false
 	}
@@ -238,7 +237,7 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 
 // populate_aksk_context — 公有逻辑：校验状态/过期/隔离/scope，写入上下文
 fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
-	if key.status != 0 {
+	if key.status != 1 {
 		ctx.json(api.json_error_403())
 		return false
 	}
@@ -300,19 +299,33 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 // check_isolation — AK/SK 专用: 校验 API Key 的租户/产品/门户隔离白名单
 // tenants/subproducts/subportals 应由调用方预先从 JSON 解码，解码失败视为空（无隔离限制）
 fn check_isolation(tenants []string, subproducts []string, subportals []string, tenant_id string, subproduct_id string, subportal_id string) ! {
-	if tenants.len == 0 && subproducts.len == 0 && subportals.len == 0 { return }
+	if tenants.len == 0 && subproducts.len == 0 && subportals.len == 0 {
+		return
+	}
 
 	if tenants.len > 0 {
-		if tenant_id == '' { return error('X-Tenant-ID is required') }
-		if !tenants.contains(tenant_id) { return error('tenant not allowed') }
+		if tenant_id == '' {
+			return error('X-Tenant-ID is required')
+		}
+		if !tenants.contains(tenant_id) {
+			return error('tenant not allowed')
+		}
 	}
 	if subproducts.len > 0 {
-		if subproduct_id == '' { return error('X-Subproduct-ID is required') }
-		if !subproducts.contains(subproduct_id) { return error('subproduct not allowed') }
+		if subproduct_id == '' {
+			return error('X-Subproduct-ID is required')
+		}
+		if !subproducts.contains(subproduct_id) {
+			return error('subproduct not allowed')
+		}
 	}
 	if subportals.len > 0 {
-		if subportal_id == '' { return error('X-Subportal-ID is required') }
-		if !subportals.contains(subportal_id) { return error('subportal not allowed') }
+		if subportal_id == '' {
+			return error('X-Subportal-ID is required')
+		}
+		if !subportals.contains(subportal_id) {
+			return error('subportal not allowed')
+		}
 	}
 }
 
@@ -328,20 +341,26 @@ fn check_isolation(tenants []string, subproducts []string, subportals []string, 
 //   ["POST:/iam/user"]   — 方法+路径前缀匹配（仅 POST 请求命中）
 fn check_scopes(allowed_scopes []string, method string, url string) ! {
 	// ["all"] 表示不限制 API；空数组 = 无权限
-	if allowed_scopes.contains('all') { return }
+	if allowed_scopes.contains('all') {
+		return
+	}
 	if allowed_scopes.len == 0 {
 		return error('scope not allowed: empty scopes, ${method} ${url}')
 	}
 	// 逐个 scope 进行匹配
 	for s in allowed_scopes {
-		if scope_match(s, method, url) { return }
+		if scope_match(s, method, url) {
+			return
+		}
 	}
 	return error('scope not allowed: ${method} ${url}')
 }
 
 fn scope_match(scope string, method string, url string) bool {
 	// 拒绝空 scope（空字符串会通配所有 URL）
-	if scope == '' { return false }
+	if scope == '' {
+		return false
+	}
 
 	mut pattern := scope
 	mut required_method := ''
@@ -355,7 +374,9 @@ fn scope_match(scope string, method string, url string) bool {
 			required_method = method_part
 			pattern = parts[1]
 			// 拒绝空路径（如 "POST:" 会通配所有 POST 请求）
-			if pattern == '' { return false }
+			if pattern == '' {
+				return false
+			}
 		}
 	}
 
@@ -377,19 +398,18 @@ $if debug {
 		sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
 		if timestamp == '' || sig == '' {
 			return reject(mut ctx, api.json_error(
-				code:   1
+				code: 1
 				status: 401
-				error:  'Missing X-Timestamp or X-Signature header'
+				error: 'Missing X-Timestamp or X-Signature header'
 			))
 		}
 
 		path := ctx.req.url.all_before('?')
-		crypt.verify_apisign(debug_sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig,
-			sig_skew_seconds) or {
+		crypt.verify_apisign(debug_sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig, sig_skew_seconds) or {
 			return reject(mut ctx, api.json_error(
-				code:   1
+				code: 1
 				status: 401
-				error:  err.msg()
+				error: err.msg()
 			))
 		}
 
@@ -413,7 +433,7 @@ fn reject(mut ctx Context, err api.ApiErrorResponse) bool {
 pub fn iam_identity_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: iam_auth_identity
-		after:   false
+		after: false
 	}
 }
 
@@ -422,7 +442,7 @@ pub fn iam_identity_middleware() veb.MiddlewareOptions[Context] {
 pub fn iam_full_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: iam_auth_full
-		after:   false
+		after: false
 	}
 }
 
@@ -431,7 +451,7 @@ pub fn iam_full_middleware() veb.MiddlewareOptions[Context] {
 pub fn iam_scoped_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: iam_auth_scoped
-		after:   false
+		after: false
 	}
 }
 
