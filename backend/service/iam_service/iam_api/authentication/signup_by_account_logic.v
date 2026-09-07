@@ -32,13 +32,21 @@ pub fn signup_by_account_usecase(mut ctx Context, req SignupByAccountReq) !Signu
 
 // ═══ Domain ═══
 fn signup_by_account_domain(req SignupByAccountReq) ! {
-	if req.username == '' { return error('username is required') }
-	if req.password == '' { return error('password is required') }
-	if req.password.len < 8 { return error('password must be at least 8 characters') }
+	if req.username == '' {
+		return error('username is required')
+	}
+	if req.password == '' {
+		return error('password is required')
+	}
+	if req.password.len < 8 {
+		return error('password must be at least 8 characters')
+	}
 	if req.mobile != '' && !req.mobile.bytes().all(it.is_digit()) {
 		return error('mobile must contain only digits')
 	}
-	if req.captcha_id == '' || req.captcha_text == '' { return error('captcha is required') }
+	if req.captcha_id == '' || req.captcha_text == '' {
+		return error('captcha is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -67,20 +75,22 @@ fn signup_by_account_repo(mut ctx Context, req SignupByAccountReq) !SignupByAcco
 	dup := sql db {
 		select from IamUser where username == req.username limit 1
 	} or { return error('Failed: ${err}') }
-	if dup.len > 0 { return error('username already exists') }
+	if dup.len > 0 {
+		return error('username already exists')
+	}
 	user_id := rand.uuid_v7()
 	password_hash := encrypt.bcrypt_hash(req.password) or {
 		return error('Failed to hash password')
 	}
 	user := IamUser{
-		id:         user_id
-		username:   req.username
-		password:   password_hash
-		nickname:   req.nickname
-		email:      req.email
-		mobile:     req.mobile
-		home_path:  '"/dashboard"'
-		status:     0
+		id: user_id
+		username: req.username
+		password: password_hash
+		nickname: req.nickname
+		email: req.email
+		mobile: req.mobile
+		home_path: '"/dashboard"'
+		status: 1
 		created_at: time.now()
 		updated_at: time.now()
 	}
@@ -89,6 +99,6 @@ fn signup_by_account_repo(mut ctx Context, req SignupByAccountReq) !SignupByAcco
 	} or { return error('Failed to create user: ${err}') }
 	return SignupByAccountResp{
 		user_id: user_id
-		msg:     'Signup successful'
+		msg: 'Signup successful'
 	}
 }

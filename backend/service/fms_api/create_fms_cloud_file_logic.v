@@ -49,12 +49,12 @@ fn create_fms_cloud_file_domain(req CreateFmsCloudFileReq) ! {
 
 // ═══ DTO ═══
 pub struct CreateFmsCloudFileReq {
-	name                         string  @[json: 'name']
-	url                          string  @[json: 'url']
-	size                         u64     @[json: 'size']
-	file_type                    i16     @[json: 'fileType']
+	name                         string @[json: 'name']
+	url                          string @[json: 'url']
+	size                         u64 @[json: 'size']
+	file_type                    u8 @[json: 'fileType']
 	cloud_file_storage_providers ?string @[json: 'cloudFileStorageProviders']
-	status                       i16     @[json: 'status']
+	status                       u8 @[json: 'status']
 }
 
 pub struct CreateFmsCloudFileResp {
@@ -65,18 +65,18 @@ pub struct CreateFmsCloudFileResp {
 fn create_fms_cloud_file_repo(mut ctx Context, req CreateFmsCloudFileReq) !CreateFmsCloudFileResp {
 	time_now := time.now()
 	file := FmsCloudFile{
-		id:                           rand.uuid_v7()
-		name:                         req.name
-		url:                          req.url
-		size:                         req.size
-		file_type:                    req.file_type
-		user_id:                      ctx.svc_iam.user_id
+		id: rand.uuid_v7()
+		name: req.name
+		url: req.url
+		size: req.size
+		file_type: req.file_type
+		user_id: ctx.svc_iam.user_id
 		cloud_file_storage_providers: req.cloud_file_storage_providers
-		status:                       req.status
-		creator_id:                   ctx.svc_iam.user_id
-		updater_id:                   ctx.svc_iam.user_id
-		created_at:                   time_now
-		updated_at:                   time_now
+		status: req.status
+		creator_id: ctx.svc_iam.user_id
+		updater_id: ctx.svc_iam.user_id
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

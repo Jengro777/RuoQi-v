@@ -36,30 +36,30 @@ fn find_currency_all_domain() {
 
 // ═══ DTO ═══
 pub struct CurrencyListReq {
-	page          int    @[json: 'page']
-	page_size     int    @[json: 'pageSize']
+	page          int @[json: 'page']
+	page_size     int @[json: 'pageSize']
 	english_name  string @[json: 'englishName']
 	currency_code string @[json: 'currencyCode']
-	status        []i16  @[json: 'status']
+	status        []u8 @[json: 'status']
 }
 
 pub struct CurrencyData {
-	id                        string  @[json: 'id']
-	english_name              string  @[json: 'englishName']
-	simplified_name           string  @[json: 'simplifiedName']
-	currency_code             string  @[json: 'currencyCode']
-	currency_symbol           string  @[json: 'currencySymbol']
-	decimal_place             i16     @[json: 'decimalPlace']
-	exchange_rate             f64     @[json: 'exchangeRate']
-	exchange_rate_fluctuation f64     @[json: 'exchangeRateFluctuation']
-	exchange_rate_used        f64     @[json: 'exchangeRateUsed']
-	sort                      ?int    @[json: 'sort']
-	status                    i16     @[json: 'status']
+	id                        string @[json: 'id']
+	english_name              string @[json: 'englishName']
+	simplified_name           string @[json: 'simplifiedName']
+	currency_code             string @[json: 'currencyCode']
+	currency_symbol           string @[json: 'currencySymbol']
+	decimal_place             u8 @[json: 'decimalPlace']
+	exchange_rate             f64 @[json: 'exchangeRate']
+	exchange_rate_fluctuation f64 @[json: 'exchangeRateFluctuation']
+	exchange_rate_used        f64 @[json: 'exchangeRateUsed']
+	sort                      ?int @[json: 'sort']
+	status                    u8 @[json: 'status']
 	updater_id                ?string @[json: 'updaterId']
 	creator_id                ?string @[json: 'creatorId']
-	created_at                string  @[json: 'createdAt']
-	updated_at                string  @[json: 'updatedAt']
-	deleted_at                string  @[json: 'deletedAt']
+	created_at                string @[json: 'createdAt']
+	updated_at                string @[json: 'updatedAt']
+	deleted_at                string @[json: 'deletedAt']
 }
 
 pub struct CurrencyListResp {
@@ -95,27 +95,27 @@ fn find_currency_all_repo(mut ctx Context, req CurrencyListReq) !CurrencyListRes
 	mut datalist := []CurrencyData{}
 	for row in result {
 		datalist << CurrencyData{
-			id:                        row.id
-			english_name:              row.english_name
-			simplified_name:           row.simplified_name
-			currency_code:             row.currency_code
-			currency_symbol:           row.currency_symbol
-			decimal_place:             row.decimal_place
-			exchange_rate:             row.exchange_rate
+			id: row.id
+			english_name: row.english_name
+			simplified_name: row.simplified_name
+			currency_code: row.currency_code
+			currency_symbol: row.currency_symbol
+			decimal_place: row.decimal_place
+			exchange_rate: row.exchange_rate
 			exchange_rate_fluctuation: row.exchange_rate_fluctuation
-			exchange_rate_used:        row.exchange_rate_used
-			sort:                      row.sort
-			status:                    row.status
-			creator_id:                row.creator_id
-			updater_id:                row.updater_id
-			created_at:                row.created_at.format_ss()
-			updated_at:                row.updated_at.format_ss()
-			deleted_at:                (row.deleted_at or { time.Time{} }).format_ss()
+			exchange_rate_used: row.exchange_rate_used
+			sort: row.sort
+			status: row.status
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return CurrencyListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

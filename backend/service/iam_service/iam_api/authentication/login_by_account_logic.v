@@ -33,19 +33,25 @@ pub fn login_by_account_usecase(mut ctx Context, req LoginByAccountReq) !LoginBy
 
 // ═══ Domain ═══
 fn login_by_account_domain(req LoginByAccountReq) ! {
-	if req.username == '' { return error('username is required') }
-	if req.password == '' { return error('password is required') }
-	if req.captcha_id == '' || req.captcha_text == '' { return error('captcha error') }
+	if req.username == '' {
+		return error('username is required')
+	}
+	if req.password == '' {
+		return error('password is required')
+	}
+	if req.captcha_id == '' || req.captcha_text == '' {
+		return error('captcha error')
+	}
 }
 
 // ═══ DTO ═══
 pub struct LoginByAccountReq {
-	username     string  @[json: 'username']
-	password     string  @[json: 'password']
-	captcha_text string  @[json: 'captcha_text']
-	captcha_id   string  @[json: 'captcha_id']
-	status       i16     @[json: 'status']
-	source       string  @[json: 'source']
+	username     string @[json: 'username']
+	password     string @[json: 'password']
+	captcha_text string @[json: 'captcha_text']
+	captcha_id   string @[json: 'captcha_id']
+	status       u8 @[json: 'status']
+	source       string @[json: 'source']
 	login_ip     ?string @[json: 'login_ip']
 	device_id    ?string @[json: 'device_id']
 }
@@ -66,7 +72,9 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 	user_info := sql db {
 		select from IamUser where username == req.username && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
-	if user_info.len == 0 { return error('UserName not exist') }
+	if user_info.len == 0 {
+		return error('UserName not exist')
+	}
 	if !encrypt.bcrypt_verify(req.password, user_info[0].password) {
 		return error('UserName or Password error')
 	}
@@ -75,12 +83,12 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 		''
 	}, req.device_id or { '' }) or { return error('Failed to generate token') }
 	t := IamToken{
-		id:         rand.uuid_v7()
-		status:     req.status
-		user_id:    user_info[0].id
-		username:   req.username
-		token:      token_jwt
-		source:     req.source
+		id: rand.uuid_v7()
+		status: req.status
+		user_id: user_info[0].id
+		username: req.username
+		token: token_jwt
+		source: req.source
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -90,7 +98,7 @@ fn login_by_account_repo(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 	} or { return error('Failed: ${err}') }
 	return LoginByAccountResp{
 		expired_at: expired_at.str()
-		user_id:    user_info[0].id
-		token_jwt:  token_jwt
+		user_id: user_info[0].id
+		token_jwt: token_jwt
 	}
 }

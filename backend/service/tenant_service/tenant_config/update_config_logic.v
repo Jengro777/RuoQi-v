@@ -30,8 +30,12 @@ pub fn update_config_usecase(mut ctx Context, req UpdateConfigReq) !UpdateConfig
 
 // ═══ Domain ═══
 fn update_config_domain(req UpdateConfigReq) ! {
-	if req.key == '' { return error('key is required') }
-	if req.value == '' { return error('value is required') }
+	if req.key == '' {
+		return error('key is required')
+	}
+	if req.value == '' {
+		return error('value is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -62,30 +66,26 @@ fn update_config_repo(mut ctx Context, req UpdateConfigReq) !UpdateConfigResp {
 
 	if existing.len > 0 {
 		time_now := time.now()
-		up_expr := {
-			value == req.value,
-			if req.category != '' { category == req.category },
-			if req.description != '' { description == req.description },
-			updater_id == ctx.svc_iam.user_id,
-			updated_at == time_now
-		}
+		up_expr :=
+			sql {
+			}
 		sql db {
 			dynamic update TnConfig set up_expr where id == existing[0].id
 		}!
 	} else {
 		config := TnConfig{
-			id:          rand.uuid_v7()
-			tenant_id:   tenant_id
-			product_id:  product_id
-			key:         req.key
-			value:       req.value
-			category:    req.category
+			id: rand.uuid_v7()
+			tenant_id: tenant_id
+			product_id: product_id
+			key: req.key
+			value: req.value
+			category: req.category
 			description: req.description
-			status:      0
-			creator_id:  ctx.svc_iam.user_id
-			updater_id:  ctx.svc_iam.user_id
-			created_at:  time.now()
-			updated_at:  time.now()
+			status: 1
+			creator_id: ctx.svc_iam.user_id
+			updater_id: ctx.svc_iam.user_id
+			created_at: time.now()
+			updated_at: time.now()
 		}
 		sql db {
 			insert config into TnConfig

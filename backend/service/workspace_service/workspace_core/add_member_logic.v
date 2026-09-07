@@ -29,9 +29,15 @@ pub fn add_member_usecase(mut ctx Context, req AddMemberReq) !AddMemberResp {
 
 // ═══ Domain ═══
 fn add_member_domain(req AddMemberReq) ! {
-	if req.workspace_id == '' { return error('workspace_id is required') }
-	if req.user_id == '' { return error('user_id is required') }
-	if req.role_id == '' { return error('role_id is required') }
+	if req.workspace_id == '' {
+		return error('workspace_id is required')
+	}
+	if req.user_id == '' {
+		return error('user_id is required')
+	}
+	if req.role_id == '' {
+		return error('role_id is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -58,11 +64,11 @@ fn add_member_repo(mut ctx Context, req AddMemberReq) !AddMemberResp {
 	// 1. 维护成员实体记录（一行一个成员）
 	m := WsMember{
 		workspace_id: req.workspace_id
-		user_id:      req.user_id
-		joined_at:    time.now()
-		status:       0
-		created_at:   time.now()
-		updated_at:   time.now()
+		user_id: req.user_id
+		joined_at: time.now()
+		status: 1
+		created_at: time.now()
+		updated_at: time.now()
 	}
 	sql db {
 		upsert m into WsMember
@@ -74,8 +80,8 @@ fn add_member_repo(mut ctx Context, req AddMemberReq) !AddMemberResp {
 	// 2. 分配角色（一行一个角色分配）
 	mr := WsMemberRole{
 		workspace_id: req.workspace_id
-		user_id:      req.user_id
-		role_id:      req.role_id
+		user_id: req.user_id
+		role_id: req.role_id
 	}
 	sql db {
 		upsert mr into WsMemberRole
@@ -87,6 +93,6 @@ fn add_member_repo(mut ctx Context, req AddMemberReq) !AddMemberResp {
 	db.execute('COMMIT') or { return error('Failed to commit transaction: ${err}') }
 	return AddMemberResp{
 		user_id: req.user_id
-		msg:     'Member added'
+		msg: 'Member added'
 	}
 }

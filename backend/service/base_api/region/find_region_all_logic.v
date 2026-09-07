@@ -36,8 +36,8 @@ fn find_region_all_domain() {
 
 // ═══ DTO ═══
 pub struct RegionListReq {
-	page                 int    @[json: 'page']
-	page_size            int    @[json: 'pageSize']
+	page                 int @[json: 'page']
+	page_size            int @[json: 'pageSize']
 	sys_region_code      string @[json: 'sysRegionCode']
 	sys_region_name      string @[json: 'sysRegionName']
 	name_local           string @[json: 'nameLocal']
@@ -54,17 +54,17 @@ pub struct RegionListReq {
 	domain_name          string @[json: 'domainName']
 	continent_code       string @[json: 'continentCode']
 	coord_bounds         string @[json: 'coordBounds']
-	status               []i16  @[json: 'status']
+	status               []u8 @[json: 'status']
 	name_en              string @[json: 'nameEn']
 	name_zh              string @[json: 'nameZh']
 }
 
 pub struct RegionData {
-	id                   string  @[json: 'id']
-	sys_region_code      string  @[json: 'sysRegionCode']
-	sys_region_name      string  @[json: 'sysRegionName']
-	name_local           string  @[json: 'nameLocal']
-	langcode_local       string  @[json: 'langcodeLocal']
+	id                   string @[json: 'id']
+	sys_region_code      string @[json: 'sysRegionCode']
+	sys_region_name      string @[json: 'sysRegionName']
+	name_local           string @[json: 'nameLocal']
+	langcode_local       string @[json: 'langcodeLocal']
 	govt_code            ?string @[json: 'govtCode']
 	gid_zero             ?string @[json: 'gidZero']
 	hasc                 ?string @[json: 'hasc']
@@ -77,15 +77,15 @@ pub struct RegionData {
 	domain_name          ?string @[json: 'domainName']
 	continent_code       ?string @[json: 'continentCode']
 	coord_bounds         ?string @[json: 'coordBounds']
-	sort                 ?int    @[json: 'sort']
-	status               i16     @[json: 'status']
+	sort                 ?int @[json: 'sort']
+	status               u8 @[json: 'status']
 	name_en              ?string @[json: 'nameEn']
 	name_zh              ?string @[json: 'nameZh']
 	updater_id           ?string @[json: 'updaterId']
 	creator_id           ?string @[json: 'creatorId']
-	created_at           string  @[json: 'createdAt']
-	updated_at           string  @[json: 'updatedAt']
-	deleted_at           string  @[json: 'deletedAt']
+	created_at           string @[json: 'createdAt']
+	updated_at           string @[json: 'updatedAt']
+	deleted_at           string @[json: 'deletedAt']
 }
 
 pub struct RegionListResp {
@@ -137,37 +137,37 @@ fn find_region_all_repo(mut ctx Context, req RegionListReq) !RegionListResp {
 	mut datalist := []RegionData{}
 	for row in result {
 		datalist << RegionData{
-			id:                   row.id
-			sys_region_code:      row.sys_region_code
-			sys_region_name:      row.sys_region_name
-			name_local:           row.name_local
-			langcode_local:       row.langcode_local
-			govt_code:            row.govt_code
-			gid_zero:             row.gid_zero
-			hasc:                 row.hasc
-			iso_two:              row.iso_two
-			iso_three:            row.iso_three
-			numeric:              row.numeric
+			id: row.id
+			sys_region_code: row.sys_region_code
+			sys_region_name: row.sys_region_name
+			name_local: row.name_local
+			langcode_local: row.langcode_local
+			govt_code: row.govt_code
+			gid_zero: row.gid_zero
+			hasc: row.hasc
+			iso_two: row.iso_two
+			iso_three: row.iso_three
+			numeric: row.numeric
 			international_prefix: row.international_prefix
-			phone_area_code:      row.phone_area_code
-			postal_code:          row.postal_code
-			domain_name:          row.domain_name
-			continent_code:       row.continent_code
-			coord_bounds:         row.coord_bounds
-			sort:                 row.sort
-			status:               row.status
-			name_en:              row.name_en
-			name_zh:              row.name_zh
-			updater_id:           row.updater_id
-			creator_id:           row.creator_id
-			created_at:           row.created_at.format_ss()
-			updated_at:           row.updated_at.format_ss()
-			deleted_at:           (row.deleted_at or { time.Time{} }).format_ss()
+			phone_area_code: row.phone_area_code
+			postal_code: row.postal_code
+			domain_name: row.domain_name
+			continent_code: row.continent_code
+			coord_bounds: row.coord_bounds
+			sort: row.sort
+			status: row.status
+			name_en: row.name_en
+			name_zh: row.name_zh
+			updater_id: row.updater_id
+			creator_id: row.creator_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return RegionListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

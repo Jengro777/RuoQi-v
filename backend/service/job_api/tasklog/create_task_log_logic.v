@@ -45,8 +45,8 @@ fn create_task_log_domain(req CreateTaskLogReq) ! {
 pub struct CreateTaskLogReq {
 	started_at     time.Time @[json: 'startedAt']
 	finished_at    time.Time @[json: 'finishedAt']
-	result         i16       @[json: 'result']
-	task_task_logs string    @[json: 'taskTaskLogs']
+	result         u8 @[json: 'result']
+	task_task_logs string @[json: 'taskTaskLogs']
 }
 
 pub struct CreateTaskLogResp {
@@ -70,14 +70,14 @@ fn create_task_log_repo(mut ctx Context, req CreateTaskLogReq) !CreateTaskLogRes
 
 	time_now := time.now()
 	task_log := JobTaskLog{
-		id:             rand.uuid_v7()
-		started_at:     req.started_at
-		finished_at:    req.finished_at
-		result:         req.result
+		id: rand.uuid_v7()
+		started_at: req.started_at
+		finished_at: req.finished_at
+		result: req.result
 		task_task_logs: req.task_task_logs
-		creator_id:     ctx.svc_iam.user_id
-		created_at:     time_now
-		updated_at:     time_now
+		creator_id: ctx.svc_iam.user_id
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	sql db {

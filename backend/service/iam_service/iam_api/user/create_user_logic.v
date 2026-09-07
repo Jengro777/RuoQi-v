@@ -45,16 +45,16 @@ fn create_user_domain(req CreateUserReq) ! {
 
 // ═══ DTO ═══
 pub struct CreateUserReq {
-	avatar       string    @[json: 'avatar']
-	description  string    @[json: 'description']
-	mobile       string    @[json: 'mobile']
-	email        string    @[json: 'email']
-	home_path    string    @[json: 'homePath']
-	nickname     string    @[json: 'nickname']
-	password     string    @[json: 'password']
-	status       i16       @[json: 'status']
-	username     string    @[json: 'username']
-	position_ids []string  @[json: 'positionIds']
+	avatar       string @[json: 'avatar']
+	description  string @[json: 'description']
+	mobile       string @[json: 'mobile']
+	email        string @[json: 'email']
+	home_path    string @[json: 'homePath']
+	nickname     string @[json: 'nickname']
+	password     string @[json: 'password']
+	status       u8 @[json: 'status']
+	username     string @[json: 'username']
+	position_ids []string @[json: 'positionIds']
 	created_at   time.Time @[json: 'createdAt']
 	updated_at   time.Time @[json: 'updatedAt']
 }
@@ -68,19 +68,19 @@ fn create_user_repo(mut ctx Context, req CreateUserReq, user_id string, password
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	user := IamUser{
-		id:          user_id
-		username:    req.username
-		password:    password_hash
-		nickname:    req.nickname
+		id: user_id
+		username: req.username
+		password: password_hash
+		nickname: req.nickname
 		description: req.description
-		email:       req.email
-		mobile:      req.mobile
-		avatar:      req.avatar
-		home_path:   req.home_path
-		status:      req.status
-		created_at:  req.created_at
-		updated_at:  req.updated_at
-		creator_id:  ctx.svc_iam.user_id
+		email: req.email
+		mobile: req.mobile
+		avatar: req.avatar
+		home_path: req.home_path
+		status: req.status
+		created_at: req.created_at
+		updated_at: req.updated_at
+		creator_id: ctx.svc_iam.user_id
 	}
 	sql db {
 		insert user into IamUser

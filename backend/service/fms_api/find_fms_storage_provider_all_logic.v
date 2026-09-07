@@ -26,33 +26,37 @@ pub fn find_fms_storage_provider_all_usecase(mut ctx Context, req FmsStorageProv
 }
 
 fn find_fms_storage_provider_all_domain(req FmsStorageProviderListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 pub struct FmsStorageProviderListReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
+	page      int @[json: 'page']
+	page_size int @[json: 'pageSize']
 	name      string @[json: 'name']
-	status    []i16  @[json: 'status']
+	status    []u8 @[json: 'status']
 }
 
 pub struct FmsStorageProviderData {
-	id         string  @[json: 'id']
-	name       string  @[json: 'name']
-	bucket     string  @[json: 'bucket']
-	endpoint   string  @[json: 'endpoint']
+	id         string @[json: 'id']
+	name       string @[json: 'name']
+	bucket     string @[json: 'bucket']
+	endpoint   string @[json: 'endpoint']
 	folder     ?string @[json: 'folder']
-	region     string  @[json: 'region']
-	is_default i16     @[json: 'isDefault']
-	use_cdn    i16     @[json: 'useCdn']
+	region     string @[json: 'region']
+	is_default u8 @[json: 'isDefault']
+	use_cdn    u8 @[json: 'useCdn']
 	cdn_url    ?string @[json: 'cdnUrl']
-	status     i16     @[json: 'status']
+	status     u8 @[json: 'status']
 	updater_id ?string @[json: 'updaterId']
 	creator_id ?string @[json: 'creatorId']
-	created_at string  @[json: 'createdAt']
-	updated_at string  @[json: 'updatedAt']
-	deleted_at string  @[json: 'deletedAt']
+	created_at string @[json: 'createdAt']
+	updated_at string @[json: 'updatedAt']
+	deleted_at string @[json: 'deletedAt']
 }
 
 pub struct FmsStorageProviderListResp {
@@ -67,27 +71,25 @@ fn find_fms_storage_provider_all_repo(mut ctx Context, req FmsStorageProviderLis
 		select count from FmsStorageProvider where del_flag == 0
 	} or { return error('Failed to execute SQL query: ${err}') }
 	offset_num := (req.page - 1) * req.page_size
-	where_expr := {
-		del_flag == 0,
-		if req.name != '' { name == req.name },
-		if req.status.len > 0 { status in req.status }
-	}
+	where_expr :=
+		sql {
+		}
 	result := sql db {
 		dynamic select from FmsStorageProvider where where_expr limit req.page_size offset offset_num
 	} or { return error('Failed to execute SQL query: ${err}') }
 	mut datalist := []FmsStorageProviderData{}
 	for row in result {
 		datalist << FmsStorageProviderData{
-			id:         row.id
-			name:       row.name
-			bucket:     row.bucket
-			endpoint:   row.endpoint
-			folder:     row.folder
-			region:     row.region
+			id: row.id
+			name: row.name
+			bucket: row.bucket
+			endpoint: row.endpoint
+			folder: row.folder
+			region: row.region
 			is_default: row.is_default
-			use_cdn:    row.use_cdn
-			cdn_url:    row.cdn_url
-			status:     row.status
+			use_cdn: row.use_cdn
+			cdn_url: row.cdn_url
+			status: row.status
 			creator_id: row.creator_id
 			updater_id: row.updater_id
 			created_at: row.created_at.format_ss()
@@ -97,6 +99,6 @@ fn find_fms_storage_provider_all_repo(mut ctx Context, req FmsStorageProviderLis
 	}
 	return FmsStorageProviderListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

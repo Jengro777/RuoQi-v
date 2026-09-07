@@ -32,28 +32,32 @@ pub fn find_fms_file_tag_all_usecase(mut ctx Context, req FmsFileTagListReq) !Fm
 
 // ═══ Domain ═══
 fn find_fms_file_tag_all_domain(req FmsFileTagListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 // ═══ DTO ═══
 pub struct FmsFileTagListReq {
-	page      int    @[json: 'page']
-	page_size int    @[json: 'pageSize']
+	page      int @[json: 'page']
+	page_size int @[json: 'pageSize']
 	name      string @[json: 'name']
-	status    []i16  @[json: 'status']
+	status    []u8 @[json: 'status']
 }
 
 pub struct FmsFileTagData {
-	id         string  @[json: 'id']
-	name       string  @[json: 'name']
+	id         string @[json: 'id']
+	name       string @[json: 'name']
 	remark     ?string @[json: 'remark']
-	status     i16     @[json: 'status']
+	status     u8 @[json: 'status']
 	updater_id ?string @[json: 'updaterId']
 	creator_id ?string @[json: 'creatorId']
-	created_at string  @[json: 'createdAt']
-	updated_at string  @[json: 'updatedAt']
-	deleted_at string  @[json: 'deletedAt']
+	created_at string @[json: 'createdAt']
+	updated_at string @[json: 'updatedAt']
+	deleted_at string @[json: 'deletedAt']
 }
 
 pub struct FmsFileTagListResp {
@@ -87,10 +91,10 @@ fn find_fms_file_tag_all_repo(mut ctx Context, req FmsFileTagListReq) !FmsFileTa
 	mut datalist := []FmsFileTagData{}
 	for row in result {
 		datalist << FmsFileTagData{
-			id:         row.id
-			name:       row.name
-			remark:     row.remark
-			status:     row.status
+			id: row.id
+			name: row.name
+			remark: row.remark
+			status: row.status
 			creator_id: row.creator_id
 			updater_id: row.updater_id
 			created_at: row.created_at.format_ss()
@@ -101,6 +105,6 @@ fn find_fms_file_tag_all_repo(mut ctx Context, req FmsFileTagListReq) !FmsFileTa
 
 	return FmsFileTagListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

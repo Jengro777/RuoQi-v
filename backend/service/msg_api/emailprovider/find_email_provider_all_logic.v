@@ -36,26 +36,26 @@ fn find_email_provider_all_domain() {
 
 // ═══ DTO ═══
 pub struct EmailProviderListReq {
-	page       int    @[json: 'page']
-	page_size  int    @[json: 'pageSize']
+	page       int @[json: 'page']
+	page_size  int @[json: 'pageSize']
 	name       string @[json: 'name']
 	email_addr string @[json: 'emailAddr']
 }
 
 pub struct EmailProviderData {
-	id         string  @[json: 'id']
-	name       string  @[json: 'name']
-	auth_type  i16     @[json: 'authType']
-	email_addr string  @[json: 'emailAddr']
-	host_name  string  @[json: 'hostName']
-	port       ?u32    @[json: 'port']
-	tls        i16     @[json: 'tls']
-	is_default i16     @[json: 'isDefault']
+	id         string @[json: 'id']
+	name       string @[json: 'name']
+	auth_type  u8 @[json: 'authType']
+	email_addr string @[json: 'emailAddr']
+	host_name  string @[json: 'hostName']
+	port       ?u32 @[json: 'port']
+	tls        u8 @[json: 'tls']
+	is_default u8 @[json: 'isDefault']
 	updater_id ?string @[json: 'updaterId']
 	creator_id ?string @[json: 'creatorId']
-	created_at string  @[json: 'createdAt']
-	updated_at string  @[json: 'updatedAt']
-	deleted_at string  @[json: 'deletedAt']
+	created_at string @[json: 'createdAt']
+	updated_at string @[json: 'updatedAt']
+	deleted_at string @[json: 'deletedAt']
 }
 
 pub struct EmailProviderListResp {
@@ -88,13 +88,13 @@ fn find_email_provider_all_repo(mut ctx Context, req EmailProviderListReq) !Emai
 	mut datalist := []EmailProviderData{}
 	for row in result {
 		datalist << EmailProviderData{
-			id:         row.id
-			name:       row.name
-			auth_type:  row.auth_type
+			id: row.id
+			name: row.name
+			auth_type: row.auth_type
 			email_addr: row.email_addr
-			host_name:  row.host_name
-			port:       row.port
-			tls:        row.tls
+			host_name: row.host_name
+			port: row.port
+			tls: row.tls
 			is_default: row.is_default
 			creator_id: row.creator_id
 			updater_id: row.updater_id
@@ -106,6 +106,6 @@ fn find_email_provider_all_repo(mut ctx Context, req EmailProviderListReq) !Emai
 
 	return EmailProviderListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

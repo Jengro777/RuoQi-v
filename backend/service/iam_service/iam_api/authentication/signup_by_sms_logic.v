@@ -32,9 +32,15 @@ pub fn signup_by_sms_usecase(mut ctx Context, req SignupBySmsReq) !SignupBySmsRe
 
 // ═══ Domain ═══
 fn signup_by_sms_domain(req SignupBySmsReq) ! {
-	if req.mobile == '' { return error('mobile is required') }
-	if req.password == '' { return error('password is required') }
-	if req.opt_num == '' || req.opt_token == '' { return error('OTP is required') }
+	if req.mobile == '' {
+		return error('mobile is required')
+	}
+	if req.password == '' {
+		return error('password is required')
+	}
+	if req.opt_num == '' || req.opt_token == '' {
+		return error('OTP is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -62,19 +68,21 @@ fn signup_by_sms_repo(mut ctx Context, req SignupBySmsReq) !SignupBySmsResp {
 	dup := sql db {
 		select from IamUser where mobile == req.mobile limit 1
 	} or { return error('Failed: ${err}') }
-	if dup.len > 0 { return error('mobile already registered') }
+	if dup.len > 0 {
+		return error('mobile already registered')
+	}
 	user_id := rand.uuid_v7()
 	password_hash := encrypt.bcrypt_hash(req.password) or {
 		return error('Failed to hash password')
 	}
 	user := IamUser{
-		id:         user_id
-		username:   req.username
-		password:   password_hash
-		nickname:   req.nickname
-		mobile:     req.mobile
-		home_path:  '"/dashboard"'
-		status:     0
+		id: user_id
+		username: req.username
+		password: password_hash
+		nickname: req.nickname
+		mobile: req.mobile
+		home_path: '"/dashboard"'
+		status: 1
 		created_at: time.now()
 		updated_at: time.now()
 	}
@@ -83,6 +91,6 @@ fn signup_by_sms_repo(mut ctx Context, req SignupBySmsReq) !SignupBySmsResp {
 	} or { return error('Failed to create user: ${err}') }
 	return SignupBySmsResp{
 		user_id: user_id
-		msg:     'Signup successful'
+		msg: 'Signup successful'
 	}
 }

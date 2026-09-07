@@ -36,32 +36,32 @@ fn find_language_all_domain() {
 
 // ═══ DTO ═══
 pub struct LanguageListReq {
-	page                     int    @[json: 'page']
-	page_size                int    @[json: 'pageSize']
+	page                     int @[json: 'page']
+	page_size                int @[json: 'pageSize']
 	language_self_proclaimed string @[json: 'languageSelfProclaimed']
 	language_code            string @[json: 'languageCode']
 	two_letter_code          string @[json: 'twoLetterCode']
 	three_letter_code        string @[json: 'threeLetterCode']
 	utf8_encoding            string @[json: 'utf8Encoding']
-	status                   []i16  @[json: 'status']
-	is_basic                 i16    @[json: 'isBasic']
+	status                   []u8 @[json: 'status']
+	is_basic                 u8 @[json: 'isBasic']
 }
 
 pub struct LanguageData {
-	id                       string  @[json: 'id']
-	language_self_proclaimed string  @[json: 'languageSelfProclaimed']
-	language_code            string  @[json: 'languageCode']
-	two_letter_code          string  @[json: 'twoLetterCode']
-	three_letter_code        string  @[json: 'threeLetterCode']
-	utf8_encoding            string  @[json: 'utf8Encoding']
-	sort                     ?int    @[json: 'sort']
-	status                   i16     @[json: 'status']
-	is_basic                 i16     @[json: 'isBasic']
+	id                       string @[json: 'id']
+	language_self_proclaimed string @[json: 'languageSelfProclaimed']
+	language_code            string @[json: 'languageCode']
+	two_letter_code          string @[json: 'twoLetterCode']
+	three_letter_code        string @[json: 'threeLetterCode']
+	utf8_encoding            string @[json: 'utf8Encoding']
+	sort                     ?int @[json: 'sort']
+	status                   u8 @[json: 'status']
+	is_basic                 u8 @[json: 'isBasic']
 	updater_id               ?string @[json: 'updaterId']
 	creator_id               ?string @[json: 'creatorId']
-	created_at               string  @[json: 'createdAt']
-	updated_at               string  @[json: 'updatedAt']
-	deleted_at               string  @[json: 'deletedAt']
+	created_at               string @[json: 'createdAt']
+	updated_at               string @[json: 'updatedAt']
+	deleted_at               string @[json: 'deletedAt']
 }
 
 pub struct LanguageListResp {
@@ -100,25 +100,25 @@ fn find_language_all_repo(mut ctx Context, req LanguageListReq) !LanguageListRes
 	mut datalist := []LanguageData{}
 	for row in result {
 		datalist << LanguageData{
-			id:                       row.id
+			id: row.id
 			language_self_proclaimed: row.language_self_proclaimed
-			language_code:            row.language_code
-			two_letter_code:          row.two_letter_code
-			three_letter_code:        row.three_letter_code
-			utf8_encoding:            row.utf8_encoding
-			sort:                     row.sort
-			status:                   row.status
-			is_basic:                 row.is_basic
-			updater_id:               row.updater_id
-			creator_id:               row.creator_id
-			created_at:               row.created_at.format_ss()
-			updated_at:               row.updated_at.format_ss()
-			deleted_at:               (row.deleted_at or { time.Time{} }).format_ss()
+			language_code: row.language_code
+			two_letter_code: row.two_letter_code
+			three_letter_code: row.three_letter_code
+			utf8_encoding: row.utf8_encoding
+			sort: row.sort
+			status: row.status
+			is_basic: row.is_basic
+			updater_id: row.updater_id
+			creator_id: row.creator_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return LanguageListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

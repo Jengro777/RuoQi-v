@@ -29,7 +29,9 @@ pub fn find_members_usecase(mut ctx Context, req FindMembersReq) !FindMembersRes
 
 // ═══ Domain ═══
 fn find_members_domain(req FindMembersReq) ! {
-	if req.workspace_id == '' { return error('workspace_id is required') }
+	if req.workspace_id == '' {
+		return error('workspace_id is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -38,10 +40,10 @@ pub struct FindMembersReq {
 }
 
 pub struct MemberInfo {
-	user_id   string    @[json: 'userId']
+	user_id   string @[json: 'userId']
 	joined_at time.Time @[json: 'joinedAt']
-	status    i16       @[json: 'status']
-	role_ids  []string  @[json: 'roleIds']
+	status    u8 @[json: 'status']
+	role_ids  []string @[json: 'roleIds']
 }
 
 pub struct FindMembersResp {
@@ -74,10 +76,10 @@ fn find_members_repo(mut ctx Context, req FindMembersReq) !FindMembersResp {
 	mut result := []MemberInfo{cap: members.len}
 	for m in members {
 		result << MemberInfo{
-			user_id:   m.user_id
+			user_id: m.user_id
 			joined_at: m.joined_at
-			status:    m.status
-			role_ids:  role_map[m.user_id]
+			status: m.status
+			role_ids: role_map[m.user_id]
 		}
 	}
 

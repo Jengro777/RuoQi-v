@@ -30,17 +30,19 @@ pub fn create_api_usecase(mut ctx Context, req CreateApiReq) !CreateApiResp {
 
 // ═══ Domain ═══
 fn create_api_domain(req CreateApiReq) ! {
-	if req.path == '' { return error('path is required') }
+	if req.path == '' {
+		return error('path is required')
+	}
 }
 
 // ═══ DTO ═══
 pub struct CreateApiReq {
-	path         string  @[json: 'path']
+	path         string @[json: 'path']
 	description  ?string @[json: 'description']
-	api_group    string  @[json: 'apiGroup']
-	service_name string  @[json: 'serviceName']
-	method       string  @[json: 'method']
-	is_required  i16     @[json: 'isRequired']
+	api_group    string @[json: 'apiGroup']
+	service_name string @[json: 'serviceName']
+	method       string @[json: 'method']
+	is_required  u8 @[json: 'isRequired']
 }
 
 pub struct CreateApiResp {
@@ -53,22 +55,22 @@ fn create_api_repo(mut ctx Context, req CreateApiReq) !CreateApiResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	api := PfApi{
-		id:           rand.uuid_v7()
-		path:         req.path
-		description:  req.description
-		api_group:    req.api_group
+		id: rand.uuid_v7()
+		path: req.path
+		description: req.description
+		api_group: req.api_group
 		service_name: req.service_name
-		method:       req.method
-		is_required:  req.is_required
-		status:       0
-		created_at:   time.now()
-		updated_at:   time.now()
+		method: req.method
+		is_required: req.is_required
+		status: 1
+		created_at: time.now()
+		updated_at: time.now()
 	}
 	sql db {
 		insert api into PfApi
 	} or { return error('Failed: ${err}') }
 	return CreateApiResp{
-		id:  api.id
+		id: api.id
 		msg: 'API created'
 	}
 }

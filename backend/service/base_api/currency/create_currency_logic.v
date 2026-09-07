@@ -52,12 +52,12 @@ pub struct CreateCurrencyReq {
 	simplified_name           string @[json: 'simplifiedName']
 	currency_code             string @[json: 'currencyCode']
 	currency_symbol           string @[json: 'currencySymbol']
-	decimal_place             i16    @[json: 'decimalPlace']
-	exchange_rate             f64    @[json: 'exchangeRate']
-	exchange_rate_fluctuation f64    @[json: 'exchangeRateFluctuation']
-	exchange_rate_used        f64    @[json: 'exchangeRateUsed']
-	sort                      ?int   @[json: 'sort']
-	status                    i16    @[json: 'status']
+	decimal_place             u8 @[json: 'decimalPlace']
+	exchange_rate             f64 @[json: 'exchangeRate']
+	exchange_rate_fluctuation f64 @[json: 'exchangeRateFluctuation']
+	exchange_rate_used        f64 @[json: 'exchangeRateUsed']
+	sort                      ?int @[json: 'sort']
+	status                    u8 @[json: 'status']
 }
 
 pub struct CreateCurrencyResp {
@@ -68,19 +68,19 @@ pub struct CreateCurrencyResp {
 fn create_currency_repo(mut ctx Context, req CreateCurrencyReq) !CreateCurrencyResp {
 	time_now := time.now()
 	base_currency := BaseCurrency{
-		id:                        rand.uuid_v7()
-		english_name:              req.english_name
-		simplified_name:           req.simplified_name
-		currency_code:             req.currency_code
-		currency_symbol:           req.currency_symbol
-		decimal_place:             req.decimal_place
-		exchange_rate:             req.exchange_rate
+		id: rand.uuid_v7()
+		english_name: req.english_name
+		simplified_name: req.simplified_name
+		currency_code: req.currency_code
+		currency_symbol: req.currency_symbol
+		decimal_place: req.decimal_place
+		exchange_rate: req.exchange_rate
 		exchange_rate_fluctuation: req.exchange_rate_fluctuation
-		exchange_rate_used:        req.exchange_rate_used
-		sort:                      req.sort
-		status:                    req.status
-		created_at:                time_now
-		updated_at:                time_now
+		exchange_rate_used: req.exchange_rate_used
+		sort: req.sort
+		status: req.status
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

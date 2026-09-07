@@ -32,11 +32,21 @@ pub fn signup_by_email_usecase(mut ctx Context, req SignupByEmailReq) !SignupByE
 
 // ═══ Domain ═══
 fn signup_by_email_domain(req SignupByEmailReq) ! {
-	if req.email == '' { return error('email is required') }
-	if !req.email.contains('@') || !req.email.contains('.') { return error('invalid email format') }
-	if req.password == '' { return error('password is required') }
-	if req.password.len < 8 { return error('password must be at least 8 characters') }
-	if req.opt_num == '' || req.opt_token == '' { return error('OTP is required') }
+	if req.email == '' {
+		return error('email is required')
+	}
+	if !req.email.contains('@') || !req.email.contains('.') {
+		return error('invalid email format')
+	}
+	if req.password == '' {
+		return error('password is required')
+	}
+	if req.password.len < 8 {
+		return error('password must be at least 8 characters')
+	}
+	if req.opt_num == '' || req.opt_token == '' {
+		return error('OTP is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -64,19 +74,21 @@ fn signup_by_email_repo(mut ctx Context, req SignupByEmailReq) !SignupByEmailRes
 	dup := sql db {
 		select from IamUser where email == req.email limit 1
 	} or { return error('Failed: ${err}') }
-	if dup.len > 0 { return error('email already registered') }
+	if dup.len > 0 {
+		return error('email already registered')
+	}
 	user_id := rand.uuid_v7()
 	password_hash := encrypt.bcrypt_hash(req.password) or {
 		return error('Failed to hash password')
 	}
 	user := IamUser{
-		id:         user_id
-		username:   req.username
-		password:   password_hash
-		nickname:   req.nickname
-		email:      req.email
-		home_path:  '"/dashboard"'
-		status:     0
+		id: user_id
+		username: req.username
+		password: password_hash
+		nickname: req.nickname
+		email: req.email
+		home_path: '"/dashboard"'
+		status: 1
 		created_at: time.now()
 		updated_at: time.now()
 	}
@@ -85,6 +97,6 @@ fn signup_by_email_repo(mut ctx Context, req SignupByEmailReq) !SignupByEmailRes
 	} or { return error('Failed to create user: ${err}') }
 	return SignupByEmailResp{
 		user_id: user_id
-		msg:     'Signup successful'
+		msg: 'Signup successful'
 	}
 }

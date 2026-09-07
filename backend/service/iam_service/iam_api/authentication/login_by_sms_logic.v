@@ -32,13 +32,17 @@ pub fn login_by_sms_usecase(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp 
 
 // ═══ Domain ═══
 fn login_by_sms_domain(req LoginBySmsReq) ! {
-	if req.mobile == '' { return error('mobile is required') }
-	if req.opt_num == '' || req.opt_token == '' { return error('OTP is required') }
+	if req.mobile == '' {
+		return error('mobile is required')
+	}
+	if req.opt_num == '' || req.opt_token == '' {
+		return error('OTP is required')
+	}
 }
 
 // ═══ DTO ═══
 pub struct LoginBySmsReq {
-	status    i16    @[json: 'status']
+	status    u8 @[json: 'status']
 	mobile    string @[json: 'mobile']
 	opt_num   string @[json: 'optNum']
 	opt_token string @[json: 'optToken']
@@ -63,17 +67,18 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp {
 	user_info := sql db {
 		select id, username, mobile, status from IamUser where mobile == req.mobile limit 1
 	} or { return error('Failed: ${err}') }
-	if user_info.len == 0 { return error('mobile not exist') }
+	if user_info.len == 0 {
+		return error('mobile not exist')
+	}
 	expired_at := time.now().add_days(30)
-	token_jwt := token.generate_iam_token(mut ctx, user_info[0].id, user_info[0].username,
-		req.login_ip, req.device_id) or { return error('Failed to generate token') }
+	token_jwt := token.generate_iam_token(mut ctx, user_info[0].id, user_info[0].username, req.login_ip, req.device_id) or { return error('Failed to generate token') }
 	t := IamToken{
-		id:         rand.uuid_v7()
-		status:     req.status
-		user_id:    user_info[0].id
-		username:   user_info[0].username
-		token:      token_jwt
-		source:     req.source
+		id: rand.uuid_v7()
+		status: req.status
+		user_id: user_info[0].id
+		username: user_info[0].username
+		token: token_jwt
+		source: req.source
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -83,7 +88,7 @@ fn login_by_sms_repo(mut ctx Context, req LoginBySmsReq) !LoginBySmsResp {
 	} or { return error('Failed: ${err}') }
 	return LoginBySmsResp{
 		expired_at: expired_at.str()
-		user_id:    user_info[0].id
-		token_jwt:  token_jwt
+		user_id: user_info[0].id
+		token_jwt: token_jwt
 	}
 }

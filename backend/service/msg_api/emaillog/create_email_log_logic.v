@@ -49,7 +49,7 @@ pub struct CreateEmailLogReq {
 	target      string @[json: 'target']
 	subject     string @[json: 'subject']
 	content     string @[json: 'content']
-	send_status i16    @[json: 'sendStatus']
+	send_status u8 @[json: 'sendStatus']
 	provider    string @[json: 'provider']
 }
 
@@ -61,16 +61,16 @@ pub struct CreateEmailLogResp {
 fn create_email_log_repo(mut ctx Context, req CreateEmailLogReq) !CreateEmailLogResp {
 	time_now := time.now()
 	email_log := MsgEmailLog{
-		id:          rand.uuid_v7()
-		target:      req.target
-		subject:     req.subject
-		content:     req.content
+		id: rand.uuid_v7()
+		target: req.target
+		subject: req.subject
+		content: req.content
 		send_status: req.send_status
-		provider:    req.provider
-		creator_id:  ctx.svc_iam.user_id
-		updater_id:  ctx.svc_iam.user_id
-		created_at:  time_now
-		updated_at:  time_now
+		provider: req.provider
+		creator_id: ctx.svc_iam.user_id
+		updater_id: ctx.svc_iam.user_id
+		created_at: time_now
+		updated_at: time_now
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

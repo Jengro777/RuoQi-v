@@ -32,37 +32,41 @@ pub fn find_pay_order_all_usecase(mut ctx Context, req PayOrderListReq) !PayOrde
 
 // ═══ Domain ═══
 fn find_pay_order_all_domain(req PayOrderListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 // ═══ DTO ═══
 pub struct PayOrderListReq {
-	page              int    @[json: 'page']
-	page_size         int    @[json: 'pageSize']
+	page              int @[json: 'page']
+	page_size         int @[json: 'pageSize']
 	merchant_order_id string @[json: 'merchantOrderId']
 	channel_code      string @[json: 'channelCode']
-	status            []i16  @[json: 'status']
+	status            []u8 @[json: 'status']
 }
 
 pub struct PayOrderData {
-	id                string  @[json: 'id']
+	id                string @[json: 'id']
 	channel_code      ?string @[json: 'channelCode']
-	merchant_order_id string  @[json: 'merchantOrderId']
-	subject           string  @[json: 'subject']
-	body              string  @[json: 'body']
-	price             int     @[json: 'price']
-	channel_fee_rate  ?f64    @[json: 'channelFeeRate']
-	channel_fee_price ?int    @[json: 'channelFeePrice']
-	user_ip           string  @[json: 'userIp']
-	refund_price      int     @[json: 'refundPrice']
+	merchant_order_id string @[json: 'merchantOrderId']
+	subject           string @[json: 'subject']
+	body              string @[json: 'body']
+	price             int @[json: 'price']
+	channel_fee_rate  ?f64 @[json: 'channelFeeRate']
+	channel_fee_price ?int @[json: 'channelFeePrice']
+	user_ip           string @[json: 'userIp']
+	refund_price      int @[json: 'refundPrice']
 	channel_order_no  ?string @[json: 'channelOrderNo']
-	status            i16     @[json: 'status']
+	status            u8 @[json: 'status']
 	updater_id        ?string @[json: 'updaterId']
 	creator_id        ?string @[json: 'creatorId']
-	created_at        string  @[json: 'createdAt']
-	updated_at        string  @[json: 'updatedAt']
-	deleted_at        string  @[json: 'deletedAt']
+	created_at        string @[json: 'createdAt']
+	updated_at        string @[json: 'updatedAt']
+	deleted_at        string @[json: 'deletedAt']
 }
 
 pub struct PayOrderListResp {
@@ -97,28 +101,28 @@ fn find_pay_order_all_repo(mut ctx Context, req PayOrderListReq) !PayOrderListRe
 	mut datalist := []PayOrderData{}
 	for row in result {
 		datalist << PayOrderData{
-			id:                row.id
-			channel_code:      row.channel_code
+			id: row.id
+			channel_code: row.channel_code
 			merchant_order_id: row.merchant_order_id
-			subject:           row.subject
-			body:              row.body
-			price:             row.price
-			channel_fee_rate:  row.channel_fee_rate
+			subject: row.subject
+			body: row.body
+			price: row.price
+			channel_fee_rate: row.channel_fee_rate
 			channel_fee_price: row.channel_fee_price
-			user_ip:           row.user_ip
-			refund_price:      row.refund_price
-			channel_order_no:  row.channel_order_no
-			status:            row.status
-			creator_id:        row.creator_id
-			updater_id:        row.updater_id
-			created_at:        row.created_at.format_ss()
-			updated_at:        row.updated_at.format_ss()
-			deleted_at:        (row.deleted_at or { time.Time{} }).format_ss()
+			user_ip: row.user_ip
+			refund_price: row.refund_price
+			channel_order_no: row.channel_order_no
+			status: row.status
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return PayOrderListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

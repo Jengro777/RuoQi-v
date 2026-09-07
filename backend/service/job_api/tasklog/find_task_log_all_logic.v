@@ -31,22 +31,26 @@ pub fn find_task_log_all_usecase(mut ctx Context, req TaskLogListReq) !TaskLogLi
 
 // ═══ Domain ═══
 fn find_task_log_all_domain(req TaskLogListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 // ═══ DTO ═══
 pub struct TaskLogListReq {
-	page      int   @[json: 'page']
-	page_size int   @[json: 'pageSize']
-	result    []i16 @[json: 'result']
+	page      int @[json: 'page']
+	page_size int @[json: 'pageSize']
+	result    []u8 @[json: 'result']
 }
 
 pub struct TaskLogData {
-	id             string  @[json: 'id']
-	started_at     string  @[json: 'startedAt']
-	finished_at    string  @[json: 'finishedAt']
-	result         i16     @[json: 'result']
+	id             string @[json: 'id']
+	started_at     string @[json: 'startedAt']
+	finished_at    string @[json: 'finishedAt']
+	result         u8 @[json: 'result']
 	task_task_logs ?string @[json: 'taskTaskLogs']
 }
 
@@ -67,10 +71,9 @@ fn find_task_log_all_repo(mut ctx Context, req TaskLogListReq) !TaskLogListResp 
 	} or { return error('Failed to execute SQL query: ${err}') }
 
 	offset_num := (req.page - 1) * req.page_size
-	where_expr := {
-		del_flag == 0,
-		if req.result.len > 0 { result in req.result }
-	}
+	where_expr :=
+		sql {
+		}
 	rows := sql db {
 		dynamic select from JobTaskLog where where_expr limit req.page_size offset offset_num
 	} or { return error('Failed to execute SQL query: ${err}') }
@@ -78,16 +81,16 @@ fn find_task_log_all_repo(mut ctx Context, req TaskLogListReq) !TaskLogListResp 
 	mut datalist := []TaskLogData{}
 	for row in rows {
 		datalist << TaskLogData{
-			id:             row.id
-			started_at:     row.started_at.format_ss()
-			finished_at:    row.finished_at.format_ss()
-			result:         row.result
+			id: row.id
+			started_at: row.started_at.format_ss()
+			finished_at: row.finished_at.format_ss()
+			result: row.result
 			task_task_logs: row.task_task_logs
 		}
 	}
 
 	return TaskLogListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

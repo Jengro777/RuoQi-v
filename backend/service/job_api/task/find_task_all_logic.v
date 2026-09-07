@@ -32,32 +32,36 @@ pub fn find_task_all_usecase(mut ctx Context, req TaskListReq) !TaskListResp {
 
 // ═══ Domain ═══
 fn find_task_all_domain(req TaskListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 // ═══ DTO ═══
 pub struct TaskListReq {
-	page       int    @[json: 'page']
-	page_size  int    @[json: 'pageSize']
+	page       int @[json: 'page']
+	page_size  int @[json: 'pageSize']
 	name       string @[json: 'name']
 	task_group string @[json: 'taskGroup']
-	status     []i16  @[json: 'status']
+	status     []u8 @[json: 'status']
 }
 
 pub struct TaskData {
-	id              string  @[json: 'id']
-	name            string  @[json: 'name']
-	task_group      string  @[json: 'taskGroup']
-	cron_expression string  @[json: 'cronExpression']
-	pattern         string  @[json: 'pattern']
-	payload         string  @[json: 'payload']
-	status          i16     @[json: 'status']
+	id              string @[json: 'id']
+	name            string @[json: 'name']
+	task_group      string @[json: 'taskGroup']
+	cron_expression string @[json: 'cronExpression']
+	pattern         string @[json: 'pattern']
+	payload         string @[json: 'payload']
+	status          u8 @[json: 'status']
 	updater_id      ?string @[json: 'updaterId']
 	creator_id      ?string @[json: 'creatorId']
-	created_at      string  @[json: 'createdAt']
-	updated_at      string  @[json: 'updatedAt']
-	deleted_at      string  @[json: 'deletedAt']
+	created_at      string @[json: 'createdAt']
+	updated_at      string @[json: 'updatedAt']
+	deleted_at      string @[json: 'deletedAt']
 }
 
 pub struct TaskListResp {
@@ -92,23 +96,23 @@ fn find_task_all_repo(mut ctx Context, req TaskListReq) !TaskListResp {
 	mut datalist := []TaskData{}
 	for row in result {
 		datalist << TaskData{
-			id:              row.id
-			name:            row.name
-			task_group:      row.task_group
+			id: row.id
+			name: row.name
+			task_group: row.task_group
 			cron_expression: row.cron_expression
-			pattern:         row.pattern
-			payload:         row.payload
-			status:          row.status
-			creator_id:      row.creator_id
-			updater_id:      row.updater_id
-			created_at:      row.created_at.format_ss()
-			updated_at:      row.updated_at.format_ss()
-			deleted_at:      (row.deleted_at or { time.Time{} }).format_ss()
+			pattern: row.pattern
+			payload: row.payload
+			status: row.status
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
 	return TaskListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

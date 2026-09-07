@@ -30,7 +30,9 @@ pub fn create_config_usecase(mut ctx Context, req CreateConfigReq) !CreateConfig
 
 // ═══ Domain ═══
 fn create_config_domain(req CreateConfigReq) ! {
-	if req.key == '' { return error('key is required') }
+	if req.key == '' {
+		return error('key is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -51,20 +53,20 @@ fn create_config_repo(mut ctx Context, req CreateConfigReq) !CreateConfigResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	c := PfConfig{
-		id:          rand.uuid_v7()
-		key:         req.key
-		value:       req.value
-		category:    req.category
+		id: rand.uuid_v7()
+		key: req.key
+		value: req.value
+		category: req.category
 		description: req.description
-		status:      0
-		created_at:  time.now()
-		updated_at:  time.now()
+		status: 1
+		created_at: time.now()
+		updated_at: time.now()
 	}
 	sql db {
 		insert c into PfConfig
 	} or { return error('Failed: ${err}') }
 	return CreateConfigResp{
-		id:  c.id
+		id: c.id
 		msg: 'Configuration created'
 	}
 }

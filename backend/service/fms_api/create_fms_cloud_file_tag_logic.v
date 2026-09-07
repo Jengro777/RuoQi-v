@@ -31,16 +31,18 @@ pub fn create_fms_cloud_file_tag_usecase(mut ctx Context, req CreateFmsCloudFile
 }
 
 fn create_fms_cloud_file_tag_domain(req CreateFmsCloudFileTagReq) ! {
-	if req.name == '' { return error('tag name is required') }
+	if req.name == '' {
+		return error('tag name is required')
+	}
 	if req.status == 0 {
 		return error('status is required')
 	}
 }
 
 pub struct CreateFmsCloudFileTagReq {
-	name   string  @[json: 'name']
+	name   string @[json: 'name']
 	remark ?string @[json: 'remark']
-	status i16     @[json: 'status']
+	status u8 @[json: 'status']
 }
 
 pub struct CreateFmsCloudFileTagResp {
@@ -50,10 +52,10 @@ pub struct CreateFmsCloudFileTagResp {
 fn create_fms_cloud_file_tag_repo(mut ctx Context, req CreateFmsCloudFileTagReq) !CreateFmsCloudFileTagResp {
 	time_now := time.now()
 	tag := FmsCloudFileTag{
-		id:         rand.uuid_v7()
-		name:       req.name
-		remark:     req.remark
-		status:     req.status
+		id: rand.uuid_v7()
+		name: req.name
+		remark: req.remark
+		status: req.status
 		creator_id: ctx.svc_iam.user_id
 		updater_id: ctx.svc_iam.user_id
 		created_at: time_now

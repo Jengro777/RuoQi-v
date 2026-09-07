@@ -30,7 +30,9 @@ pub fn create_dictionary_usecase(mut ctx Context, req CreateDictionaryReq) !Crea
 
 // ═══ Domain ═══
 fn create_dictionary_domain(req CreateDictionaryReq) ! {
-	if req.name == '' { return error('name is required') }
+	if req.name == '' {
+		return error('name is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -50,19 +52,19 @@ fn create_dictionary_repo(mut ctx Context, req CreateDictionaryReq) !CreateDicti
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	d := PfDictionary{
-		id:          rand.uuid_v7()
-		name:        req.name
-		code:        req.code
+		id: rand.uuid_v7()
+		name: req.name
+		code: req.code
 		description: req.description
-		status:      0
-		created_at:  time.now()
-		updated_at:  time.now()
+		status: 1
+		created_at: time.now()
+		updated_at: time.now()
 	}
 	sql db {
 		insert d into PfDictionary
 	} or { return error('Failed: ${err}') }
 	return CreateDictionaryResp{
-		id:  d.id
+		id: d.id
 		msg: 'Dictionary created'
 	}
 }

@@ -40,11 +40,11 @@ pub struct RegionAdmListReq {
 }
 
 pub struct RegionAdmData {
-	id              string  @[json: 'id']
-	parent_id       string  @[json: 'parentId']
-	region_id       string  @[json: 'regionId']
-	sys_adm_code    string  @[json: 'sysAdmCode']
-	sys_adm_name    string  @[json: 'sysAdmName']
+	id              string @[json: 'id']
+	parent_id       string @[json: 'parentId']
+	region_id       string @[json: 'regionId']
+	sys_adm_code    string @[json: 'sysAdmCode']
+	sys_adm_name    string @[json: 'sysAdmName']
 	name_local      ?string @[json: 'nameLocal']
 	govt_code       ?string @[json: 'govtCode']
 	gid_zero        ?string @[json: 'gidZero']
@@ -53,22 +53,22 @@ pub struct RegionAdmData {
 	iso_three       ?string @[json: 'isoThree']
 	numeric         ?string @[json: 'numeric']
 	postal_code     ?string @[json: 'postalCode']
-	level           i16     @[json: 'level']
-	tree_id         string  @[json: 'treeId']
+	level           u8 @[json: 'level']
+	tree_id         string @[json: 'treeId']
 	coord_bounds    ?string @[json: 'coordBounds']
-	sort            ?u64    @[json: 'sort']
-	status          i16     @[json: 'status']
+	sort            ?u64 @[json: 'sort']
+	status          u8 @[json: 'status']
 	adm_merger_name ?string @[json: 'admMergerName']
 	adm_short_name  ?string @[json: 'admShortName']
 	pinyin          ?string @[json: 'pinyin']
-	first           string  @[json: 'first']
+	first           string @[json: 'first']
 	name_en         ?string @[json: 'nameEn']
 	name_zh         ?string @[json: 'nameZh']
 	updater_id      ?string @[json: 'updaterId']
 	creator_id      ?string @[json: 'creatorId']
-	created_at      string  @[json: 'createdAt']
-	updated_at      string  @[json: 'updatedAt']
-	deleted_at      string  @[json: 'deletedAt']
+	created_at      string @[json: 'createdAt']
+	updated_at      string @[json: 'updatedAt']
+	deleted_at      string @[json: 'deletedAt']
 }
 
 pub struct RegionAdmListResp {
@@ -95,35 +95,35 @@ fn find_region_adm_all_repo(mut ctx Context, req RegionAdmListReq) !RegionAdmLis
 	mut datalist := []RegionAdmData{}
 	for row in result {
 		datalist << RegionAdmData{
-			id:              row.id
-			parent_id:       row.parent_id
-			region_id:       row.region_id
-			sys_adm_code:    row.sys_adm_code
-			sys_adm_name:    row.sys_adm_name
-			name_local:      row.name_local
-			govt_code:       row.govt_code
-			gid_zero:        row.gid_zero
-			hasc:            row.hasc
-			iso_two:         row.iso_two
-			iso_three:       row.iso_three
-			numeric:         row.numeric
-			postal_code:     row.postal_code
-			level:           row.level
-			tree_id:         row.tree_id
-			coord_bounds:    row.coord_bounds
-			sort:            row.sort
-			status:          row.status
+			id: row.id
+			parent_id: row.parent_id
+			region_id: row.region_id
+			sys_adm_code: row.sys_adm_code
+			sys_adm_name: row.sys_adm_name
+			name_local: row.name_local
+			govt_code: row.govt_code
+			gid_zero: row.gid_zero
+			hasc: row.hasc
+			iso_two: row.iso_two
+			iso_three: row.iso_three
+			numeric: row.numeric
+			postal_code: row.postal_code
+			level: row.level
+			tree_id: row.tree_id
+			coord_bounds: row.coord_bounds
+			sort: row.sort
+			status: row.status
 			adm_merger_name: row.adm_merger_name
-			adm_short_name:  row.adm_short_name
-			pinyin:          row.pinyin
-			first:           row.first
-			name_en:         row.name_en
-			name_zh:         row.name_zh
-			updater_id:      row.updater_id
-			creator_id:      row.creator_id
-			created_at:      row.created_at.format_ss()
-			updated_at:      row.updated_at.format_ss()
-			deleted_at:      (row.deleted_at or { time.Time{} }).format_ss()
+			adm_short_name: row.adm_short_name
+			pinyin: row.pinyin
+			first: row.first
+			name_en: row.name_en
+			name_zh: row.name_zh
+			updater_id: row.updater_id
+			creator_id: row.creator_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
