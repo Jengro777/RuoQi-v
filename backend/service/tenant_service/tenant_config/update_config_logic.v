@@ -65,9 +65,13 @@ fn update_config_repo(mut ctx Context, req UpdateConfigReq) !UpdateConfigResp {
 	} or { return error('Failed to query config: ${err}') }
 
 	if existing.len > 0 {
+		// vfmt off
 		up_expr :=
-			sql {
-			}
+			sql
+		{
+			value == req.value, category == req.category, description == req.description, updater_id == ctx.svc_iam.user_id, updated_at == time.now()
+		}
+		// vfmt on
 		sql db {
 			dynamic update TnConfig set up_expr where id == existing[0].id
 		}!
