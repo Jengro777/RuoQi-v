@@ -65,9 +65,36 @@ fn update_language_repo(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageR
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.language_self_proclaimed {
+			language_self_proclaimed == v
+		},
+		if v := req.language_code {
+			language_code == v
+		},
+		if v := req.two_letter_code {
+			two_letter_code == v
+		},
+		if v := req.three_letter_code {
+			three_letter_code == v
+		},
+		if v := req.utf8_encoding {
+			utf8_encoding == v
+		},
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.status {
+			status == v
+		},
+		if v := req.is_basic {
+			is_basic == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update BaseLanguage set up_expr where id == req.id

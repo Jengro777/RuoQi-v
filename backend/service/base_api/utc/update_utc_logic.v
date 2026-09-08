@@ -6,6 +6,7 @@ import json2 as json
 import model.schema_base { BaseUtc }
 import common.api
 import model { Context }
+import time
 
 // ═══ Handler ═══
 @['/update'; post]
@@ -61,9 +62,27 @@ fn update_utc_repo(mut ctx Context, req UpdateUtcReq) !UpdateUtcResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.name {
+			name == v
+		},
+		if v := req.lng_range_start {
+			lng_range_start == v
+		},
+		if v := req.lng_range_end {
+			lng_range_end == v
+		},
+		if v := req.lng_mid {
+			lng_mid == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update BaseUtc set up_expr where id == req.id

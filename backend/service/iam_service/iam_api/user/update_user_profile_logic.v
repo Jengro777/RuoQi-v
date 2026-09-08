@@ -6,6 +6,7 @@ import json2 as json
 import model { Context }
 import model.schema_iam { IamUser }
 import common.api
+import time
 
 // ═══ Handler ═══
 @['/update_user_profile'; post]
@@ -53,9 +54,27 @@ pub struct UpdateUserProfileResp {
 fn update_user_profile_repo(mut ctx Context, req UpdateUserProfileReq) ! {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.nickname {
+			nickname == v
+		},
+		if v := req.email {
+			email == v
+		},
+		if v := req.mobile {
+			mobile == v
+		},
+		if v := req.description {
+			description == v
+		},
+		if v := req.avatar {
+			avatar == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update IamUser set up_expr where id == ctx.svc_iam.user_id
 	}!

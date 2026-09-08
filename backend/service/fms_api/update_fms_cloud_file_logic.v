@@ -66,9 +66,27 @@ fn update_fms_cloud_file_repo(mut ctx Context, req UpdateFmsCloudFileReq) !Updat
 		return error('FmsCloudFile with id ${req.id} not found')
 	}
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.name {
+			name == v
+		},
+		if v := req.url {
+			url == v
+		},
+		if v := req.file_type {
+			file_type == v
+		},
+		if v := req.cloud_file_storage_providers {
+			cloud_file_storage_providers == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update FmsCloudFile set up_expr where id == req.id && del_flag == 0

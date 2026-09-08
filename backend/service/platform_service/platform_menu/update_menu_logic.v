@@ -6,6 +6,7 @@ import json2 as json
 import model { Context }
 import model.schema_platform { PfMenu }
 import common.api
+import time
 
 // ═══ Handler ═══
 @['/update_menu'; post]
@@ -57,9 +58,45 @@ pub struct UpdateMenuResp {
 fn update_menu_repo(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.parent_id {
+			parent_id == v
+		},
+		if v := req.menu_level {
+			menu_level == v
+		},
+		if v := req.menu_type {
+			menu_type == v
+		},
+		if v := req.path {
+			path == v
+		},
+		if v := req.name {
+			name == v
+		},
+		if v := req.redirect {
+			redirect == v
+		},
+		if v := req.component {
+			component == v
+		},
+		if v := req.order_no {
+			order_no == v
+		},
+		if v := req.icon {
+			icon == v
+		},
+		if v := req.title {
+			title == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update PfMenu set up_expr where id == req.id
 	}!

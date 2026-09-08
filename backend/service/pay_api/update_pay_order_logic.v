@@ -68,9 +68,54 @@ fn update_pay_order_repo(mut ctx Context, req UpdatePayOrderReq) !UpdatePayOrder
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.channel_code {
+			channel_code == v
+		},
+		if v := req.merchant_order_id {
+			merchant_order_id == v
+		},
+		if v := req.subject {
+			subject == v
+		},
+		if v := req.body {
+			body == v
+		},
+		if v := req.price {
+			price == v
+		},
+		if v := req.channel_fee_rate {
+			channel_fee_rate == v
+		},
+		if v := req.channel_fee_price {
+			channel_fee_price == v
+		},
+		if v := req.user_ip {
+			user_ip == v
+		},
+		if v := req.refund_price {
+			refund_price == v
+		},
+		if v := req.channel_user_id {
+			channel_user_id == v
+		},
+		if v := req.channel_order_no {
+			channel_order_no == v
+		},
+		if v := req.success_time {
+			success_time == v
+		},
+		if v := req.notify_time {
+			notify_time == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update PayOrder set up_expr where id == req.id

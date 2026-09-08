@@ -64,9 +64,42 @@ fn update_email_provider_repo(mut ctx Context, req UpdateEmailProviderReq) !Upda
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.name {
+			name == v
+		},
+		if v := req.auth_type {
+			auth_type == v
+		},
+		if v := req.email_addr {
+			email_addr == v
+		},
+		if v := req.password {
+			password == v
+		},
+		if v := req.host_name {
+			host_name == v
+		},
+		if v := req.identify {
+			identify == v
+		},
+		if v := req.secret {
+			secret == v
+		},
+		if v := req.port {
+			port == v
+		},
+		if v := req.tls {
+			tls == v
+		},
+		if v := req.is_default {
+			is_default == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update MsgEmailProvider set up_expr where id == req.id

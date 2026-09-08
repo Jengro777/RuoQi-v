@@ -58,9 +58,21 @@ fn update_task_log_repo(mut ctx Context, req UpdateTaskLogReq) !UpdateTaskLogRes
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
 	time_now := time.now()
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.finished_at {
+			finished_at == v
+		},
+		if v := req.result {
+			result == v
+		},
+		if v := req.task_task_logs {
+			task_task_logs == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time_now
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update JobTaskLog set up_expr where id == req.id

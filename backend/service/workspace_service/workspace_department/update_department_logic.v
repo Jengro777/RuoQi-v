@@ -6,6 +6,7 @@ import json2 as json
 import model { Context }
 import model.schema_workspace { WsDepartment }
 import common.api
+import time
 
 // ═══ Handler ═══
 @['/update_department'; post]
@@ -52,9 +53,30 @@ pub struct UpdateDepartmentResp {
 fn update_department_repo(mut ctx Context, req UpdateDepartmentReq) !UpdateDepartmentResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.parent_id {
+			parent_id == v
+		},
+		if v := req.name {
+			name == v
+		},
+		if v := req.code {
+			code == v
+		},
+		if v := req.description {
+			description == v
+		},
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update WsDepartment set up_expr where id == req.id
 	}!

@@ -80,9 +80,81 @@ fn update_adm_repo(mut ctx Context, req UpdateAdmReq) !UpdateAdmResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.parent_id {
+			parent_id == v
+		},
+		if v := req.region_id {
+			region_id == v
+		},
+		if v := req.sys_adm_code {
+			sys_adm_code == v
+		},
+		if v := req.sys_adm_name {
+			sys_adm_name == v
+		},
+		if v := req.name_local {
+			name_local == v
+		},
+		if v := req.govt_code {
+			govt_code == v
+		},
+		if v := req.gid_zero {
+			gid_zero == v
+		},
+		if v := req.hasc {
+			hasc == v
+		},
+		if v := req.iso_two {
+			iso_two == v
+		},
+		if v := req.iso_three {
+			iso_three == v
+		},
+		if v := req.numeric {
+			numeric == v
+		},
+		if v := req.postal_code {
+			postal_code == v
+		},
+		if v := req.level {
+			level == v
+		},
+		if v := req.tree_id {
+			tree_id == v
+		},
+		if v := req.coord_bounds {
+			coord_bounds == v
+		},
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.status {
+			status == v
+		},
+		if v := req.adm_merger_name {
+			adm_merger_name == v
+		},
+		if v := req.adm_short_name {
+			adm_short_name == v
+		},
+		if v := req.pinyin {
+			pinyin == v
+		},
+		if v := req.first {
+			first == v
+		},
+		if v := req.name_en {
+			name_en == v
+		},
+		if v := req.name_zh {
+			name_zh == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update BaseRegionAdmDiv set up_expr where id == req.id

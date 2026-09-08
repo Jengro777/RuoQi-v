@@ -60,9 +60,30 @@ fn update_task_repo(mut ctx Context, req UpdateTaskReq) !UpdateTaskResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.name {
+			name == v
+		},
+		if v := req.task_group {
+			task_group == v
+		},
+		if v := req.cron_expression {
+			cron_expression == v
+		},
+		if v := req.pattern {
+			pattern == v
+		},
+		if v := req.payload {
+			payload == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update JobTask set up_expr where id == req.id

@@ -56,9 +56,21 @@ fn update_fms_cloud_file_tag_repo(mut ctx Context, req UpdateFmsCloudFileTagReq)
 		return error('FmsCloudFileTag with id ${req.id} not found')
 	}
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.name {
+			name == v
+		},
+		if v := req.remark {
+			remark == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update FmsCloudFileTag set up_expr where id == req.id && del_flag == 0
 	} or { return error('Failed to update cloud file tag: ${err}') }

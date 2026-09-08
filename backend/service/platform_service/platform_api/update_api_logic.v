@@ -6,6 +6,7 @@ import json2 as json
 import model { Context }
 import model.schema_platform { PfApi }
 import common.api as capi
+import time
 
 // ═══ Handler ═══
 @['/update_api'; post]
@@ -53,9 +54,33 @@ pub struct UpdateApiResp {
 fn update_api_repo(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire scoped DB: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.path {
+			path == v
+		},
+		if v := req.description {
+			description == v
+		},
+		if v := req.api_group {
+			api_group == v
+		},
+		if v := req.service_name {
+			service_name == v
+		},
+		if v := req.method {
+			method == v
+		},
+		if v := req.is_required {
+			is_required == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update PfApi set up_expr where id == req.id
 	}!

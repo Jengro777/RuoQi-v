@@ -6,6 +6,7 @@ import json2 as json
 import model { Context }
 import model.schema_platform { PfConfig }
 import common.api
+import time
 
 // ═══ Handler ═══
 @['/update_config'; post]
@@ -51,9 +52,27 @@ pub struct UpdateConfigResp {
 fn update_config_repo(mut ctx Context, req UpdateConfigReq) !UpdateConfigResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.key {
+			key == v
+		},
+		if v := req.value {
+			value == v
+		},
+		if v := req.category {
+			category == v
+		},
+		if v := req.description {
+			description == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update PfConfig set up_expr where id == req.id
 	}!

@@ -60,9 +60,16 @@ fn find_fms_cloudfile_join_cloudtag_all_repo(mut ctx Context, req FmsCloudFileCl
 		select count from FmsCloudFileCloudFileTag
 	} or { return error('Failed to execute SQL query: ${err}') }
 	offset_num := (req.page - 1) * req.page_size
-	where_expr :=
-		sql {
+	// vfmt off
+	where_expr := {
+		if req.cloud_file_tag_id != '' {
+			cloud_file_tag_id == req.cloud_file_tag_id
+		},
+		if req.cloud_file_id != '' {
+			cloud_file_id == req.cloud_file_id
 		}
+	}
+	// vfmt on
 	result := sql db {
 		dynamic select from FmsCloudFileCloudFileTag where where_expr limit req.page_size offset offset_num
 	} or { return error('Failed to execute SQL query: ${err}') }
