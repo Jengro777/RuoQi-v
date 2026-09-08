@@ -10,8 +10,13 @@ import common.api
 @['/find_user_all'; post]
 pub fn (app &User) find_user_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	result := find_user_all_usecase(mut ctx) or { return ctx.json(api.json_error_500(err.msg())) }
-	return ctx.json(api.json_success_200(result))
+	result := find_user_all_usecase(mut ctx) or {
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: err.msg()
+		))
+	}
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══

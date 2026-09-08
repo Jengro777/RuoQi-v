@@ -13,14 +13,17 @@ pub fn (app &Fms) create_fms_file_join_tag_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[CreateFmsFileJoinTagReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := create_fms_file_join_tag_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -53,7 +56,7 @@ pub struct CreateFmsFileJoinTagResp {
 fn create_fms_file_join_tag_repo(mut ctx Context, req CreateFmsFileJoinTagReq) !CreateFmsFileJoinTagResp {
 	join := FmsFileJoinTag{
 		file_tag_id: req.file_tag_id
-		file_id:     req.file_id
+		file_id: req.file_id
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

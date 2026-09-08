@@ -14,14 +14,17 @@ pub fn (app &Pay) update_pay_demo_order_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdatePayDemoOrderReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := update_pay_demo_order_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -39,14 +42,14 @@ fn update_pay_demo_order_domain(req UpdatePayDemoOrderReq) ! {
 
 // ═══ DTO ═══
 pub struct UpdatePayDemoOrderReq {
-	id               string     @[json: 'id']
-	spu_name         ?string    @[json: 'spuName']
-	pay_status       ?u8        @[json: 'payStatus']
-	pay_order_id     ?string    @[json: 'payOrderId']
+	id               string @[json: 'id']
+	spu_name         ?string @[json: 'spuName']
+	pay_status       ?u8 @[json: 'payStatus']
+	pay_order_id     ?string @[json: 'payOrderId']
 	pay_time         ?time.Time @[json: 'payTime']
-	pay_channel_code ?string    @[json: 'payChannelCode']
-	pay_refund_id    ?string    @[json: 'payRefundId']
-	refund_price     ?int       @[json: 'refundPrice']
+	pay_channel_code ?string @[json: 'payChannelCode']
+	pay_refund_id    ?string @[json: 'payRefundId']
+	refund_price     ?int @[json: 'refundPrice']
 	refund_time      ?time.Time @[json: 'refundTime']
 }
 
@@ -59,18 +62,9 @@ fn update_pay_demo_order_repo(mut ctx Context, req UpdatePayDemoOrderReq) !Updat
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr := {
-		if spu_name := req.spu_name { spu_name == spu_name },
-		if pay_status := req.pay_status { pay_status == pay_status },
-		if pay_order_id := req.pay_order_id { pay_order_id == pay_order_id },
-		if pay_time := req.pay_time { pay_time == pay_time },
-		if pay_channel_code := req.pay_channel_code { pay_channel_code == pay_channel_code },
-		if pay_refund_id := req.pay_refund_id { pay_refund_id == pay_refund_id },
-		if refund_price := req.refund_price { refund_price == refund_price },
-		if refund_time := req.refund_time { refund_time == refund_time },
-		updater_id == ctx.svc_iam.user_id,
-		updated_at == time.now()
-	}
+	up_expr :=
+		sql {
+		}
 
 	sql db {
 		dynamic update PayDemoOrder set up_expr where id == req.id

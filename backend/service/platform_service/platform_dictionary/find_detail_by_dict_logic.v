@@ -12,12 +12,12 @@ import common.api
 pub fn (app &PlatformDictionary) find_detail_by_dict_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[FindDetailByDictReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := find_detail_by_dict_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -28,7 +28,9 @@ pub fn find_detail_by_dict_usecase(mut ctx Context, req FindDetailByDictReq) ![]
 
 // ═══ Domain ═══
 fn find_detail_by_dict_domain(req FindDetailByDictReq) ! {
-	if req.dictionary_id == '' { return error('dictionary_id is required') }
+	if req.dictionary_id == '' {
+		return error('dictionary_id is required')
+	}
 }
 
 // ═══ DTO ═══

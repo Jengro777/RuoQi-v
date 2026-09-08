@@ -12,12 +12,15 @@ import model { Context }
 pub fn (app &Fms) update_fms_cloud_file_tag_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[UpdateFmsCloudFileTagReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := update_fms_cloud_file_tag_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 pub fn update_fms_cloud_file_tag_usecase(mut ctx Context, req UpdateFmsCloudFileTagReq) !UpdateFmsCloudFileTagResp {
@@ -26,14 +29,16 @@ pub fn update_fms_cloud_file_tag_usecase(mut ctx Context, req UpdateFmsCloudFile
 }
 
 fn update_fms_cloud_file_tag_domain(req UpdateFmsCloudFileTagReq) ! {
-	if req.id == '' { return error('tag id is required') }
+	if req.id == '' {
+		return error('tag id is required')
+	}
 }
 
 pub struct UpdateFmsCloudFileTagReq {
-	id     string  @[json: 'id']
+	id     string @[json: 'id']
 	name   ?string @[json: 'name']
 	remark ?string @[json: 'remark']
-	status ?u8     @[json: 'status']
+	status ?u8 @[json: 'status']
 }
 
 pub struct UpdateFmsCloudFileTagResp {
@@ -51,13 +56,9 @@ fn update_fms_cloud_file_tag_repo(mut ctx Context, req UpdateFmsCloudFileTagReq)
 		return error('FmsCloudFileTag with id ${req.id} not found')
 	}
 
-	up_expr := {
-		if name := req.name { name == name },
-		if remark := req.remark { remark == remark },
-		if status := req.status { status == status },
-		updater_id == ctx.svc_iam.user_id,
-		updated_at == time.now()
-	}
+	up_expr :=
+		sql {
+		}
 	sql db {
 		dynamic update FmsCloudFileTag set up_expr where id == req.id && del_flag == 0
 	} or { return error('Failed to update cloud file tag: ${err}') }

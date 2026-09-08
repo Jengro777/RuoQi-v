@@ -31,8 +31,13 @@ pub struct ApiKeyListResp {
 @['/list'; post]
 pub fn (app &ApiKey) find_apikey_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	result := find_apikey_all_usecase(mut ctx) or { return ctx.json(api.json_error_500('${err}')) }
-	return ctx.json(api.json_success_200(result))
+	result := find_apikey_all_usecase(mut ctx) or {
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: '${err}'
+		))
+	}
+	return ctx.json(api.json_success(data: result))
 }
 
 fn find_apikey_all_usecase(mut ctx Context) !ApiKeyListResp {
@@ -59,12 +64,12 @@ fn find_apikey_all_repo(mut ctx Context) ![]IamApiKey {
 pub fn (app &ApiKey) find_apikey_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[FindApiKeyByIdReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := find_apikey_by_id_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('${err}'))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: '${err}'))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 pub struct FindApiKeyByIdReq {

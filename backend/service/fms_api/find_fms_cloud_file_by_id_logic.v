@@ -14,14 +14,17 @@ pub fn (app &Fms) find_fms_cloud_file_by_id_handler(mut ctx Context) veb.Result 
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[FmsCloudFileByIdReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := find_fms_cloud_file_by_id_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -62,19 +65,19 @@ fn find_fms_cloud_file_by_id_repo(mut ctx Context, req FmsCloudFileByIdReq) !Fms
 	row := files[0]
 	return FmsCloudFileByIdResp{
 		data: FmsCloudFileData{
-			id:                           row.id
-			name:                         row.name
-			url:                          row.url
-			size:                         row.size
-			file_type:                    row.file_type
-			user_id:                      row.user_id
+			id: row.id
+			name: row.name
+			url: row.url
+			size: row.size
+			file_type: row.file_type
+			user_id: row.user_id
 			cloud_file_storage_providers: row.cloud_file_storage_providers
-			status:                       row.status
-			creator_id:                   row.creator_id
-			updater_id:                   row.updater_id
-			created_at:                   row.created_at.format_ss()
-			updated_at:                   row.updated_at.format_ss()
-			deleted_at:                   (row.deleted_at or { time.Time{} }).format_ss()
+			status: row.status
+			creator_id: row.creator_id
+			updater_id: row.updater_id
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 }

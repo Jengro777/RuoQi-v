@@ -3,7 +3,7 @@ module iam_api
 import model { App, Context }
 import veb
 import log
-import common.api { json_success_200 }
+import common.api
 
 pub struct Iam {
 	App
@@ -12,5 +12,5 @@ pub struct Iam {
 @['/'; get; post]
 fn (app &Iam) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	return ctx.json(json_success_200('iam api success'))
+	return ctx.json(api.json_success(data: 'iam api success'))
 }

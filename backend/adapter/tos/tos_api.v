@@ -26,8 +26,8 @@ pub struct TokenData {
 
 // LoginResponse 外部认证接口的完整响应结构
 pub struct LoginResponse {
-	code int       @[json: 'code']
-	msg  string    @[json: 'msg']
+	code int @[json: 'code']
+	msg  string @[json: 'msg']
 	data TokenData @[json: 'data']
 }
 
@@ -105,18 +105,26 @@ pub fn (c TosClient) build_login_request() http.Request {
 pub fn (c TosClient) login() !string {
 	req := c.build_login_request()
 
-	resp := req.do() or { return error(api.json_error_500('请求失败：${err}').error) }
+	resp := req.do() or {
+		return error(api.json_error(
+			code: api.err_common_server
+			msg: '请求失败：${err}'
+		).msg)
+	}
 
 	if resp.status_code != 200 {
-		return error(api.json_error_400('HTTP 错误：${resp.status_code}').error)
+		return error(api.json_error(
+			code: api.err_common_param_invalid
+			msg: 'HTTP 错误：${resp.status_code}'
+		).msg)
 	}
 
 	result := json.decode[LoginResponse](resp.body) or {
-		return error(api.json_error_500('解析响应失败：${err}').error)
+		return error(api.json_error(code: api.err_common_server, msg: '解析响应失败：${err}').msg)
 	}
 
 	if result.code != 0 {
-		return error(api.json_error_422(result.msg).error)
+		return error(api.json_error(code: api.err_common_param_invalid, msg: result.msg).msg)
 	}
 
 	return result.data.access_token

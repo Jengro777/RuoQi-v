@@ -14,14 +14,17 @@ pub fn (app &Language) update_language_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateLanguageReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := update_language_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -42,15 +45,15 @@ fn update_language_domain(req UpdateLanguageReq) ! {
 
 // ═══ DTO ═══
 pub struct UpdateLanguageReq {
-	id                       string  @[json: 'id']
+	id                       string @[json: 'id']
 	language_self_proclaimed ?string @[json: 'languageSelfProclaimed']
 	language_code            ?string @[json: 'languageCode']
 	two_letter_code          ?string @[json: 'twoLetterCode']
 	three_letter_code        ?string @[json: 'threeLetterCode']
 	utf8_encoding            ?string @[json: 'utf8Encoding']
-	sort                     ?int    @[json: 'sort']
-	status                   ?u8     @[json: 'status']
-	is_basic                 ?u8     @[json: 'isBasic']
+	sort                     ?int @[json: 'sort']
+	status                   ?u8 @[json: 'status']
+	is_basic                 ?u8 @[json: 'isBasic']
 }
 
 pub struct UpdateLanguageResp {
@@ -62,19 +65,9 @@ fn update_language_repo(mut ctx Context, req UpdateLanguageReq) !UpdateLanguageR
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr := {
-		if language_self_proclaimed := req.language_self_proclaimed {
-			language_self_proclaimed == language_self_proclaimed
-		},
-		if language_code := req.language_code { language_code == language_code },
-		if two_letter_code := req.two_letter_code { two_letter_code == two_letter_code },
-		if three_letter_code := req.three_letter_code { three_letter_code == three_letter_code },
-		if utf8_encoding := req.utf8_encoding { utf8_encoding == utf8_encoding },
-		if is_basic := req.is_basic { is_basic == is_basic },
-		if sort := req.sort { sort == sort },
-		if status := req.status { status == status },
-		updated_at == time.now()
-	}
+	up_expr :=
+		sql {
+		}
 
 	sql db {
 		dynamic update BaseLanguage set up_expr where id == req.id

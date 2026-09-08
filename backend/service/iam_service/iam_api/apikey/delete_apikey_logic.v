@@ -15,16 +15,18 @@ pub struct DeleteApiKeyReq {
 pub fn (app &ApiKey) delete_apikey_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[DeleteApiKeyReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := delete_apikey_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('${err}'))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: '${err}'))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 fn delete_apikey_usecase(mut ctx Context, req DeleteApiKeyReq) !map[string]string {
-	if req.id.len == 0 { return error('id is required') }
+	if req.id.len == 0 {
+		return error('id is required')
+	}
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 	sql db {

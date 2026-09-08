@@ -12,12 +12,12 @@ import common.api as capi
 pub fn (app &PlatformApi) delete_api_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[DeleteApiReq](ctx.req.data) or {
-		return ctx.json(capi.json_error_400(err.msg()))
+		return ctx.json(capi.json_error(code: capi.err_common_param_invalid, msg: err.msg()))
 	}
 	result := delete_api_usecase(mut ctx, req) or {
-		return ctx.json(capi.json_error_500(err.msg()))
+		return ctx.json(capi.json_error(code: capi.err_common_server, msg: err.msg()))
 	}
-	return ctx.json(capi.json_success_200(result))
+	return ctx.json(capi.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -28,7 +28,9 @@ pub fn delete_api_usecase(mut ctx Context, req DeleteApiReq) !DeleteApiResp {
 
 // ═══ Domain ═══
 fn delete_api_domain(req DeleteApiReq) ! {
-	if req.id == '' { return error('id is required') }
+	if req.id == '' {
+		return error('id is required')
+	}
 }
 
 // ═══ DTO ═══

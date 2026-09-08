@@ -13,12 +13,15 @@ import common.api
 pub fn (app &WorkspaceCore) remove_member_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[RemoveMemberReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := remove_member_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -29,14 +32,18 @@ pub fn remove_member_usecase(mut ctx Context, req RemoveMemberReq) !RemoveMember
 
 // ═══ Domain ═══
 fn remove_member_domain(req RemoveMemberReq) ! {
-	if req.workspace_id == '' { return error('workspace_id is required') }
-	if req.user_id == '' { return error('user_id is required') }
+	if req.workspace_id == '' {
+		return error('workspace_id is required')
+	}
+	if req.user_id == '' {
+		return error('user_id is required')
+	}
 }
 
 // ═══ DTO ═══
 pub struct RemoveMemberReq {
-	workspace_id string  @[json: 'workspaceId']
-	user_id      string  @[json: 'userId']
+	workspace_id string @[json: 'workspaceId']
+	user_id      string @[json: 'userId']
 	role_id      ?string @[json: 'roleId']
 }
 
