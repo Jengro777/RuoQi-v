@@ -10,8 +10,10 @@ import common.api
 @['/find_user_info'; post]
 pub fn (app &User) find_user_info_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	result := find_user_info_usecase(mut ctx) or { return ctx.json(api.json_error_500(err.msg())) }
-	return ctx.json(api.json_success_200(result))
+	result := find_user_info_usecase(mut ctx) or {
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
+	}
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -26,6 +28,8 @@ fn find_user_info_repo(mut ctx Context) !IamUser {
 	users := sql db {
 		select from IamUser where id == ctx.svc_iam.user_id && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
-	if users.len == 0 { return error('user not found') }
+	if users.len == 0 {
+		return error('user not found')
+	}
 	return users[0]
 }

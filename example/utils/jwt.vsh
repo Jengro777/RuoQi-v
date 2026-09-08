@@ -15,7 +15,7 @@ const header = base64.url_encode_str(json.encode({
 	'typ': 'JWT'
 }))
 
-//生成令牌
+// 生成令牌
 fn generate(secret string, payload map[string]Any) string {
 	playload_64 := base64.url_encode_str(json.encode(payload))
 
@@ -50,6 +50,7 @@ fn main() {
 	}
 
 	token := generate(secret, payload)
+
 	// println(token)
 
 	// verify(secret,token)
@@ -110,7 +111,9 @@ struct Payload {
 }
 
 type F64 = f64
+
 type I64 = i64
+
 type Any = string
 	| []string
 	| int

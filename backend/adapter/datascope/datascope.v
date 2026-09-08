@@ -52,11 +52,11 @@ pub mut:
 pub fn from_scope_config(cfg ScopeConfig) ScopeContext {
 	return ScopeContext{
 		enabled_fields: cfg.enabled_fields
-		workspace_id:   cfg.workspace_id
-		subproduct_id:  cfg.subproduct_id
-		subportal_id:   cfg.subportal_id
-		user_id:        cfg.user_id
-		tenant_id:      cfg.tenant_id
+		workspace_id: cfg.workspace_id
+		subproduct_id: cfg.subproduct_id
+		subportal_id: cfg.subportal_id
+		user_id: cfg.user_id
+		tenant_id: cfg.tenant_id
 	}
 }
 
@@ -102,8 +102,9 @@ pub fn acquire_scoped(mut sc ScopeContext) !(orm.DB, &pool.ConnectionPoolable) {
 			}
 		}
 
-		if skip { continue
-		 }
+		if skip {
+			continue
+		}
 		val := match field {
 			.tenant_id {
 				orm.Primitive(sc.tenant_id)
@@ -125,7 +126,7 @@ pub fn acquire_scoped(mut sc ScopeContext) !(orm.DB, &pool.ConnectionPoolable) {
 		filters << orm.QueryFilter{
 			field: '${field}'
 			value: val
-			mode:  .dynamic
+			mode: .dynamic
 		}
 	}
 

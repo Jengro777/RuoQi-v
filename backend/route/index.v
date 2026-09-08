@@ -11,7 +11,7 @@ pub fn (mut app AliasApp) get(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	dump(ctx.config)
 	dump(ctx.config.web.port)
-	return ctx.json(api.json_success(code: 200, data: 'req success'))
+	return ctx.json(api.json_success(data: 'req success'))
 }
 
 @['/static/403'; get; post]
@@ -138,9 +138,8 @@ fn (mut app AliasApp) openapi_json(mut ctx Context) veb.Result {
 	file_path := os.join_path(os.getwd(), 'etc/openapi.json')
 	content := os.read_file(file_path) or {
 		return ctx.json(api.json_error(
-			code:   404
-			status: 404
-			error:  'OpenAPI spec not found. Run: v run openapi/openapi_generate.vsh'
+			code: api.err_common_not_found
+			msg: 'OpenAPI spec not found. Run: v run openapi/openapi_generate.vsh'
 		))
 	}
 	ctx.set_content_type('application/json')

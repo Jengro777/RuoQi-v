@@ -11,7 +11,9 @@ pub fn find_apis_by_aksk(mut ctx Context, ak string) !IamApiKey {
 	keys := sql db {
 		select from IamApiKey where access_key_id == ak limit 1
 	}!
-	if keys.len != 1 { return error('Access Key ID not found') }
+	if keys.len != 1 {
+		return error('Access Key ID not found')
+	}
 	return keys[0]
 }
 

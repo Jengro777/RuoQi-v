@@ -16,13 +16,13 @@ pub:
 
 pub struct BasePayload {
 pub:
-	iss string   @[default: 'ruoqi-v'] // Issuer         签发方
-	sub string   @[required]           // Subject        用户唯一标识
-	aud []string @[omitempty]          // Audience       目标接收方['app.mall.com']
-	exp i64      @[required]           // Expires        过期时刻 (unix)
-	nbf i64      @[required]           // Not Before     生效时刻 (unix)
-	iat i64      @[required]           // Issued At      签发时刻 (unix)
-	jti string   @[required]           // JWT ID         防重放唯一标识
+	iss string @[default: 'ruoqi-v'] // Issuer         签发方
+	sub string @[required] // Subject        用户唯一标识
+	aud []string @[omitempty] // Audience       目标接收方['app.mall.com']
+	exp i64 @[required] // Expires        过期时刻 (unix)
+	nbf i64 @[required] // Not Before     生效时刻 (unix)
+	iat i64 @[required] // Issued At      签发时刻 (unix)
+	jti string @[required] // JWT ID         防重放唯一标识
 }
 
 // ---- JwtTimeBounded -----------------------------------------------------------

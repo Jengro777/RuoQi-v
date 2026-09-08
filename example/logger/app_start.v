@@ -14,15 +14,15 @@ pub fn app_start() {
 	app.register_routes()
 
 	app.use(veb.cors[structs.Context](veb.CorsOptions{
-		origins:         cors_origin
+		origins: cors_origin
 		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
 	}))
 
 	port := 9009
 	veb.run_at[routes.AliasApp, structs.Context](mut app,
-		host:               ''
-		port:               port
-		family:             .ip6
+		host: ''
+		port: port
+		family: .ip6
 		timeout_in_seconds: 30
 	) or { panic(err) }
 }

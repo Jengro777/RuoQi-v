@@ -14,14 +14,17 @@ pub fn (app &SmsProvider) update_sms_provider_handler(mut ctx Context) veb.Resul
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateSmsProviderReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := update_sms_provider_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -39,12 +42,12 @@ fn update_sms_provider_domain(req UpdateSmsProviderReq) ! {
 
 // ═══ DTO ═══
 pub struct UpdateSmsProviderReq {
-	id         string  @[json: 'id']
+	id         string @[json: 'id']
 	name       ?string @[json: 'name']
 	secret_id  ?string @[json: 'secretId']
 	secret_key ?string @[json: 'secretKey']
 	region     ?string @[json: 'region']
-	is_default ?u8     @[json: 'isDefault']
+	is_default ?u8 @[json: 'isDefault']
 }
 
 pub struct UpdateSmsProviderResp {
@@ -56,15 +59,9 @@ fn update_sms_provider_repo(mut ctx Context, req UpdateSmsProviderReq) !UpdateSm
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr := {
-		if name := req.name { name == name },
-		if secret_id := req.secret_id { secret_id == secret_id },
-		if secret_key := req.secret_key { secret_key == secret_key },
-		if region := req.region { region == region },
-		if is_default := req.is_default { is_default == is_default },
-		updater_id == ctx.svc_iam.user_id,
-		updated_at == time.now()
-	}
+	up_expr :=
+		sql {
+		}
 
 	sql db {
 		dynamic update MsgSmsProvider set up_expr where id == req.id

@@ -24,7 +24,7 @@ fn main() {
 fn authority_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: authority_jwt_verify
-		after:   false
+		after: false
 	}
 }
 
@@ -32,6 +32,7 @@ fn authority_jwt_verify(mut ctx Context) bool {
 	// ctx.res.set_status(.unauthorized)
 	// ctx.res.header.set(.content_type, 'application/json')
 	ctx.send_response_to_client('application/json', 'send_response_to_client unauthorized')
+
 	// ctx.request_error('request_error')
 	// ctx.server_error('server_error')
 

@@ -11,9 +11,12 @@ import common.api as capi
 pub fn (app &TenantMember) find_member_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	result := find_member_all_usecase(mut ctx) or {
-		return ctx.json(capi.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(capi.json_error(
+			code: capi.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
-	return ctx.json(capi.json_success_200(result))
+	return ctx.json(capi.json_success(data: result))
 }
 
 // ═══ Use Case ═══

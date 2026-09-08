@@ -739,9 +739,12 @@ fn is_box_banner(line string) bool {
 
 fn is_box_rune(r rune) bool {
 	return r == rune(0x2500) // ─
-	 || r == rune(0x2501) // ━
-	 || r == rune(0x2550) // ═
-	 || r == rune(0x2261) // ≡
+
+		|| r == rune(0x2501) // ━
+
+		|| r == rune(0x2550) // ═
+
+		|| r == rune(0x2261) // ≡
 }
 
 fn append_unique(mut items []string, value string) {
@@ -1192,8 +1195,10 @@ fn parse_api_response_profiles(file_path string) !map[string]ApiResponseProfile 
 				profiles[status_code] = ApiResponseProfile{
 					status_code: status_code
 					description: if description != '' {
-						description} else {
-						default_response_description_fallback(status_code)}
+						description
+					} else {
+						default_response_description_fallback(status_code)
+					}
 				}
 			}
 		}

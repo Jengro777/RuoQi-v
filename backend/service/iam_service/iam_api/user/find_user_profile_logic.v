@@ -11,9 +11,9 @@ import common.api
 pub fn (app &User) find_user_profile_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	result := find_user_profile_usecase(mut ctx) or {
-		return ctx.json(api.json_error_500(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -48,15 +48,17 @@ fn find_user_profile_repo(mut ctx Context) !UserProfileResp {
 	user := sql db {
 		select from IamUser where id == ctx.svc_iam.user_id && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
-	if user.len == 0 { return error('user not found') }
+	if user.len == 0 {
+		return error('user not found')
+	}
 	return UserProfileResp{
-		user_id:     user[0].id
-		username:    user[0].username
-		nickname:    user[0].nickname
-		avatar:      user[0].avatar
-		email:       user[0].email
-		mobile:      user[0].mobile
+		user_id: user[0].id
+		username: user[0].username
+		nickname: user[0].nickname
+		avatar: user[0].avatar
+		email: user[0].email
+		mobile: user[0].mobile
 		description: user[0].description
-		home_path:   user[0].home_path
+		home_path: user[0].home_path
 	}
 }

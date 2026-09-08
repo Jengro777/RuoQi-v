@@ -24,7 +24,9 @@ fn (app &Database) init_fms_tables(mut pool dbpool.DatabasePoolable) ! {
 		create table schema_fms.FmsCloudFile
 		create table schema_fms.FmsCloudFileTag
 	} or {
-		if !err.msg().contains('already exists') { return error('error creating table: ${err}') }
+		if !err.msg().contains('already exists') {
+			return error('error creating table: ${err}')
+		}
 	}
 	log.info('schema_fms init success')
 
@@ -35,7 +37,7 @@ fn (app &Database) init_fms_tables(mut pool dbpool.DatabasePoolable) ! {
 pub fn (app &Database) init_fms(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	app.init_fms_tables(mut ctx.dbpool) or {
-		return ctx.json(api.json_error_500('init_fms failed: ${err}'))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: 'init_fms failed: ${err}'))
 	}
-	return ctx.json(api.json_success_200('FMF database init Successfull'))
+	return ctx.json(api.json_success(data: 'FMF database init Successfull'))
 }

@@ -11,7 +11,7 @@ pub:
 	redis   RedisConf
 }
 
-//[veb]
+// [veb]
 pub struct WebConf {
 pub:
 	port             int
@@ -32,12 +32,12 @@ pub fn (c CryptConf) effective_aksk_encrypt() string {
 	return c.aksk_encrypt
 }
 
-//[logging]
+// [logging]
 pub struct LogConf {
 	log_level string
 }
 
-//[dbconf]
+// [dbconf]
 pub struct DBConf {
 pub:
 	type       string
@@ -54,10 +54,10 @@ pub:
 	ssl_cipher string
 	// 连接池配置
 	max_conns      int = 100 // 默认 100 个
-	min_idle_conns int = 10  // 默认 10个
-	max_lifetime   i64 = 60  // 默认 60 minute
-	idle_timeout   i64 = 30  // 默认 30 minute
-	get_timeout    i64 = 3   // 默认 3 second
+	min_idle_conns int = 10 // 默认 10个
+	max_lifetime   i64 = 60 // 默认 60 minute
+	idle_timeout   i64 = 30 // 默认 30 minute
+	get_timeout    i64 = 3 // 默认 3 second
 }
 
 // Redis 配置

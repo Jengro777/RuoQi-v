@@ -39,12 +39,12 @@ pub struct CreateApiKeyResp {
 pub fn (app &ApiKey) create_apikey_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[CreateApiKeyReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := create_apikey_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('${err}'))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: '${err}'))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 fn create_apikey_usecase(mut ctx Context, req CreateApiKeyReq) !CreateApiKeyResp {

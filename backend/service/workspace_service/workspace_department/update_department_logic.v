@@ -12,12 +12,12 @@ import common.api
 pub fn (app &WorkspaceDepartment) update_department_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[UpdateDepartmentReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := update_department_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -35,13 +35,13 @@ fn update_department_domain(req UpdateDepartmentReq) ! {
 
 // ═══ DTO ═══
 pub struct UpdateDepartmentReq {
-	id          string  @[json: 'id']
+	id          string @[json: 'id']
 	parent_id   ?string @[json: 'parentId']
 	name        ?string @[json: 'name']
 	code        ?string @[json: 'code']
 	description ?string @[json: 'description']
-	sort        ?u32    @[json: 'sort']
-	status      ?u8     @[json: 'status']
+	sort        ?u32 @[json: 'sort']
+	status      ?u8 @[json: 'status']
 }
 
 pub struct UpdateDepartmentResp {
@@ -52,14 +52,9 @@ pub struct UpdateDepartmentResp {
 fn update_department_repo(mut ctx Context, req UpdateDepartmentReq) !UpdateDepartmentResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr := {
-		if parent_id := req.parent_id { parent_id == parent_id },
-		if name := req.name { name == name },
-		if code := req.code { code == code },
-		if description := req.description { description == description },
-		if sort := req.sort { sort == sort },
-		if status := req.status { status == status }
-	}
+	up_expr :=
+		sql {
+		}
 	sql db {
 		dynamic update WsDepartment set up_expr where id == req.id
 	}!

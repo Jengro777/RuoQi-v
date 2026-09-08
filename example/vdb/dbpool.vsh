@@ -19,8 +19,8 @@ pub mut:
 	ssl_verify bool @[default: false]
 
 	//* pool 配置 */
-	max_conns      int           = 100
-	min_idle_conns int           = 10
+	max_conns      int = 100
+	min_idle_conns int = 10
 	max_lifetime   time.Duration = 60 * time.minute
 	idle_timeout   time.Duration = 30 * time.minute
 	get_timeout    time.Duration = 3 * time.second
@@ -55,11 +55,11 @@ mut:
 
 pub fn new_mysql_adapter(conf DatabaseConfig) !&MysqlAdapter {
 	db := mysql.connect(mysql.Config{
-		host:     conf.host
-		port:     conf.port
+		host: conf.host
+		port: conf.port
 		username: conf.username
 		password: conf.password
-		dbname:   conf.dbname
+		dbname: conf.dbname
 	})!
 	return &MysqlAdapter{db}
 }
@@ -94,11 +94,11 @@ mut:
 
 pub fn new_pg_adapter(conf DatabaseConfig) !&PgAdapter {
 	db := pg.connect(pg.Config{
-		host:     conf.host
-		port:     int(conf.port)
-		user:     conf.username
+		host: conf.host
+		port: int(conf.port)
+		user: conf.username
 		password: conf.password
-		dbname:   conf.dbname
+		dbname: conf.dbname
 	})!
 	return &PgAdapter{db}
 }
@@ -153,11 +153,11 @@ pub fn new_mysql_pool(conf DatabaseConfig) !&MysqlPool {
 	}
 
 	cp := pool.new_connection_pool(create_conn, pool.ConnectionPoolConfig{
-		max_conns:      conf.max_conns
+		max_conns: conf.max_conns
 		min_idle_conns: conf.min_idle_conns
-		max_lifetime:   conf.max_lifetime
-		idle_timeout:   conf.idle_timeout
-		get_timeout:    conf.get_timeout
+		max_lifetime: conf.max_lifetime
+		idle_timeout: conf.idle_timeout
+		get_timeout: conf.get_timeout
 	})!
 
 	return &MysqlPool{cp}
@@ -192,11 +192,11 @@ pub fn new_pg_pool(conf DatabaseConfig) !&PgPool {
 	}
 
 	cp := pool.new_connection_pool(create_conn, pool.ConnectionPoolConfig{
-		max_conns:      conf.max_conns
+		max_conns: conf.max_conns
 		min_idle_conns: conf.min_idle_conns
-		max_lifetime:   conf.max_lifetime
-		idle_timeout:   conf.idle_timeout
-		get_timeout:    conf.get_timeout
+		max_lifetime: conf.max_lifetime
+		idle_timeout: conf.idle_timeout
+		get_timeout: conf.get_timeout
 	})!
 
 	return &PgPool{cp}
@@ -220,9 +220,15 @@ pub fn (mut p PgPool) close() {
 // ======================================
 pub fn new_db_pool(conf DatabaseConfig) !DatabasePoolable {
 	match conf.db_type.to_lower() {
-		'mysql' { return new_mysql_pool(conf)! }
-		'pgsql', 'postgres', 'postgresql' { return new_pg_pool(conf)! }
-		else { return error('Unsupported db type: ${conf.db_type}') }
+		'mysql' {
+			return new_mysql_pool(conf)!
+		}
+		'pgsql', 'postgres', 'postgresql' {
+			return new_pg_pool(conf)!
+		}
+		else {
+			return error('Unsupported db type: ${conf.db_type}')
+		}
 	}
 }
 
@@ -234,12 +240,12 @@ struct User {
 
 fn main() {
 	conf := DatabaseConfig{
-		db_type:  'mysql' // 或 'pgsql'
-		host:     '127.0.0.1'
-		port:     3306
+		db_type: 'mysql' // 或 'pgsql'
+		host: '127.0.0.1'
+		port: 3306
 		username: 'root'
 		password: 'mysql_123456'
-		dbname:   'vcore'
+		dbname: 'vcore'
 	}
 
 	mut d_pool := new_db_pool(conf) or { panic(err) }

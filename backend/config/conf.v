@@ -18,7 +18,7 @@ const default_web_shutdown_timeout = 30
 pub struct ConfigLoader {
 pub mut:
 	globalconfig &GlobalConfig = unsafe { nil } // 存储配置对象的指针
-	initialized  bool      // 标记是否已初始化
+	initialized  bool // 标记是否已初始化
 	once         sync.Once // 保证线程安全的单次加载
 }
 
@@ -67,56 +67,56 @@ pub fn parse_data() !GlobalConfig {
 		request_timeout = default_web_request_timeout
 	}
 	web_config := WebConf{
-		port:             doc.value('web.port').int()
-		request_timeout:  request_timeout
+		port: doc.value('web.port').int()
+		request_timeout: request_timeout
 		shutdown_timeout: shutdown_timeout
 	}
-	//解析logging配置节
+	// 解析logging配置节
 	log_config := LogConf{
 		log_level: doc.value('logging.log_level').string()
 	}
 	// // 解析dbconf配置节
 	db_config := DBConf{
-		type:       doc.value('dbconf.type').string()
-		host:       doc.value('dbconf.host').string()
-		port:       doc.value('dbconf.port').string()
-		username:   doc.value('dbconf.username').string()
-		password:   doc.value('dbconf.password').string()
-		dbname:     doc.value('dbconf.dbname').string()
+		type: doc.value('dbconf.type').string()
+		host: doc.value('dbconf.host').string()
+		port: doc.value('dbconf.port').string()
+		username: doc.value('dbconf.username').string()
+		password: doc.value('dbconf.password').string()
+		dbname: doc.value('dbconf.dbname').string()
 		ssl_verify: doc.value('dbconf.ssl_verify').bool()
-		ssl_key:    doc.value('dbconf.ssl_key').string()
-		ssl_cert:   doc.value('dbconf.ssl_cert').string()
-		ssl_ca:     doc.value('dbconf.ssl_ca').string()
+		ssl_key: doc.value('dbconf.ssl_key').string()
+		ssl_cert: doc.value('dbconf.ssl_cert').string()
+		ssl_ca: doc.value('dbconf.ssl_ca').string()
 		ssl_capath: doc.value('dbconf.ssl_capath').string()
 		ssl_cipher: doc.value('dbconf.ssl_cipher').string()
 		// 连接池配置
-		max_conns:      doc.value('dbconf.max_conns').int() // 默认 100 个
+		max_conns: doc.value('dbconf.max_conns').int() // 默认 100 个
 		min_idle_conns: doc.value('dbconf.min_idle_conns').int() // 默认 10个
-		max_lifetime:   doc.value('dbconf.max_lifetime').int() // 默认 60 minute
-		idle_timeout:   doc.value('dbconf.idle_timeout').int() // 默认 30 minute
-		get_timeout:    doc.value('dbconf.get_timeout').int() // 默认 3 second
+		max_lifetime: doc.value('dbconf.max_lifetime').int() // 默认 60 minute
+		idle_timeout: doc.value('dbconf.idle_timeout').int() // 默认 30 minute
+		get_timeout: doc.value('dbconf.get_timeout').int() // 默认 3 second
 	}
 	// 解析 redis 配置节
 	redis_config := RedisConf{
-		host:        doc.value('redisconf.host').string()
-		port:        doc.value('redisconf.port').int()
-		password:    doc.value('redisconf.password').string()
+		host: doc.value('redisconf.host').string()
+		port: doc.value('redisconf.port').int()
+		password: doc.value('redisconf.password').string()
 		get_timeout: doc.value('redisconf.get_timeout').int()
 	}
 
 	// 解析 crypt 配置节
 	crypt_config := CryptConf{
-		jwt_secret:   doc.value('crypt.jwt_secret').string()
+		jwt_secret: doc.value('crypt.jwt_secret').string()
 		aksk_encrypt: doc.value('crypt.aksk_encrypt').string()
 	}
 
 	// 构建完整配置对象
 	cfg := GlobalConfig{
-		web:     web_config
-		crypt:   crypt_config
+		web: web_config
+		crypt: crypt_config
 		logging: log_config
-		dbconf:  db_config
-		redis:   redis_config
+		dbconf: db_config
+		redis: redis_config
 	}
 	return cfg
 }
@@ -190,7 +190,7 @@ pub fn find_toml() !string {
 	return error('无法找到任何配置文件，所有路径都已尝试')
 }
 
-//指定配置文件 [v run . -f etc/config_dev.toml]
+// 指定配置文件 [v run . -f etc/config_dev.toml]
 pub fn config_toml() string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

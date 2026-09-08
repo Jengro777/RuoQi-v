@@ -12,12 +12,15 @@ import common.api
 pub fn (app &Token) refresh_token_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[RefreshTokenReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := refresh_token_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 fn refresh_token_usecase(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
@@ -33,8 +36,8 @@ fn refresh_token_usecase(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp
 	} or { return error('Failed: ${err}') }
 	return RefreshTokenResp{
 		expired_at: time.now().add_days(30).str()
-		user_id:    ctx.svc_iam.user_id
-		token_jwt:  token_jwt
+		user_id: ctx.svc_iam.user_id
+		token_jwt: token_jwt
 	}
 }
 

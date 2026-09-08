@@ -18,14 +18,11 @@ fn (mut app AliasApp) routes_platform(mut ctx Context) {
 	app.register_routes_platform[PlatformApi, Context](mut &PlatformApi{}, '/platform/api', mut ctx)
 
 	// 菜单管理
-	app.register_routes_platform[PlatformMenu, Context](mut &PlatformMenu{}, '/platform/menu', mut
-		ctx)
+	app.register_routes_platform[PlatformMenu, Context](mut &PlatformMenu{}, '/platform/menu', mut ctx)
 
 	// 数据字典
-	app.register_routes_platform[PlatformDictionary, Context](mut &PlatformDictionary{},
-		'/platform/dictionary', mut ctx)
+	app.register_routes_platform[PlatformDictionary, Context](mut &PlatformDictionary{}, '/platform/dictionary', mut ctx)
 
 	// 系统配置
-	app.register_routes_platform[PlatformConfiguration, Context](mut &PlatformConfiguration{},
-		'/platform/configuration', mut ctx)
+	app.register_routes_platform[PlatformConfiguration, Context](mut &PlatformConfiguration{}, '/platform/configuration', mut ctx)
 }

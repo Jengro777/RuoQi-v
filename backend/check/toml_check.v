@@ -8,13 +8,13 @@ import config
 pub fn check_all() ! {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	check_config_toml()! //检查配置文件是否存在
+	check_config_toml()! // 检查配置文件是否存在
 	doc := config.read_toml() or { return }
-	set_log_sevel(doc) or { return } //设置全局日志级别
-	check_config_toml_data(doc) //检查配置文件内必要数据是否配置
+	set_log_sevel(doc) or { return } // 设置全局日志级别
+	check_config_toml_data(doc) // 检查配置文件内必要数据是否配置
 }
 
-//检查配置文件是否存在，若不存在则自动生成模板并继续启动
+// 检查配置文件是否存在，若不存在则自动生成模板并继续启动
 fn check_config_toml() !string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
@@ -35,7 +35,7 @@ fn check_config_toml() !string {
 	return config_path
 }
 
-//检查配置文件内必要数据是否配置
+// 检查配置文件内必要数据是否配置
 fn check_config_toml_data(doc toml.Doc) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

@@ -11,12 +11,15 @@ import json2 as json
 pub fn (app &Fms) find_fms_cloudfile_join_cloudtag_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[FmsCloudFileCloudFileTagListReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := find_fms_cloudfile_join_cloudtag_all_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 pub fn find_fms_cloudfile_join_cloudtag_all_usecase(mut ctx Context, req FmsCloudFileCloudFileTagListReq) !FmsCloudFileCloudFileTagListResp {
@@ -25,13 +28,17 @@ pub fn find_fms_cloudfile_join_cloudtag_all_usecase(mut ctx Context, req FmsClou
 }
 
 fn find_fms_cloudfile_join_cloudtag_all_domain(req FmsCloudFileCloudFileTagListReq) ! {
-	if req.page <= 0 { return error('page must be greater than 0') }
-	if req.page_size <= 0 { return error('page_size must be greater than 0') }
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
 }
 
 pub struct FmsCloudFileCloudFileTagListReq {
-	page              int    @[json: 'page']
-	page_size         int    @[json: 'pageSize']
+	page              int @[json: 'page']
+	page_size         int @[json: 'pageSize']
 	cloud_file_tag_id string @[json: 'cloudFileTagId']
 	cloud_file_id     string @[json: 'cloudFileId']
 }
@@ -53,10 +60,9 @@ fn find_fms_cloudfile_join_cloudtag_all_repo(mut ctx Context, req FmsCloudFileCl
 		select count from FmsCloudFileCloudFileTag
 	} or { return error('Failed to execute SQL query: ${err}') }
 	offset_num := (req.page - 1) * req.page_size
-	where_expr := {
-		if req.cloud_file_tag_id != '' { cloud_file_tag_id == req.cloud_file_tag_id },
-		if req.cloud_file_id != '' { cloud_file_id == req.cloud_file_id }
-	}
+	where_expr :=
+		sql {
+		}
 	result := sql db {
 		dynamic select from FmsCloudFileCloudFileTag where where_expr limit req.page_size offset offset_num
 	} or { return error('Failed to execute SQL query: ${err}') }
@@ -64,11 +70,11 @@ fn find_fms_cloudfile_join_cloudtag_all_repo(mut ctx Context, req FmsCloudFileCl
 	for row in result {
 		datalist << FmsCloudFileCloudFileTagData{
 			cloud_file_tag_id: row.cloud_file_tag_id
-			cloud_file_id:     row.cloud_file_id
+			cloud_file_id: row.cloud_file_id
 		}
 	}
 	return FmsCloudFileCloudFileTagListResp{
 		total: count
-		data:  datalist
+		data: datalist
 	}
 }

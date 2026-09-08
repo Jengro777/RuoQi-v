@@ -6,12 +6,12 @@ struct User {
 
 fn test_mysql() ! {
 	conf := DatabaseConfig{
-		type:     'mysql' // 或 'pgsql'
-		host:     '127.0.0.1'
-		port:     3306
+		type: 'mysql' // 或 'pgsql'
+		host: '127.0.0.1'
+		port: 3306
 		username: 'root'
 		password: 'mysql_123456'
-		dbname:   'vcore'
+		dbname: 'vcore'
 	}
 
 	mut d_pool := new_db_pool(conf) or { panic(err) }
@@ -37,12 +37,12 @@ fn test_mysql() ! {
 
 fn test_pgsql() ! {
 	conf := DatabaseConfig{
-		type:     'pgsql' // 或 'pgsql'
-		host:     '127.0.0.1'
-		port:     5432
+		type: 'pgsql' // 或 'pgsql'
+		host: '127.0.0.1'
+		port: 5432
 		username: 'root'
 		password: 'pg_123456'
-		dbname:   'postgres'
+		dbname: 'postgres'
 	}
 
 	mut d_pool := new_db_pool(conf) or { panic(err) }

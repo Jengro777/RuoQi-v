@@ -14,8 +14,8 @@ struct DbConfig {
 	username       string
 	password       string
 	dbname         string
-	max_conns      int           = 100
-	min_idle_conns int           = 10
+	max_conns      int = 100
+	min_idle_conns int = 10
 	max_lifetime   time.Duration = 1 * time.hour
 	idle_timeout   time.Duration = 30 * time.minute
 	get_timeout    time.Duration = 5 * time.second
@@ -40,21 +40,21 @@ mut:
 pub fn new_mysql_pool[T](config DbConfig) !&DatabaseMysqlPool[T] {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
 		mut db := mysql.connect(mysql.Config{
-			host:     config.host
-			port:     config.port
+			host: config.host
+			port: config.port
 			username: config.username
 			password: config.password
-			dbname:   config.dbname
+			dbname: config.dbname
 		})!
 		return &db
 	}
 
 	pool_conf := pool.ConnectionPoolConfig{
-		max_conns:      config.max_conns
+		max_conns: config.max_conns
 		min_idle_conns: config.min_idle_conns
-		max_lifetime:   config.max_lifetime
-		idle_timeout:   config.idle_timeout
-		get_timeout:    config.get_timeout
+		max_lifetime: config.max_lifetime
+		idle_timeout: config.idle_timeout
+		get_timeout: config.get_timeout
 	}
 
 	inner_pool := pool.new_connection_pool(create_conn, pool_conf)!
@@ -67,6 +67,7 @@ pub fn new_mysql_pool[T](config DbConfig) !&DatabaseMysqlPool[T] {
 // 获取连接 - 使用泛型类型转换
 pub fn (mut p DatabasePoolImpl[T]) acquire() !(T, &pool.ConnectionPoolable) {
 	conn := p.inner.get()!
+
 	// 安全类型转换
 
 	return conn as mysql.DB, conn
@@ -83,11 +84,11 @@ pub fn (mut p DatabasePoolImpl[T]) close() {
 }
 
 const config = DbConfig{
-	host:     'mysql2.sqlpub.com'
-	port:     3307
+	host: 'mysql2.sqlpub.com'
+	port: 3307
 	username: 'vcore_test'
 	password: 'wfo8wS7CylT0qIMg'
-	dbname:   'vcore_test'
+	dbname: 'vcore_test'
 }
 
 fn main() {

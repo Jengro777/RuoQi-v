@@ -42,7 +42,10 @@ fn iam_auth_scoped(mut ctx Context) bool {
 		return authenticate_aksk_signature(mut ctx, access_key)
 	}
 
-	ctx.json(api.json_error_401())
+	ctx.json(api.json_error(
+		code: api.err_common_auth
+		msg: 'Authentication required to access this resource'
+	))
 	return false
 }
 
@@ -70,7 +73,10 @@ fn iam_auth_identity(mut ctx Context) bool {
 		return authenticate_aksk_signature(mut ctx, access_key)
 	}
 
-	ctx.json(api.json_error_401())
+	ctx.json(api.json_error(
+		code: api.err_common_auth
+		msg: 'Authentication required to access this resource'
+	))
 	return false
 }
 
@@ -94,7 +100,10 @@ fn iam_auth_full(mut ctx Context) bool {
 		return authenticate_aksk_signature(mut ctx, access_key)
 	}
 
-	ctx.json(api.json_error_401())
+	ctx.json(api.json_error(
+		code: api.err_common_auth
+		msg: 'Authentication required to access this resource'
+	))
 	return false
 }
 
@@ -106,7 +115,10 @@ fn iam_auth_full(mut ctx Context) bool {
 fn authenticate_jwt_identity(mut ctx Context, token string) bool {
 	secret := ctx.config.crypt.jwt_secret
 	payload := crypt.verify_and_decode[crypt.AuthPayload](secret, token) or {
-		ctx.json(api.json_error_401())
+		ctx.json(api.json_error(
+			code: api.err_common_auth
+			msg: 'Authentication required to access this resource'
+		))
 		return false
 	}
 	ctx.svc_iam.user_id = payload.sub
@@ -123,11 +135,14 @@ fn authenticate_jwt_identity(mut ctx Context, token string) bool {
 fn authorize_workspace_permission(mut ctx Context, token string) bool {
 	scopes := middle.find_user_apis_by_token(mut ctx, token) or {
 		log.warn('find_user_apis_by_token failed: ${err}')
-		ctx.json(api.json_error_403())
+		ctx.json(api.json_error(
+			code: api.err_common_permission
+			msg: "You don't have permission to perform this action"
+		))
 		return false
 	}
 	check_scopes(scopes, ctx.req.method.str(), ctx.req.url.all_before('?')) or {
-		ctx.json(api.json_error(code: 1, status: 403, error: err.msg()))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: err.msg()))
 		return false
 	}
 	return true
@@ -147,15 +162,14 @@ fn authorize_tenant_membership(mut ctx Context) bool {
 	portal_id := ctx.req.header.get_custom('X-Portal-ID') or { '' }
 	if tenant_id == '' || product_id == '' || portal_id == '' {
 		ctx.json(api.json_error(
-			code: 1
-			status: 400
-			error: 'X-Tenant-ID, X-Product-ID and X-Portal-ID are required'
+			code: api.err_common_param_invalid
+			msg: 'X-Tenant-ID, X-Product-ID and X-Portal-ID are required'
 		))
 		return false
 	}
 
 	db, conn := ctx.dbpool.acquire() or {
-		ctx.json(api.json_error_500('Failed to acquire DB conn'))
+		ctx.json(api.json_error(code: api.err_common_server, msg: 'Failed to acquire DB conn'))
 		return false
 	}
 	defer {
@@ -166,14 +180,16 @@ fn authorize_tenant_membership(mut ctx Context) bool {
 		select from TnMember where tenant_id == tenant_id && user_id == ctx.svc_iam.user_id
 		&& product_id == product_id && portal_id == portal_id && status == 1 && del_flag == 0 limit 1
 	} or {
-		ctx.json(api.json_error_403())
+		ctx.json(api.json_error(
+			code: api.err_common_permission
+			msg: "You don't have permission to perform this action"
+		))
 		return false
 	}
 	if members.len == 0 {
 		ctx.json(api.json_error(
-			code: 1
-			status: 403
-			error: 'user not a member of this tenant/product/portal'
+			code: api.err_common_permission
+			msg: 'user not a member of this tenant/product/portal'
 		))
 		return false
 	}
@@ -206,28 +222,34 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 	sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
 	if timestamp == '' || sig == '' {
 		ctx.json(api.json_error(
-			code: 1
-			status: 401
-			error: 'Missing X-Timestamp or X-Signature header'
+			code: api.err_common_auth
+			msg: 'Missing X-Timestamp or X-Signature header'
 		))
 		return false
 	}
 
-	key := middle.find_apis_by_aksk(mut ctx, ak) or { return reject(mut ctx, api.json_error_401()) }
+	key := middle.find_apis_by_aksk(mut ctx, ak) or {
+		return reject(mut ctx, api.json_error(
+			code: api.err_common_auth
+			msg: 'Authentication required to access this resource'
+		))
+	}
 
 	aksk_encrypt := ctx.config.crypt.effective_aksk_encrypt()
 	sk := crypt.aes_decrypt(key.secret_key_cipher, aksk_encrypt) or {
 		log.warn('aes_decrypt failed for apikey ${key.id}: ${err}')
-		ctx.json(api.json_error_401())
+		ctx.json(api.json_error(
+			code: api.err_common_auth
+			msg: 'Authentication required to access this resource'
+		))
 		return false
 	}
 
 	path := ctx.req.url.all_before('?')
 	crypt.verify_apisign(sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig, sig_skew_seconds) or {
 		ctx.json(api.json_error(
-			code: 1
-			status: 401
-			error: err.msg()
+			code: api.err_common_auth
+			msg: err.msg()
 		))
 		return false
 	}
@@ -238,12 +260,18 @@ fn authenticate_aksk_signature(mut ctx Context, ak string) bool {
 // populate_aksk_context — 公有逻辑：校验状态/过期/隔离/scope，写入上下文
 fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 	if key.status != 1 {
-		ctx.json(api.json_error_403())
+		ctx.json(api.json_error(
+			code: api.err_common_permission
+			msg: "You don't have permission to perform this action"
+		))
 		return false
 	}
 	if exp := key.expired_at {
 		if time.now() > exp {
-			ctx.json(api.json_error_403())
+			ctx.json(api.json_error(
+				code: api.err_common_permission
+				msg: "You don't have permission to perform this action"
+			))
 			return false
 		}
 	}
@@ -256,31 +284,31 @@ fn populate_aksk_context(mut ctx Context, key IamApiKey) bool {
 	// 解码失败必须拒绝请求，不能静默回退为空（否则 JSON 损坏会导致隔离绕过）
 	tenants := json.decode[[]string](key.tenant_ids) or {
 		log.warn('invalid tenant_ids JSON for apikey ${key.id}: ${err}')
-		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid tenant_ids'))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: 'invalid tenant_ids'))
 		return false
 	}
 	subproducts := json.decode[[]string](key.subproduct_ids) or {
 		log.warn('invalid subproduct_ids JSON for apikey ${key.id}: ${err}')
-		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid subproduct_ids'))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: 'invalid subproduct_ids'))
 		return false
 	}
 	subportals := json.decode[[]string](key.subportal_ids) or {
 		log.warn('invalid subportal_ids JSON for apikey ${key.id}: ${err}')
-		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid subportal_ids'))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: 'invalid subportal_ids'))
 		return false
 	}
 
 	check_isolation(tenants, subproducts, subportals, tenant_id, subproduct_id, subportal_id) or {
-		ctx.json(api.json_error(code: 1, status: 403, error: err.msg()))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: err.msg()))
 		return false
 	}
 
 	scopes := json.decode[[]string](key.scopes) or {
-		ctx.json(api.json_error(code: 1, status: 403, error: 'invalid scopes JSON'))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: 'invalid scopes JSON'))
 		return false
 	}
 	check_scopes(scopes, ctx.req.method.str(), ctx.req.url.all_before('?')) or {
-		ctx.json(api.json_error(code: 1, status: 403, error: err.msg()))
+		ctx.json(api.json_error(code: api.err_common_permission, msg: err.msg()))
 		return false
 	}
 
@@ -398,18 +426,16 @@ $if debug {
 		sig := ctx.req.header.get_custom(crypt.sig_header_signature) or { '' }
 		if timestamp == '' || sig == '' {
 			return reject(mut ctx, api.json_error(
-				code: 1
-				status: 401
-				error: 'Missing X-Timestamp or X-Signature header'
+				code: api.err_common_auth
+				msg: 'Missing X-Timestamp or X-Signature header'
 			))
 		}
 
 		path := ctx.req.url.all_before('?')
 		crypt.verify_apisign(debug_sk, ctx.req.method.str(), path, ctx.req.data, timestamp, sig, sig_skew_seconds) or {
 			return reject(mut ctx, api.json_error(
-				code: 1
-				status: 401
-				error: err.msg()
+				code: api.err_common_auth
+				msg: err.msg()
 			))
 		}
 

@@ -21,8 +21,8 @@ pub fn init_cache_pool(doc &config.GlobalConfig) !&cache_pool.CachePool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut config_redis := cache_pool.CacheConfig{
-		host:     doc.redis.host
-		port:     u16(doc.redis.port)
+		host: doc.redis.host
+		port: u16(doc.redis.port)
 		password: doc.redis.password
 	}
 

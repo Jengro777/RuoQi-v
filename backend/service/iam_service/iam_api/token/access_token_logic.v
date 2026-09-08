@@ -15,8 +15,8 @@ pub fn generate_iam_token(mut ctx Context, user_id string, username string, logi
 			iat: time.now().unix()
 			jti: rand.uuid_v4()
 		}
-		client_ip:   login_ip
-		device_id:   device_id
+		client_ip: login_ip
+		device_id: device_id
 	}
 	return crypt.auth_generate(ctx.config.crypt.jwt_secret, payload)
 }

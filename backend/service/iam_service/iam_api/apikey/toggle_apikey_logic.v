@@ -16,23 +16,29 @@ pub struct ToggleApiKeyReq {
 pub fn (app &ApiKey) toggle_apikey_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[ToggleApiKeyReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := toggle_apikey_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('${err}'))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: '${err}'))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 fn toggle_apikey_usecase(mut ctx Context, req ToggleApiKeyReq) !map[string]string {
-	if req.id.len == 0 { return error('id is required') }
-	if req.action.len == 0 { return error('action is required') }
+	if req.id.len == 0 {
+		return error('id is required')
+	}
+	if req.action.len == 0 {
+		return error('action is required')
+	}
 
 	ts := match req.action {
 		'enable' { 0 }
 		'disable' { 1 }
 		'revoke' { 2 }
-		else { return error("action must be 'enable', 'disable', or 'revoke'") }
+		else {
+			return error("action must be 'enable', 'disable', or 'revoke'")
+		}
 	}
 
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }

@@ -22,17 +22,14 @@ fn (mut app AliasApp) routes_msg(mut ctx Context) {
 	app.register_routes_platform[EmailLog, Context](mut &EmailLog{}, '/msg/emaillog', mut ctx)
 
 	// Email provider management
-	app.register_routes_platform[EmailProvider, Context](mut &EmailProvider{},
-		'/msg/emailprovider', mut ctx)
+	app.register_routes_platform[EmailProvider, Context](mut &EmailProvider{}, '/msg/emailprovider', mut ctx)
 
 	// SMS log management
 	app.register_routes_platform[SmsLog, Context](mut &SmsLog{}, '/msg/smslog', mut ctx)
 
 	// SMS provider management
-	app.register_routes_platform[SmsProvider, Context](mut &SmsProvider{}, '/msg/smsprovider', mut
-		ctx)
+	app.register_routes_platform[SmsProvider, Context](mut &SmsProvider{}, '/msg/smsprovider', mut ctx)
 
 	// Message sender (send operations)
-	app.register_routes_platform[MessageSender, Context](mut &MessageSender{}, '/msg/sender', mut
-		ctx)
+	app.register_routes_platform[MessageSender, Context](mut &MessageSender{}, '/msg/sender', mut ctx)
 }

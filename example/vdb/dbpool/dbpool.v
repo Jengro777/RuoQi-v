@@ -18,11 +18,11 @@ pub fn new_mysql_pool(conf DatabaseConfig) !&MysqlPool {
 	}
 
 	cp := pool.new_connection_pool(create_conn, pool.ConnectionPoolConfig{
-		max_conns:      conf.max_conns
+		max_conns: conf.max_conns
 		min_idle_conns: conf.min_idle_conns
-		max_lifetime:   conf.max_lifetime
-		idle_timeout:   conf.idle_timeout
-		get_timeout:    conf.get_timeout
+		max_lifetime: conf.max_lifetime
+		idle_timeout: conf.idle_timeout
+		get_timeout: conf.get_timeout
 	})!
 
 	return &MysqlPool{cp}
@@ -57,11 +57,11 @@ pub fn new_pg_pool(conf DatabaseConfig) !&PgPool {
 	}
 
 	cp := pool.new_connection_pool(create_conn, pool.ConnectionPoolConfig{
-		max_conns:      conf.max_conns
+		max_conns: conf.max_conns
 		min_idle_conns: conf.min_idle_conns
-		max_lifetime:   conf.max_lifetime
-		idle_timeout:   conf.idle_timeout
-		get_timeout:    conf.get_timeout
+		max_lifetime: conf.max_lifetime
+		idle_timeout: conf.idle_timeout
+		get_timeout: conf.get_timeout
 	})!
 
 	return &PgPool{cp}
@@ -85,8 +85,14 @@ pub fn (mut p PgPool) close() {
 // ======================================
 pub fn new_db_pool(conf DatabaseConfig) !DatabasePoolable {
 	match conf.type.to_lower() {
-		'mysql' { return new_mysql_pool(conf)! }
-		'pgsql', 'postgres', 'postgresql' { return new_pg_pool(conf)! }
-		else { return error('Unsupported db type: ${conf.type}') }
+		'mysql' {
+			return new_mysql_pool(conf)!
+		}
+		'pgsql', 'postgres', 'postgresql' {
+			return new_pg_pool(conf)!
+		}
+		else {
+			return error('Unsupported db type: ${conf.type}')
+		}
 	}
 }

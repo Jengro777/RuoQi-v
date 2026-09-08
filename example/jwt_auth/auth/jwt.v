@@ -13,7 +13,7 @@ const header = base64.url_encode_str(json.encode(JwtHeader{
 	typ: 'JWT'
 }))
 
-//生成令牌
+// 生成令牌
 pub fn jwt_generate(secret string, payload JwtPayload) string {
 	playload_64 := base64.url_encode_str(json.encode(payload))
 

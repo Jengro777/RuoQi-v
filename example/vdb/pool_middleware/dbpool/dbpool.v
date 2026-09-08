@@ -20,8 +20,8 @@ pub mut:
 	ssl_capath string
 	ssl_cipher string
 
-	max_conns      int           = 100
-	min_idle_conns int           = 10
+	max_conns      int = 100
+	min_idle_conns int = 10
 	max_lifetime   time.Duration = 60 * time.minute
 	idle_timeout   time.Duration = 30 * time.minute
 	get_timeout    time.Duration = 3 * time.second
@@ -43,21 +43,21 @@ pub mut:
 pub fn new_db_pool(config DatabaseConfig) !&DatabasePool {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
 		mut db := mysql.connect(mysql.Config{
-			host:     config.host
-			port:     config.port
+			host: config.host
+			port: config.port
 			username: config.username
 			password: config.password
-			dbname:   config.dbname
+			dbname: config.dbname
 		})!
 		return &db
 	}
 
 	pool_conf := pool.ConnectionPoolConfig{
-		max_conns:      config.max_conns
+		max_conns: config.max_conns
 		min_idle_conns: config.min_idle_conns
-		max_lifetime:   config.max_lifetime
-		idle_timeout:   config.idle_timeout
-		get_timeout:    config.get_timeout
+		max_lifetime: config.max_lifetime
+		idle_timeout: config.idle_timeout
+		get_timeout: config.get_timeout
 	}
 
 	inner_pool := pool.new_connection_pool(create_conn, pool_conf)!

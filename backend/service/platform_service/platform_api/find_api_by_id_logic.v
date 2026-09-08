@@ -12,12 +12,12 @@ import common.api as capi
 pub fn (app &PlatformApi) find_api_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[FindApiByIdReq](ctx.req.data) or {
-		return ctx.json(capi.json_error_400(err.msg()))
+		return ctx.json(capi.json_error(code: capi.err_common_param_invalid, msg: err.msg()))
 	}
 	result := find_api_by_id_usecase(mut ctx, req) or {
-		return ctx.json(capi.json_error_500(err.msg()))
+		return ctx.json(capi.json_error(code: capi.err_common_server, msg: err.msg()))
 	}
-	return ctx.json(capi.json_success_200(result))
+	return ctx.json(capi.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -28,7 +28,9 @@ pub fn find_api_by_id_usecase(mut ctx Context, req FindApiByIdReq) !PfApi {
 
 // ═══ Domain ═══
 fn find_api_by_id_domain(req FindApiByIdReq) ! {
-	if req.id == '' { return error('id is required') }
+	if req.id == '' {
+		return error('id is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -43,6 +45,8 @@ fn find_api_by_id_repo(mut ctx Context, req FindApiByIdReq) !PfApi {
 	apis := sql db {
 		select from PfApi where id == req.id && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
-	if apis.len == 0 { return error('API not found') }
+	if apis.len == 0 {
+		return error('API not found')
+	}
 	return apis[0]
 }

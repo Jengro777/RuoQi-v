@@ -10,8 +10,10 @@ import common.api
 @['/logout'; get; post]
 pub fn (app &User) logout_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	result := logout_usecase(mut ctx) or { return ctx.json(api.json_error_500(err.msg())) }
-	return ctx.json(api.json_success_200(result))
+	result := logout_usecase(mut ctx) or {
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
+	}
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══

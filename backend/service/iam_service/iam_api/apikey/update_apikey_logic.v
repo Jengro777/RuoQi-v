@@ -8,8 +8,8 @@ import model.schema_iam { IamApiKey }
 import common.api
 
 pub struct UpdateApiKeyReq {
-	id             string    @[json: 'id']
-	name           ?string   @[json: 'name']
+	id             string @[json: 'id']
+	name           ?string @[json: 'name']
 	tenant_ids     ?[]string @[json: 'tenant_ids']
 	subproduct_ids ?[]string @[json: 'subproduct_ids']
 	subportal_ids  ?[]string @[json: 'subportal_ids']
@@ -20,18 +20,22 @@ pub struct UpdateApiKeyReq {
 pub fn (app &ApiKey) update_apikey_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[UpdateApiKeyReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := update_apikey_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('${err}'))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: '${err}'))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 fn update_apikey_usecase(mut ctx Context, req UpdateApiKeyReq) !map[string]string {
-	if req.id.len == 0 { return error('id is required') }
+	if req.id.len == 0 {
+		return error('id is required')
+	}
 	if v := req.name {
-		if v.len > 255 { return error('name too long') }
+		if v.len > 255 {
+			return error('name too long')
+		}
 	}
 
 	// Check that at least one field is being updated
@@ -47,7 +51,9 @@ fn update_apikey_usecase(mut ctx Context, req UpdateApiKeyReq) !map[string]strin
 	keys := sql db {
 		select from IamApiKey where id == req.id && user_id == ctx.svc_iam.user_id limit 1
 	} or { return error('API Key not found') }
-	if keys.len == 0 { return error('API Key not found') }
+	if keys.len == 0 {
+		return error('API Key not found')
+	}
 	existing := keys[0]
 
 	// Apply changes (read-modify-write)
@@ -57,11 +63,21 @@ fn update_apikey_usecase(mut ctx Context, req UpdateApiKeyReq) !map[string]strin
 	mut subportal_ids := existing.subportal_ids
 	mut scopes := existing.scopes
 
-	if v := req.name { name = v }
-	if v := req.tenant_ids { tenant_ids = json.encode(v) }
-	if v := req.subproduct_ids { subproduct_ids = json.encode(v) }
-	if v := req.subportal_ids { subportal_ids = json.encode(v) }
-	if v := req.scopes { scopes = json.encode(v) }
+	if v := req.name {
+		name = v
+	}
+	if v := req.tenant_ids {
+		tenant_ids = json.encode(v)
+	}
+	if v := req.subproduct_ids {
+		subproduct_ids = json.encode(v)
+	}
+	if v := req.subportal_ids {
+		subportal_ids = json.encode(v)
+	}
+	if v := req.scopes {
+		scopes = json.encode(v)
+	}
 
 	sql db {
 		update IamApiKey set name = name, tenant_ids = tenant_ids, subproduct_ids = subproduct_ids,

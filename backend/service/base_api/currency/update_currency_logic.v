@@ -14,14 +14,17 @@ pub fn (app &Currency) update_currency_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateCurrencyReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := update_currency_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -42,17 +45,17 @@ fn update_currency_domain(req UpdateCurrencyReq) ! {
 
 // ═══ DTO ═══
 pub struct UpdateCurrencyReq {
-	id                        string  @[json: 'id']
+	id                        string @[json: 'id']
 	english_name              ?string @[json: 'englishName']
 	simplified_name           ?string @[json: 'simplifiedName']
 	currency_code             ?string @[json: 'currencyCode']
 	currency_symbol           ?string @[json: 'currencySymbol']
-	decimal_place             ?u8     @[json: 'decimalPlace']
-	exchange_rate             ?f64    @[json: 'exchangeRate']
-	exchange_rate_fluctuation ?f64    @[json: 'exchangeRateFluctuation']
-	exchange_rate_used        ?f64    @[json: 'exchangeRateUsed']
-	sort                      ?int    @[json: 'sort']
-	status                    ?u8     @[json: 'status']
+	decimal_place             ?u8 @[json: 'decimalPlace']
+	exchange_rate             ?f64 @[json: 'exchangeRate']
+	exchange_rate_fluctuation ?f64 @[json: 'exchangeRateFluctuation']
+	exchange_rate_used        ?f64 @[json: 'exchangeRateUsed']
+	sort                      ?int @[json: 'sort']
+	status                    ?u8 @[json: 'status']
 }
 
 pub struct UpdateCurrencyResp {
@@ -64,21 +67,9 @@ fn update_currency_repo(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyR
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr := {
-		if english_name := req.english_name { english_name == english_name },
-		if simplified_name := req.simplified_name { simplified_name == simplified_name },
-		if currency_code := req.currency_code { currency_code == currency_code },
-		if currency_symbol := req.currency_symbol { currency_symbol == currency_symbol },
-		if decimal_place := req.decimal_place { decimal_place == decimal_place },
-		if exchange_rate := req.exchange_rate { exchange_rate == exchange_rate },
-		if exchange_rate_fluctuation := req.exchange_rate_fluctuation {
-			exchange_rate_fluctuation == exchange_rate_fluctuation
-		},
-		if exchange_rate_used := req.exchange_rate_used { exchange_rate_used == exchange_rate_used },
-		if sort := req.sort { sort == sort },
-		if status := req.status { status == status },
-		updated_at == time.now()
-	}
+	up_expr :=
+		sql {
+		}
 
 	sql db {
 		dynamic update BaseCurrency set up_expr where id == req.id

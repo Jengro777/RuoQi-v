@@ -31,7 +31,7 @@ pub fn opt_generate(secret string) (string, string) {
 			iat: now.unix()
 			jti: rand.uuid_v4()
 		}
-		opt_text:    opt_num
+		opt_text: opt_num
 	}
 	token := sign_payload[OptPayload](secret, payload)
 	return token, opt_num

@@ -14,12 +14,15 @@ import service.iam_service.iam_api.tenant
 pub fn (app &TenantMember) invite_member_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[InviteMemberReq](ctx.req.data) or {
-		return ctx.json(capi.json_error_400(err.msg()))
+		return ctx.json(capi.json_error(code: capi.err_common_param_invalid, msg: err.msg()))
 	}
 	result := invite_member_usecase(mut ctx, req) or {
-		return ctx.json(capi.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(capi.json_error(
+			code: capi.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
-	return ctx.json(capi.json_success_200(result))
+	return ctx.json(capi.json_success(data: result))
 }
 
 // ═══ Use Case ═══

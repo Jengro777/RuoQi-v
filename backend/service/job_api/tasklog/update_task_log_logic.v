@@ -14,14 +14,17 @@ pub fn (app &TaskLog) update_task_log_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateTaskLogReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 
 	result := update_task_log_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+		return ctx.json(api.json_error(
+			code: api.err_common_server
+			msg: 'Internal Server Error: ${err}'
+		))
 	}
 
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -39,10 +42,10 @@ fn update_task_log_domain(req UpdateTaskLogReq) ! {
 
 // ═══ DTO ═══
 pub struct UpdateTaskLogReq {
-	id             string     @[json: 'id']
+	id             string @[json: 'id']
 	finished_at    ?time.Time @[json: 'finishedAt']
-	result         ?u8        @[json: 'result']
-	task_task_logs ?string    @[json: 'taskTaskLogs']
+	result         ?u8 @[json: 'result']
+	task_task_logs ?string @[json: 'taskTaskLogs']
 }
 
 pub struct UpdateTaskLogResp {
@@ -55,13 +58,9 @@ fn update_task_log_repo(mut ctx Context, req UpdateTaskLogReq) !UpdateTaskLogRes
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
 	time_now := time.now()
-	up_expr := {
-		if finished_at := req.finished_at { finished_at == finished_at },
-		if result := req.result { result == result },
-		if task_task_logs := req.task_task_logs { task_task_logs == task_task_logs },
-		updated_at == time_now,
-		updater_id == ctx.svc_iam.user_id
-	}
+	up_expr :=
+		sql {
+		}
 
 	sql db {
 		dynamic update JobTaskLog set up_expr where id == req.id

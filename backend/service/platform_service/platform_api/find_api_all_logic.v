@@ -10,8 +10,10 @@ import common.api as capi
 @['/find_api_all'; post]
 pub fn (app &PlatformApi) find_api_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	result := find_api_all_usecase(mut ctx) or { return ctx.json(capi.json_error_500(err.msg())) }
-	return ctx.json(capi.json_success_200(result))
+	result := find_api_all_usecase(mut ctx) or {
+		return ctx.json(capi.json_error(code: capi.err_common_server, msg: err.msg()))
+	}
+	return ctx.json(capi.json_success(data: result))
 }
 
 // ═══ Use Case ═══

@@ -12,12 +12,12 @@ import common.api
 pub fn (app &PlatformMenu) find_menu_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	req := json.decode[FindMenuByIdReq](ctx.req.data) or {
-		return ctx.json(api.json_error_400(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_param_invalid, msg: err.msg()))
 	}
 	result := find_menu_by_id_usecase(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
 	}
-	return ctx.json(api.json_success_200(result))
+	return ctx.json(api.json_success(data: result))
 }
 
 // ═══ Use Case ═══
@@ -28,7 +28,9 @@ pub fn find_menu_by_id_usecase(mut ctx Context, req FindMenuByIdReq) !PfMenu {
 
 // ═══ Domain ═══
 fn find_menu_by_id_domain(req FindMenuByIdReq) ! {
-	if req.id == '' { return error('id is required') }
+	if req.id == '' {
+		return error('id is required')
+	}
 }
 
 // ═══ DTO ═══
@@ -43,6 +45,8 @@ fn find_menu_by_id_repo(mut ctx Context, req FindMenuByIdReq) !PfMenu {
 	menus := sql db {
 		select from PfMenu where id == req.id && del_flag == 0 limit 1
 	} or { return error('Failed: ${err}') }
-	if menus.len == 0 { return error('Menu not found') }
+	if menus.len == 0 {
+		return error('Menu not found')
+	}
 	return menus[0]
 }

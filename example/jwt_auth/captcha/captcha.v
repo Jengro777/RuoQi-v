@@ -81,7 +81,7 @@ pub fn generate_captcha() Captcha {
 
 	// 3. 返回Base64编码的SVG
 	return Captcha{
-		text:  text
+		text: text
 		image: 'data:image/svg+xml;base64,' + base64.encode_str(svg)
 	}
 }

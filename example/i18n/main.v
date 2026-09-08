@@ -10,7 +10,7 @@ pub struct Context {
 	veb.Context
 pub mut:
 	extra_i18n map[string]string = map[string]string{}
-	i18n       &I18nStore        = unsafe { nil }
+	i18n       &I18nStore = unsafe { nil }
 }
 
 // ------------------------- I18n -------------------------
@@ -30,12 +30,12 @@ pub mut:
 // 创建 I18nStore
 pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 	mut s := &I18nStore{
-		dir:          dir
+		dir: dir
 		default_lang: default_lang
 		translations: map[string]map[string]string{}
-		lang_cache:   map[string]string{}
-		mod_times:    map[string]int{}
-		last_check:   0
+		lang_cache: map[string]string{}
+		mod_times: map[string]int{}
+		last_check: 0
 	}
 	load_translations(mut s)!
 	return s

@@ -26,11 +26,11 @@ mut:
 
 pub fn new_pg_connection(conf DatabaseConfig) !&PgConnection {
 	db := pg.connect(pg.Config{
-		host:     conf.host
-		port:     int(conf.port)
-		user:     conf.username
+		host: conf.host
+		port: int(conf.port)
+		user: conf.username
 		password: conf.password
-		dbname:   conf.dbname
+		dbname: conf.dbname
 	})!
 	return &PgConnection{db}
 }
@@ -65,12 +65,12 @@ pub fn (c &PgConnection) close() ! {}
 // 主函数测试
 fn main() {
 	conf := DatabaseConfig{
-		db_type:  'postgresql'
-		host:     'localhost'
-		port:     5432
+		db_type: 'postgresql'
+		host: 'localhost'
+		port: 5432
 		username: 'root'
 		password: 'pg_123456'
-		dbname:   'postgres'
+		dbname: 'postgres'
 	}
 
 	// 测试 PostgreSQL 连接

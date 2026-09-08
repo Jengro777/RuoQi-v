@@ -12,9 +12,9 @@ import route { AliasApp }
 
 fn serve_http(mut app AliasApp, port int, request_timeout int) {
 	veb.run_at[AliasApp, Context](mut app,
-		host:               ''
-		port:               port
-		family:             .ip6
+		host: ''
+		port: port
+		family: .ip6
 		timeout_in_seconds: request_timeout
 	) or { panic(err) }
 }
@@ -80,8 +80,8 @@ pub fn new_app() {
 
 	// 5. 创建 veb 应用实例，并注册系统关闭信号。
 	mut app := &AliasApp{
-		started:         chan bool{cap: 1}
-		shutdown_signal: chan bool{cap: 1}
+		started: chan bool{ cap: 1 }
+		shutdown_signal: chan bool{ cap: 1 }
 	}
 	os.signal_opt(.int, fn [app] (_ os.Signal) {
 		app.request_shutdown()
