@@ -15,7 +15,7 @@ const header_opt = base64.url_encode_str(json.encode(JwtHeader{
 }))
 
 //*>>>>>>>>>>>>>captcha_jwt>>>>>>>>>>>>>*/
-const opt_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
+const opt_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' // 固定值，JWT有效性验证时使用
 
 fn random_num() string {
 	gen_random := fn () int {
@@ -25,7 +25,7 @@ fn random_num() string {
 	return gen_random.str()
 }
 
-//生成captcha_opt令牌
+// 生成captcha_opt令牌
 pub fn opt_generate() (string, string) {
 	opt_num := random_num().str()
 

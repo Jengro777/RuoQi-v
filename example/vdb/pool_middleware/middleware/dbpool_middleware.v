@@ -9,11 +9,11 @@ pub fn init_db_pool() !&dbpool.DatabasePool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut config_db := dbpool.DatabaseConfig{
-		host:     'mysql2.sqlpub.com'
-		port:     3307
+		host: 'mysql2.sqlpub.com'
+		port: 3307
 		username: 'vcore_test'
 		password: 'wfo8wS7CylT0qIMg'
-		dbname:   'vcore_test'
+		dbname: 'vcore_test'
 	}
 
 	mut conn := dbpool.new_db_pool(config_db) or {

@@ -1,12 +1,12 @@
 module pgsql_pool
 
 const config = DatabaseConfig{
-	host:           'ep-wandering-king-akw206lc-pooler.c-3.us-west-2.aws.neon.tech'
-	port:           5432
-	username:       'neondb_owner'
-	password:       'npg_U4j7sqBcgIMO'
-	dbname:         'vcore_test'
-	max_conns:      1
+	host: 'ep-wandering-king-akw206lc-pooler.c-3.us-west-2.aws.neon.tech'
+	port: 5432
+	username: 'neondb_owner'
+	password: 'npg_U4j7sqBcgIMO'
+	dbname: 'vcore_test'
+	max_conns: 1
 	min_idle_conns: 0
 }
 

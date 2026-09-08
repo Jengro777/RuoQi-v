@@ -13,4 +13,5 @@ for _ in 0 .. 10000 {
 	u.next()
 	dump(u.next())
 }
+
 b.measure('new_uuid_v7_session')

@@ -24,12 +24,12 @@ pub fn new_locale(dir string, default_lang string) !&LocaleStore {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut s := &LocaleStore{
-		dir:          dir
+		dir: dir
 		default_lang: default_lang
 		translations: map[string]map[string]string{}
 		current_lang: default_lang
-		mod_times:    map[string]int{}
-		last_check:   0
+		mod_times: map[string]int{}
+		last_check: 0
 	}
 	load_translations(mut s)!
 	return s

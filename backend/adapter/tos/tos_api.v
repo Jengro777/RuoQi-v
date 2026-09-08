@@ -106,10 +106,7 @@ pub fn (c TosClient) login() !string {
 	req := c.build_login_request()
 
 	resp := req.do() or {
-		return error(api.json_error(
-			code: api.err_common_server
-			msg: '请求失败：${err}'
-		).msg)
+		return error(api.json_error(code: api.err_common_server, msg: '请求失败：${err}').msg)
 	}
 
 	if resp.status_code != 200 {

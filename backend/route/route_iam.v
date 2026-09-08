@@ -24,8 +24,7 @@ fn (mut app AliasApp) routes_iam(mut ctx Context) {
 
 	// 无需认证 —— 认证入口 + 注册 + MFA
 	app.register_routes_no_auth[Iam, Context](mut &Iam{}, '/iam', mut ctx)
-	app.register_routes_no_auth[Authentication, Context](mut &Authentication{}, '/iam/auth', mut
-		ctx)
+	app.register_routes_no_auth[Authentication, Context](mut &Authentication{}, '/iam/auth', mut ctx)
 
 	// 仅认证（自服务）—— 已登录即可访问，不检查 workspace 权限
 	app.register_routes_authenticated[Profile, Context](mut &Profile{}, '/iam/profile', mut ctx)

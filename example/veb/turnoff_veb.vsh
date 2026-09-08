@@ -14,18 +14,18 @@ pub struct Context {
 pub struct GracefulShutdownManager {
 mut:
 	mu                 sync.Mutex // 互斥锁，保护共享状态 / Mutex to protect shared state
-	inflight           int        // 当前正在处理的请求数 / Number of requests currently being processed
-	shutting_down      bool       // 是否正在关闭 / Whether the server is shutting down
-	shutdown_ch        chan bool  // 用于接收关闭信号 / Channel to receive shutdown signals
-	inflight_zero      chan bool  // inflight 为 0 时通知 / Notifies when inflight reaches 0
-	shutdown_wait_secs int        // 等待请求完成的最大秒数 / Maximum seconds to wait for requests to complete
+	inflight           int // 当前正在处理的请求数 / Number of requests currently being processed
+	shutting_down      bool // 是否正在关闭 / Whether the server is shutting down
+	shutdown_ch        chan bool // 用于接收关闭信号 / Channel to receive shutdown signals
+	inflight_zero      chan bool // inflight 为 0 时通知 / Notifies when inflight reaches 0
+	shutdown_wait_secs int // 等待请求完成的最大秒数 / Maximum seconds to wait for requests to complete
 }
 
 // 创建优雅关闭管理器 / Create a Graceful Shutdown Manager
 pub fn new_graceful_shutdown_manager(shutdown_wait_secs int) GracefulShutdownManager {
 	return GracefulShutdownManager{
-		shutdown_ch:        chan bool{cap: 1}
-		inflight_zero:      chan bool{cap: 1}
+		shutdown_ch: chan bool{ cap: 1 }
+		inflight_zero: chan bool{ cap: 1 }
 		shutdown_wait_secs: shutdown_wait_secs
 	}
 }
@@ -70,8 +70,10 @@ pub fn (manager &GracefulShutdownManager) initiate_shutdown() {
 			// 防止阻塞 / Prevent blocking
 			go fn (ch chan bool) {
 				select {
-					ch <- true {}
-					else {}
+					ch <- true {
+					}
+					else {
+					}
 				}
 			}(manager.shutdown_ch)
 		}
@@ -118,7 +120,8 @@ pub fn (mut manager GracefulShutdownManager) start_shutdown() {
 				perform_graceful_exit()
 				return
 			}
-			else {}
+			else {
+			}
 		}
 
 		if time.now() - start > time.Duration(wait_secs) * time.second {
@@ -186,7 +189,6 @@ fn main() {
 
 	// 启动 shutdown listener / Start shutdown listener
 	go shutdown_listener(mut &shutdown_manager)
-
 	eprintln('Server 启动在端口 9008 / Server started on port 9008')
 	eprintln('curl http://localhost:9008/slow')
 

@@ -47,7 +47,7 @@ fn test_opt_verify_expired_token() {
 			iat: now - 120
 			jti: 'expired-jti'
 		}
-		opt_text:    '12345'
+		opt_text: '12345'
 	}
 	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
 	assert crypt.opt_verify(test_jwt_secret, token, '12345') == false

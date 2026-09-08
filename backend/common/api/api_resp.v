@@ -12,7 +12,7 @@ pub:
 @[params]
 pub struct ApiErrorResponse {
 pub:
-	code       int = 1
+	code       int
 	request_id string
 	msg        string
 }

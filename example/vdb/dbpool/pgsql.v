@@ -12,11 +12,11 @@ mut:
 
 pub fn new_pg_adapter(conf DatabaseConfig) !&PgAdapter {
 	db := pg.connect(pg.Config{
-		host:     conf.host
-		port:     int(conf.port)
-		user:     conf.username
+		host: conf.host
+		port: int(conf.port)
+		user: conf.username
 		password: conf.password
-		dbname:   conf.dbname
+		dbname: conf.dbname
 	})!
 	return &PgAdapter{db}
 }

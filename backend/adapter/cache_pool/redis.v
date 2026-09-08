@@ -21,10 +21,10 @@ pub struct CachePool {
 // 初始化缓存连接
 pub fn new_cache_pool(config CacheConfig) !&CachePool {
 	mut redisdb := redis.connect(redis.Config{
-		host:     config.host
+		host: config.host
 		password: config.password
-		port:     config.port
-		tls:      config.tls or { false }
+		port: config.port
+		tls: config.tls or { false }
 	}) or { return error('Failed to connect Redis at ${config.host}:${config.port}: ${err}') }
 
 	return &CachePool{redisdb}

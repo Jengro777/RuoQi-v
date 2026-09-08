@@ -21,8 +21,8 @@ fn test_auth_generate() {
 			iat: now
 			jti: 'jti-001'
 		}
-		client_ip:   '10.0.0.1'
-		device_id:   'dev-a'
+		client_ip: '10.0.0.1'
+		device_id: 'dev-a'
 	}
 	token := crypt.auth_generate(secret, payload)
 	dump(token)

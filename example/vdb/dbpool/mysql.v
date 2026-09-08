@@ -12,11 +12,11 @@ mut:
 
 pub fn new_mysql_adapter(conf DatabaseConfig) !&MysqlAdapter {
 	mut config := mysql.Config{
-		host:     conf.host
-		port:     conf.port
+		host: conf.host
+		port: conf.port
 		username: conf.username
 		password: conf.password
-		dbname:   conf.dbname
+		dbname: conf.dbname
 	}
 
 	// SSL 配置

@@ -16,8 +16,10 @@ pub fn set_log_sevel(doc toml.Doc) ! {
 		'warn' { log.Level.warn }
 		'error' { log.Level.error }
 		'fatal' { log.Level.fatal }
-		else { log.Level.debug } // 设置默认值
+		else { log.Level.debug }
 	}
+
+	// 设置默认值
 
 	log.set_level(level)
 }

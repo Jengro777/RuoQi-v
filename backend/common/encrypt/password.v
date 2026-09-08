@@ -5,7 +5,7 @@ import crypto.sha256
 import regex
 import strconv
 
-pub const client_salt = '7x!A@D#Ke9q2$}{{*)%~?'
+pub const client_salt = '7x!A@D#Ke9q2\$}{{*)%~?'
 const expected_sha_len = 64
 
 // ===================================================================

@@ -4,8 +4,8 @@ import log
 import os
 
 mut l := log.Log{}
-l.set_output_stream(os.stdout())
 
+l.set_output_stream(os.stdout())
 log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 // ----------------------------

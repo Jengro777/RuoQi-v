@@ -6,12 +6,12 @@ import time
 @[table: 'sys_users']
 struct User {
 pub:
-	id         string     @[primary; sql_type: 'VARCHAR(255)'; unique]
-	name       ?string    @[sql_type: 'VARCHAR(255)']
-	nickname   ?string    @[sql_type: 'VARCHAR(255)']
-	mobile     ?string    @[sql_type: 'VARCHAR(255)']
-	email      ?string    @[sql_type: 'VARCHAR(255)']
-	created_at time.Time  @[omitempty; sql_type: 'TIMESTAMP']
+	id         string @[primary; sql_type: 'VARCHAR(255)'; unique]
+	name       ?string @[sql_type: 'VARCHAR(255)']
+	nickname   ?string @[sql_type: 'VARCHAR(255)']
+	mobile     ?string @[sql_type: 'VARCHAR(255)']
+	email      ?string @[sql_type: 'VARCHAR(255)']
+	created_at time.Time @[omitempty; sql_type: 'TIMESTAMP']
 	updated_at ?time.Time @[default: new; omitempty; sql_type: 'TIMESTAMP']
 }
 
@@ -39,10 +39,10 @@ fn main() {
 	insert_users(mut db) or { panic(err) }
 
 	req := UserReq{
-		name:     'Jengro'
+		name: 'Jengro'
 		nickname: 'Woo'
-		mobile:   '535770088'
-		email:    'admin@admin.com'
+		mobile: '535770088'
+		email: 'admin@admin.com'
 	}
 	// 更改用户数据
 	update_users(mut db, req) or { panic(err) }
@@ -69,21 +69,21 @@ fn init_database() !&sqlite.DB {
 // 插入用户数据
 fn insert_users(mut db sqlite.DB) ! {
 	users1 := User{
-		id:         '1'
-		name:       'Jengro'
-		nickname:   'Woo'
-		mobile:     '535770088'
-		email:      'admin@admin.com'
+		id: '1'
+		name: 'Jengro'
+		nickname: 'Woo'
+		mobile: '535770088'
+		email: 'admin@admin.com'
 		created_at: time.now()
 		updated_at: time.now()
 	}
 
 	users2 := User{
-		id:         '2'
-		name:       'Dev'
-		nickname:   'T'
-		mobile:     '15020579521'
-		email:      'dev@dev.com'
+		id: '2'
+		name: 'Dev'
+		nickname: 'T'
+		mobile: '15020579521'
+		email: 'dev@dev.com'
 		created_at: time.now()
 		updated_at: time.now()
 	}

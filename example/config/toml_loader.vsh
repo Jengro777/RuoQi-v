@@ -26,7 +26,7 @@ pub:
 struct ConfigLoader {
 mut:
 	config   &Config = unsafe { nil }
-	load_err IError  = none
+	load_err IError = none
 	once     &sync.Once
 }
 
@@ -54,7 +54,7 @@ fn (mut l ConfigLoader) load_config() {
 
 	// 解析web配置
 	web_config := WebConfig{
-		port:    doc.value('web.port').int()
+		port: doc.value('web.port').int()
 		timeout: doc.value('web.timeout').int()
 	}
 
@@ -65,7 +65,7 @@ fn (mut l ConfigLoader) load_config() {
 	}
 
 	l.config = &Config{
-		web:    web_config
+		web: web_config
 		dbconf: db_config
 	}
 }

@@ -24,7 +24,7 @@ pub fn json_to_string_nesting(data map[string]json.Any) string {
 	return result
 }
 
-//单层map转字符串(1688签名因子使用)
+// 单层map转字符串(1688签名因子使用)
 pub fn json_to_string(data map[string]json.Any) string {
 	mut result := ''
 	for key, value in data {

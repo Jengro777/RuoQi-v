@@ -21,10 +21,20 @@ pub fn json_success[T](input ApiSuccessResponse[T]) ApiSuccessResponse[T] {
 
 // 业务失败
 pub fn json_error(input ApiErrorResponse) ApiErrorResponse {
+	mut msg := input.msg
+	// 非用户行为类错误（系统/下游/依赖，category != 1）在生产构建统一隐藏具体信息，
+	// 避免泄露内部实现细节（DB / 堆栈 / 内部异常等）；非生产构建仍返回原始 msg 便于排障。
+	if category(input.code) != 1 {
+		$if !prod {
+			msg = input.msg
+		} $else {
+			msg = 'Something went wrong on our end. Please try again later.'
+		}
+	}
 	return ApiErrorResponse{
 		code: input.code
 		request_id: rand.uuid_v7()
-		msg: input.msg
+		msg: msg
 	}
 }
 

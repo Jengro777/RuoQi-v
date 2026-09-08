@@ -56,7 +56,7 @@ fn test_load_translations() {
 	// 写入中文翻译文件
 	os.write_file(os.join_path(dir, 'zh.json'), '{"a": "你好"}') or {}
 	mut store := &LocaleStore{
-		dir:          dir
+		dir: dir
 		default_lang: 'zh'
 	}
 	load_translations(mut store) or { assert false, 'load_translations failed: ${err}' }

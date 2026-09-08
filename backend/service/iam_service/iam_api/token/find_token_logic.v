@@ -11,10 +11,7 @@ import common.api
 pub fn (app &Token) find_token_all_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	result := find_token_all_usecase(mut ctx) or {
-		return ctx.json(api.json_error(
-			code: api.err_common_server
-			msg: err.msg()
-		))
+		return ctx.json(api.json_error(code: api.err_common_server, msg: err.msg()))
 	}
 	return ctx.json(api.json_success(data: result))
 }

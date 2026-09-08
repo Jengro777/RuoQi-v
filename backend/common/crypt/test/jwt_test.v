@@ -23,7 +23,7 @@ fn test_sign_and_verify_roundtrip() {
 			iat: now
 			jti: 'jti-rt'
 		}
-		opt_text:    '67890'
+		opt_text: '67890'
 	}
 	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
 	decoded := crypt.verify_and_decode[crypt.OptPayload](test_jwt_secret, token)!
@@ -54,7 +54,7 @@ fn test_verify_and_decode_expired() {
 			iat: now - 120
 			jti: 'expired-jti'
 		}
-		opt_text:    '12345'
+		opt_text: '12345'
 	}
 	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
 	_ := crypt.verify_and_decode[crypt.OptPayload](test_jwt_secret, token) or {
@@ -75,7 +75,7 @@ fn test_verify_and_decode_not_yet_valid() {
 			iat: now
 			jti: 'future-jti'
 		}
-		opt_text:    '99999'
+		opt_text: '99999'
 	}
 	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
 	_ := crypt.verify_and_decode[crypt.OptPayload](test_jwt_secret, token) or {
@@ -96,7 +96,7 @@ fn test_verify_and_decode_tampered_payload() {
 			iat: now
 			jti: 'tamper-jti'
 		}
-		opt_text:    '11111'
+		opt_text: '11111'
 	}
 	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
 	parts := token.split('.')
@@ -122,7 +122,7 @@ fn test_decode_payload() {
 			iat: now
 			jti: 'decode-jti'
 		}
-		opt_text:    '54321'
+		opt_text: '54321'
 	}
 	token := crypt.sign_payload[crypt.OptPayload](test_jwt_secret, payload)
 	decoded := crypt.decode_payload[crypt.OptPayload](token)!

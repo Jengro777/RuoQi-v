@@ -11,6 +11,6 @@ pub fn datascope_middleware(cfg ScopeConfig) veb.MiddlewareOptions[Context] {
 			ctx.scope_sc = datascope.from_scope_config(cfg)
 			return true
 		}
-		after:   false
+		after: false
 	}
 }

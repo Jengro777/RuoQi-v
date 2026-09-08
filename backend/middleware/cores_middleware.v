@@ -40,11 +40,11 @@ pub fn cores_middleware(mut ctx Context) bool {
 	veb.cors[Context](veb.CorsOptions{
 		origins: origins
 		// 允许跨域请求的方法 ｜ allow CORS requests from methods:
-		allowed_methods:   [.get, .head, .patch, .put, .post, .delete, .options]
-		allowed_headers:   ['Authorization', 'Content-Type', 'WWW-Authorization']
+		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
+		allowed_headers: ['Authorization', 'Content-Type', 'WWW-Authorization']
 		allow_credentials: false
-		max_age:           3600
-		expose_headers:    [
+		max_age: 3600
+		expose_headers: [
 			'Content-Length',
 			'Authorization',
 			'Content-Type',
@@ -60,6 +60,6 @@ pub fn cores_middleware(mut ctx Context) bool {
 pub fn cores_middleware_generic() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: cores_middleware // 显式初始化 handler 字段
-		after:   false            // 请求处理前执行
+		after: false // 请求处理前执行
 	}
 }

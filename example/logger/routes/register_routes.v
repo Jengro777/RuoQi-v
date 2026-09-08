@@ -44,7 +44,7 @@ pub fn before_request(mut ctx Context) bool {
 	log.info('req.header: ${ctx.req.header}')
 	log.info('req.data: ${ctx.req.data}')
 
-	//响应信息,需要设置 after: true
+	// 响应信息,需要设置 after: true
 	log.info('res.http_version: ${ctx.res.http_version}')
 	log.info('res.header: ${ctx.res.header}')
 	log.info('res.status_code: ${ctx.res.status_code}')

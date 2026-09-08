@@ -31,25 +31,25 @@ fn new_pgsql_pool(config DatabaseConfig) !&DatabasePool[pg.DB] {
 			pg.SslMode.unset
 		}
 		cfg := pg.Config{
-			host:     config.host
-			port:     int(config.port)
-			user:     config.username
+			host: config.host
+			port: int(config.port)
+			user: config.username
 			password: config.password
-			dbname:   config.dbname
-			ssl_key:  config.ssl_key
+			dbname: config.dbname
+			ssl_key: config.ssl_key
 			ssl_cert: config.ssl_cert
-			ssl_ca:   config.ssl_ca
+			ssl_ca: config.ssl_ca
 			ssl_mode: ssl_mode_val
 		}
 		mut db := pg.connect(cfg)!
 		return db
 	}
 	pool_conf := pool.ConnectionPoolConfig{
-		max_conns:      config.max_conns
+		max_conns: config.max_conns
 		min_idle_conns: config.min_idle_conns
-		max_lifetime:   config.max_lifetime
-		idle_timeout:   config.idle_timeout
-		get_timeout:    config.get_timeout
+		max_lifetime: config.max_lifetime
+		idle_timeout: config.idle_timeout
+		get_timeout: config.get_timeout
 	}
 	inner_pool := pool.new_connection_pool(create_conn, pool_conf)!
 	return &DatabasePool[pg.DB]{
@@ -60,11 +60,11 @@ fn new_pgsql_pool(config DatabaseConfig) !&DatabasePool[pg.DB] {
 fn new_mysql_pool(config DatabaseConfig) !&DatabasePool[mysql.DB] {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
 		mut cfg := mysql.Config{
-			host:     config.host
-			port:     config.port
+			host: config.host
+			port: config.port
 			username: config.username
 			password: config.password
-			dbname:   config.dbname
+			dbname: config.dbname
 		}
 
 		if config.ssl_verify || config.ssl_key != '' || config.ssl_cert != '' || config.ssl_ca != ''
@@ -86,11 +86,11 @@ fn new_mysql_pool(config DatabaseConfig) !&DatabasePool[mysql.DB] {
 		return &db
 	}
 	pool_conf := pool.ConnectionPoolConfig{
-		max_conns:      config.max_conns
+		max_conns: config.max_conns
 		min_idle_conns: config.min_idle_conns
-		max_lifetime:   config.max_lifetime
-		idle_timeout:   config.idle_timeout
-		get_timeout:    config.get_timeout
+		max_lifetime: config.max_lifetime
+		idle_timeout: config.idle_timeout
+		get_timeout: config.get_timeout
 	}
 	inner_pool := pool.new_connection_pool(create_conn, pool_conf)!
 	return &DatabasePool[mysql.DB]{

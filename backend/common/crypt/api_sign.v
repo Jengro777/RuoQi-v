@@ -33,7 +33,9 @@ pub fn verify_apisign(sk string, method string, path string, body string, timest
 	}
 	now := time.now().unix()
 	mut diff := now - ts
-	if diff < 0 { diff = -diff }
+	if diff < 0 {
+		diff = -diff
+	}
 	if diff > skew_sec {
 		return error('timestamp expired')
 	}

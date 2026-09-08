@@ -15,7 +15,7 @@ __global g_pool ConnectionPool
 pub fn init_pool(config mysql.Config, pool_size int) {
 	mut g := &g_pool
 	g.config = config
-	g.pool = chan mysql.DB{cap: pool_size}
+	g.pool = chan mysql.DB{ cap: pool_size }
 
 	for _ in 0 .. pool_size {
 		g.pool <- mysql.connect(config) or { panic(err) }
@@ -36,11 +36,11 @@ pub fn release(conn mysql.DB) {
 fn main() {
 	// 初始化配置
 	config := mysql.Config{
-		host:     'mysql2.sqlpub.com'
-		port:     3307
+		host: 'mysql2.sqlpub.com'
+		port: 3307
 		username: 'vcore_test'
 		password: 'wfo8wS7CylT0qIMg'
-		dbname:   'vcore_test'
+		dbname: 'vcore_test'
 	}
 
 	// 初始化连接池（5个连接）

@@ -18,18 +18,14 @@ fn (mut app AliasApp) routes_tenant(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 产品订阅
-	app.register_routes_scoped[TenantSubProduct, Context](mut &TenantSubProduct{},
-		'/tenant/subproduct', mut ctx)
+	app.register_routes_scoped[TenantSubProduct, Context](mut &TenantSubProduct{}, '/tenant/subproduct', mut ctx)
 
 	// 成员管理
-	app.register_routes_scoped[TenantMember, Context](mut &TenantMember{}, '/tenant/member', mut
-		ctx)
+	app.register_routes_scoped[TenantMember, Context](mut &TenantMember{}, '/tenant/member', mut ctx)
 
 	// 账单查看
-	app.register_routes_scoped[TenantInvoice, Context](mut &TenantInvoice{}, '/tenant/invoice', mut
-		ctx)
+	app.register_routes_scoped[TenantInvoice, Context](mut &TenantInvoice{}, '/tenant/invoice', mut ctx)
 
 	// 租户配置
-	app.register_routes_scoped[TenantConfig, Context](mut &TenantConfig{}, '/tenant/config', mut
-		ctx)
+	app.register_routes_scoped[TenantConfig, Context](mut &TenantConfig{}, '/tenant/config', mut ctx)
 }
