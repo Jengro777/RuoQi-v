@@ -65,9 +65,13 @@ fn find_fms_cloud_file_tag_all_repo(mut ctx Context, req FmsCloudFileTagListReq)
 		select count from FmsCloudFileTag where del_flag == 0
 	} or { return error('Failed to execute SQL query: ${err}') }
 	offset_num := (req.page - 1) * req.page_size
-	where_expr :=
-		sql {
-		}
+	// vfmt off
+	where_expr := {
+		del_flag == 0,
+		if req.name != '' {name == req.name},
+		if req.status.len > 0 {status in req.status}
+	}
+	// vfmt on
 	result := sql db {
 		dynamic select from FmsCloudFileTag where where_expr limit req.page_size offset offset_num
 	} or { return error('Failed to execute SQL query: ${err}') }
