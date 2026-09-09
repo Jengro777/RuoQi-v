@@ -60,9 +60,30 @@ fn update_pay_order_extension_repo(mut ctx Context, req UpdatePayOrderExtensionR
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.channel_code {
+			channel_code == v
+		},
+		if v := req.channel_extras {
+			channel_extras == v
+		},
+		if v := req.channel_error_code {
+			channel_error_code == v
+		},
+		if v := req.channel_error_msg {
+			channel_error_msg == v
+		},
+		if v := req.channel_notify_data {
+			channel_notify_data == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update PayOrderExtension set up_expr where id == req.id

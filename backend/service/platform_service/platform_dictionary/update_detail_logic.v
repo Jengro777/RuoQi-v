@@ -6,6 +6,7 @@ import json2 as json
 import model { Context }
 import model.schema_platform { PfDictionaryDetail }
 import common.api
+import time
 
 // ═══ Handler ═══
 @['/update_detail'; post]
@@ -50,9 +51,24 @@ pub struct UpdateDetailResp {
 fn update_detail_repo(mut ctx Context, req UpdateDetailReq) !UpdateDetailResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.label {
+			label == v
+		},
+		if v := req.value {
+			value == v
+		},
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update PfDictionaryDetail set up_expr where id == req.id
 	}!

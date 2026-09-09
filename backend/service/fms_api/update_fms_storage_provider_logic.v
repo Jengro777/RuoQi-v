@@ -64,9 +64,45 @@ fn update_fms_storage_provider_repo(mut ctx Context, req UpdateFmsStorageProvide
 		return error('FmsStorageProvider with id ${req.id} not found')
 	}
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.name {
+			name == v
+		},
+		if v := req.bucket {
+			bucket == v
+		},
+		if v := req.secret_id {
+			secret_id == v
+		},
+		if v := req.secret_key {
+			secret_key == v
+		},
+		if v := req.endpoint {
+			endpoint == v
+		},
+		if v := req.folder {
+			folder == v
+		},
+		if v := req.region {
+			region == v
+		},
+		if v := req.is_default {
+			is_default == v
+		},
+		if v := req.use_cdn {
+			use_cdn == v
+		},
+		if v := req.cdn_url {
+			cdn_url == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update FmsStorageProvider set up_expr where id == req.id && del_flag == 0
 	} or { return error('Failed to update storage provider: ${err}') }

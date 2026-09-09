@@ -58,9 +58,24 @@ fn update_sms_log_repo(mut ctx Context, req UpdateSmsLogReq) !UpdateSmsLogResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.phone_number {
+			phone_number == v
+		},
+		if v := req.content {
+			content == v
+		},
+		if v := req.send_status {
+			send_status == v
+		},
+		if v := req.provider {
+			provider == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update MsgSmsLog set up_expr where id == req.id

@@ -62,9 +62,36 @@ fn update_pay_demo_order_repo(mut ctx Context, req UpdatePayDemoOrderReq) !Updat
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.spu_name {
+			spu_name == v
+		},
+		if v := req.pay_status {
+			pay_status == v
+		},
+		if v := req.pay_order_id {
+			pay_order_id == v
+		},
+		if v := req.pay_time {
+			pay_time == v
+		},
+		if v := req.pay_channel_code {
+			pay_channel_code == v
+		},
+		if v := req.pay_refund_id {
+			pay_refund_id == v
+		},
+		if v := req.refund_price {
+			refund_price == v
+		},
+		if v := req.refund_time {
+			refund_time == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update PayDemoOrder set up_expr where id == req.id

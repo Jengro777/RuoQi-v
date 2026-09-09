@@ -7,6 +7,7 @@ import model { Context }
 import model.schema_iam { IamUser }
 import common.api
 import common.encrypt
+import time
 
 // ═══ Handler ═══
 @['/update_user'; post]
@@ -64,9 +65,39 @@ pub struct UpdateUserResp {
 fn update_user_repo(mut ctx Context, req UpdateUserReq, password_hash string) ! {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.avatar {
+			avatar == v
+		},
+		if v := req.description {
+			description == v
+		},
+		if v := req.email {
+			email == v
+		},
+		if v := req.home_path {
+			home_path == v
+		},
+		if v := req.mobile {
+			mobile == v
+		},
+		if v := req.nickname {
+			nickname == v
+		},
+		if password_hash != '' {
+			password == password_hash
+		},
+		if v := req.status {
+			status == v
+		},
+		if v := req.username {
+			username == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 	sql db {
 		dynamic update IamUser set up_expr where id == req.user_id
 	}!

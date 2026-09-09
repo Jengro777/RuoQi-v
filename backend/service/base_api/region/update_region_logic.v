@@ -77,9 +77,72 @@ fn update_region_repo(mut ctx Context, req UpdateRegionReq) !UpdateRegionResp {
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.sys_region_code {
+			sys_region_code == v
+		},
+		if v := req.sys_region_name {
+			sys_region_name == v
+		},
+		if v := req.name_local {
+			name_local == v
+		},
+		if v := req.langcode_local {
+			langcode_local == v
+		},
+		if v := req.govt_code {
+			govt_code == v
+		},
+		if v := req.gid_zero {
+			gid_zero == v
+		},
+		if v := req.hasc {
+			hasc == v
+		},
+		if v := req.iso_two {
+			iso_two == v
+		},
+		if v := req.iso_three {
+			iso_three == v
+		},
+		if v := req.numeric {
+			numeric == v
+		},
+		if v := req.international_prefix {
+			international_prefix == v
+		},
+		if v := req.phone_area_code {
+			phone_area_code == v
+		},
+		if v := req.postal_code {
+			postal_code == v
+		},
+		if v := req.domain_name {
+			domain_name == v
+		},
+		if v := req.continent_code {
+			continent_code == v
+		},
+		if v := req.coord_bounds {
+			coord_bounds == v
+		},
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.status {
+			status == v
+		},
+		if v := req.name_en {
+			name_en == v
+		},
+		if v := req.name_zh {
+			name_zh == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update BaseRegion set up_expr where id == req.id

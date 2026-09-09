@@ -60,9 +60,30 @@ fn update_pay_refund_repo(mut ctx Context, req UpdatePayRefundReq) !UpdatePayRef
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.channel_refund_no {
+			channel_refund_no == v
+		},
+		if v := req.success_time {
+			success_time == v
+		},
+		if v := req.channel_error_code {
+			channel_error_code == v
+		},
+		if v := req.channel_error_msg {
+			channel_error_msg == v
+		},
+		if v := req.channel_notify_data {
+			channel_notify_data == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update PayRefund set up_expr where id == req.id

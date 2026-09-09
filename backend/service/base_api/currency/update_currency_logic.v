@@ -67,9 +67,42 @@ fn update_currency_repo(mut ctx Context, req UpdateCurrencyReq) !UpdateCurrencyR
 	db, conn := ctx.acquire_scoped() or { return error('Failed to acquire DB conn: ${err}') }
 	defer { ctx.dbpool.release(conn) or { log.warn('Failed to release conn: ${err}') } }
 
-	up_expr :=
-		sql {
-		}
+	// vfmt off
+	up_expr := {
+		if v := req.english_name {
+			english_name == v
+		},
+		if v := req.simplified_name {
+			simplified_name == v
+		},
+		if v := req.currency_code {
+			currency_code == v
+		},
+		if v := req.currency_symbol {
+			currency_symbol == v
+		},
+		if v := req.decimal_place {
+			decimal_place == v
+		},
+		if v := req.exchange_rate {
+			exchange_rate == v
+		},
+		if v := req.exchange_rate_fluctuation {
+			exchange_rate_fluctuation == v
+		},
+		if v := req.exchange_rate_used {
+			exchange_rate_used == v
+		},
+		if v := req.sort {
+			sort == v
+		},
+		if v := req.status {
+			status == v
+		},
+		updater_id == ctx.svc_iam.user_id,
+		updated_at == time.now()
+	}
+	// vfmt on
 
 	sql db {
 		dynamic update BaseCurrency set up_expr where id == req.id
