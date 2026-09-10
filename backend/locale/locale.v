@@ -92,23 +92,44 @@ pub fn load_translations(mut s LocaleStore) ! {
 	}
 }
 
-// 查询翻译，支持 fallback，只传入 key 参数
-pub fn (s &LocaleStore) t(key string) string {
+// 查询翻译，返回 ?string：未命中返回 none，调用方用 `or { '静态文案' }` 兜底
+// 查找顺序：当前语言 -> 默认语言 -> none
+// 语言未加载、key 不存在、译文为空字符串，都算未命中
+// 用法：ctx.locale.t('common.success') or { '成功' }
+pub fn (s &LocaleStore) t(key string) ?string {
 	// log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 使用当前缓存语言或默认语言
 	selected := if s.current_lang != '' { s.current_lang } else { s.default_lang }
 
 	// 查找翻译，首先检查当前语言，如果没有再回退到默认语言
-	if key in s.translations[selected] {
-		return s.translations[selected][key]
+	if text := s.lookup(selected, key) {
+		return text
 	}
-	if key in s.translations[s.default_lang] {
-		return s.translations[s.default_lang][key]
+	if text := s.lookup(s.default_lang, key) {
+		return text
 	}
 
-	// 如果都没有找到，则返回 key 本身
-	return key
+	// 都没有找到，交给调用方的 or 兜底
+	return none
+}
+
+// 便捷方法：不想写静态文案时，用 key 本身兜底（等价于 t(key) or { key }）
+pub fn (s &LocaleStore) t_key(key string) string {
+	return s.t(key) or { key }
+}
+
+// 在指定语言中查 key，返回 none 表示未命中
+fn (s &LocaleStore) lookup(lang string, key string) ?string {
+	if lang !in s.translations {
+		return none
+	}
+	text := s.translations[lang][key] or { return none }
+	// 空字符串视为未翻译，交给下一级兜底
+	if text == '' {
+		return none
+	}
+	return text
 }
 
 // 设置当前语言

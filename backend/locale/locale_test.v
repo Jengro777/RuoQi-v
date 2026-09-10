@@ -81,12 +81,50 @@ fn test_t() {
 	}
 
 	// 验证翻译查询
-	assert store.t('hello') == 'Hello' // 默认语言 'en'
+	assert store.t('hello') or { '' } == 'Hello' // 默认语言 'en'
 	store.set_language('zh') // 设置为中文
-	assert store.t('hello') == '你好' // 查询中文翻译
+	assert store.t('hello') or { '' } == '你好' // 查询中文翻译
 	store.set_language('nolang') // 设置不存在的语言
-	assert store.t('hello') == 'Hello' // fallback 到默认语言 'en'
-	assert store.t('not_exist') == 'not_exist' // 未找到的翻译返回 key 本身
+	assert store.t('hello') or { '' } == 'Hello' // fallback 到默认语言 'en'
+	assert store.t('not_exist') == none // 未找到的翻译返回 none
+	assert store.t_key('not_exist') == 'not_exist' // t_key 用 key 本身兜底
+}
+
+// ------------------------- 测试 t 的静态文案兜底 -------------------------
+fn test_t_static_fallback() {
+	mut store := &LocaleStore{
+		default_lang: 'en'
+		translations: {
+			'en': {
+				'hello':   'Hello'
+				'only_en': 'Only English'
+				'empty':   ''
+			}
+			'zh': {
+				'hello': '你好'
+			}
+		}
+	}
+
+	// 有译文时，静态文案不生效
+	assert store.t('hello') or { '成功' } == 'Hello'
+	// key 完全缺失：给了静态文案就用静态文案
+	assert store.t('not_exist') or { '成功' } == '成功'
+	// key 完全缺失：也可以用 key 本身兜底
+	assert store.t('not_exist') or { 'not_exist' } == 'not_exist'
+
+	// 当前语言缺失时，优先走默认语言的译文，而不是静态文案
+	store.set_language('zh')
+	assert store.t('only_en') or { '静态兜底' } == 'Only English'
+
+	// 语言文件里值为空串也视为未命中
+	assert store.t('empty') or { '空文案兜底' } == '空文案兜底'
+	assert store.t('empty') == none
+
+	// 当前语言整体不存在时（未加载的语言）仍然能兜底
+	store.set_language('jp')
+	assert store.t('hello') or { '' } == 'Hello'
+	assert store.t('not_exist') or { '成功' } == '成功'
 }
 
 // ------------------------- 测试 flatten_map -------------------------
