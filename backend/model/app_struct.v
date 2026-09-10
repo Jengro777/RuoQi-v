@@ -67,3 +67,18 @@ pub fn (mut ctx Context) acquire_scoped() !(orm.DB, &pool.ConnectionPoolable) {
 	db, conn := datascope.acquire_scoped(mut ctx.scope_sc) or { return err }
 	return db, conn
 }
+
+// 翻译查询的快捷方式，等价于 ctx.locale.t(key)
+// 用法：ctx.t('common.success') or { '成功' }
+// locale 中间件未生效（ctx.locale 为空）时返回 none，交给调用方的 or 兜底
+pub fn (ctx &Context) t(key string) ?string {
+	if ctx.locale == unsafe { nil } {
+		return none
+	}
+	return ctx.locale.t(key)
+}
+
+// 便捷方法：不想写静态文案时，用 key 本身兜底（等价于 ctx.t(key) or { key }）
+pub fn (ctx &Context) t_key(key string) string {
+	return ctx.t(key) or { key }
+}

@@ -87,9 +87,9 @@ fn (mut app AliasApp) index(mut ctx Context) veb.Result {
 @['/locale'; get]
 pub fn (app &AliasApp) locale(mut ctx Context) veb.Result {
 	result := {
-		'success':        ctx.locale.t('common.success')
-		'create_success': ctx.locale.t('common.createSuccess')
-		'init':           ctx.locale.t('init.alreadyInit')
+		'success':        ctx.t('common.success') or { '成功' }
+		'create_success': ctx.t('common.createSuccess') or { '新建成功' }
+		'init':           ctx.t('init.alreadyInit') or { '数据库已被初始化。' }
 	}
 	return ctx.json(result)
 }
