@@ -7,8 +7,17 @@ void main() {
   runApp(const PlatformApp());
 }
 
-class PlatformApp extends StatelessWidget {
+class PlatformApp extends StatefulWidget {
   const PlatformApp({super.key});
+
+  @override
+  State<PlatformApp> createState() => _PlatformAppState();
+}
+
+class _PlatformAppState extends State<PlatformApp> {
+  /// 深浅色模式：默认浅色（与 DESIGN-consensus 的默认模式一致），
+  /// 由首页顶栏右上角的按钮切换。
+  ThemeMode _themeMode = ThemeMode.light;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +28,11 @@ class PlatformApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ruoQiTheme(),
         darkTheme: ruoQiTheme(brightness: Brightness.dark),
-        themeMode: ThemeMode.light,
-        home: const HomePage(),
+        themeMode: _themeMode,
+        home: HomePage(
+          themeMode: _themeMode,
+          onThemeModeChanged: (mode) => setState(() => _themeMode = mode),
+        ),
       ),
     );
   }

@@ -1,0 +1,3 @@
+# RuoQi 全仓 Flutter 版本钉（mise / asdf 读取，CI 同步读取）。
+# 改这里之后要跑一次 `cd frontend && flutter pub get` 并提交 pubspec.lock。
+flutter 3.44.0

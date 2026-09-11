@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RuoQi 服务入口</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f1115;
+      --card: #181b22;
+      --card-hover: #1d212a;
+      --line: #2a2f3a;
+      --fg: #e8eaef;
+      --muted: #98a0b0;
+      --accent: #5b8cff;
+      --ok: #3ddc84;
+      --bad: #ff6b6b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 40px 24px 64px;
+      background: var(--bg);
+      color: var(--fg);
+      font: 15px/1.6 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    header, footer, .grid { max-width: 1000px; margin-inline: auto; }
+    header { margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    .sub { margin: 0; color: var(--muted); }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    a.card {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      color: inherit;
+      text-decoration: none;
+      transition: border-color .15s, transform .15s, background .15s;
+    }
+
+    a.card:hover { border-color: var(--accent); background: var(--card-hover); transform: translateY(-1px); }
+
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .name { font-size: 16px; font-weight: 600; }
+
+    .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+    .dot.up { background: var(--ok); box-shadow: 0 0 0 3px rgba(61, 220, 132, .15); }
+    .dot.down { background: var(--bad); }
+
+    .meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .tag { border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); font-size: 11.5px; }
+    .pkg, .url { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .pkg { color: var(--muted); font-size: 12.5px; }
+    .url { margin-top: 10px; color: var(--accent); font-size: 13px; }
+
+    footer { margin-top: 32px; color: var(--muted); font-size: 13px; }
+    code { padding: 1px 6px; border-radius: 5px; background: #20242d; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RuoQi 服务入口</h1>
+    <p class="sub">
+      8 个 Flutter 端各自跑在独立端口。首次编译需要几十秒，圆点变绿表示该端已就绪。
+    </p>
+  </header>
+
+  <main id="grid" class="grid"></main>
+
+  <footer>
+    <p>
+      启动：<code>just apps</code>；停止：终端里按 <code>Ctrl-C</code>。
+      各端日志在 <code>frontend/build/dev-all-logs/</code>。
+    </p>
+  </footer>
+
+  <script>
+    const host = location.hostname || 'localhost';
+    const grid = document.getElementById('grid');
+
+    async function probe(app, dot) {
+      try {
+        await fetch(`http://${host}:${app.port}/`, {
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: AbortSignal.timeout(2500),
+        });
+        dot.className = 'dot up';
+        dot.title = '已就绪';
+      } catch {
+        dot.className = 'dot down';
+        dot.title = '未响应（可能仍在编译）';
+      }
+    }
+
+    fetch('apps.json', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then(({ apps }) => {
+        const probes = [];
+
+        for (const app of apps) {
+          const card = document.createElement('a');
+          card.className = 'card';
+          card.href = `http://${host}:${app.port}/`;
+          card.target = '_blank';
+          card.rel = 'noopener';
+          card.innerHTML = `
+            <div class="row">
+              <span class="name"></span>
+              <span class="dot" title="检测中"></span>
+            </div>
+            <div class="meta"><span class="tag"></span><span class="pkg"></span></div>
+            <div class="url"></div>`;
+
+          card.querySelector('.name').textContent = app.name;
+          card.querySelector('.tag').textContent = app.kind;
+          card.querySelector('.pkg').textContent = app.package;
+          card.querySelector('.url').textContent = `localhost:${app.port}`;
+
+          const dot = card.querySelector('.dot');
+          probes.push([app, dot]);
+          grid.appendChild(card);
+        }
+
+        const refresh = () => Promise.all(probes.map(([app, dot]) => probe(app, dot)));
+        refresh();
+        setInterval(refresh, 5000);
+      })
+      .catch((err) => {
+        grid.innerHTML = `<p class="sub">读取 apps.json 失败：${err}</p>`;
+      });
+  </script>
+</body>
+</html>

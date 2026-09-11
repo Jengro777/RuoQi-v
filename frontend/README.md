@@ -31,12 +31,31 @@ packages/
 
 ## 环境准备
 
-需要 Flutter 3.44+（Dart 3.12+）。若 `flutter` / `melos` 不在 PATH 中：
+Flutter 版本钉在仓库根的 `.tool-versions`（当前 `3.44.0`，对应 Dart 3.12.0），
+CI 读同一个文件，本地请保持一致。
+
+> 为什么必须钉版本：`meta` / `matcher` / `test_api` / `vector_math` 这几个传递依赖
+> 由 Flutter SDK 精确钉住，SDK 版本一变，`frontend/pubspec.lock` 就会被 pub 改写；
+> 而依赖集在运行中变化会让 dev server 拒绝热重载（`Hot reload rejected due to
+> unsupported changes`）。
+
+用 mise / asdf 管理：
+
+```bash
+mise install        # asdf 用户：asdf install
+flutter --version   # 应输出 3.44.0
+```
+
+手动安装：把 3.44.0 放在 `$HOME/opt/flutter`，再把它和 melos 加进 PATH：
 
 ```bash
 export PATH="$PATH":"$HOME/opt/flutter/bin":"$HOME/.pub-cache/bin"
+flutter --version # 应输出 3.44.0
 melos --version   # 首次使用前：dart pub global activate melos 6.3.3
 ```
+
+升级 Flutter 时：改 `.tool-versions` 的版本号 → `cd frontend && flutter pub get`
+→ 提交更新后的 `frontend/pubspec.lock`，CI 会自动切到新版本。
 
 ## 常用命令
 

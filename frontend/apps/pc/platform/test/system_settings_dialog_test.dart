@@ -66,7 +66,7 @@ void main() {
     for (final tab in ['设置', '用户', '权限', '菜单', '基础', '语言', '日志']) {
       expect(inTopBar(tester, tab), isTrue, reason: '顶部 Tab 应有 $tab');
     }
-    expect(inTopBar(tester, '退出管理'), isTrue);
+    expect(inTopBar(tester, '退出'), isTrue);
     // 左侧菜单带搜索框（参照 权限 页）
     expect(find.text('搜索菜单'), findsOneWidget);
 

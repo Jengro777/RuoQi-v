@@ -90,7 +90,12 @@ ThemeData ruoQiTheme({
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
       centerTitle: false,
-      titleTextStyle: textTheme.headlineSmall?.copyWith(
+      // 规范 §6.7：顶部导航文本用 `onSurface`。
+      // 颜色必须显式声明——`titleTextStyle` 一旦非空就会整体覆盖 Material 3
+      // 由 `foregroundColor` 推导的默认样式；颜色为 null 时文字回退成黑色，
+      // 暗色模式下标题（如首页顶栏的「RuoQi-Platform」）就完全看不见了。
+      titleTextStyle: textTheme.titleLarge?.copyWith(
+        color: scheme.onSurface,
         fontWeight: FontWeight.w600,
       ),
     ),

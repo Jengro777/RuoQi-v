@@ -79,7 +79,7 @@ class ConsoleTopBar extends StatelessWidget {
             child: OutlinedButton(
               onPressed: onExit,
               style: RuQiButtonStyles.secondary(context),
-              child: const Text('退出管理'),
+              child: const Text('退出'),
             ),
           ),
         ],

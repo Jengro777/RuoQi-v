@@ -21,6 +21,19 @@ void main() {
     expect(theme.extension<RuQiThemeExtension>()!.onDark, Colors.white);
   });
 
+  test('顶部导航标题显式取 onSurface', () {
+    // 规范 §6.7：AppBar 文本用 onSurface。颜色一旦缺失，文字会退回黑色，
+    // 暗色模式下标题与 surface 背景重合而完全不可见。
+    for (final brightness in Brightness.values) {
+      final theme = ruoQiTheme(brightness: brightness);
+      expect(
+        theme.appBarTheme.titleTextStyle?.color,
+        theme.colorScheme.onSurface,
+        reason: '$brightness 下 AppBar 标题必须显式带颜色',
+      );
+    }
+  });
+
   test('ruoQiTheme 营销模式覆盖主色为品牌蓝', () {
     final theme = ruoQiTheme(purpose: RuQiPurpose.marketing);
     expect(theme.colorScheme.primary, const Color(0xFF2563EB));

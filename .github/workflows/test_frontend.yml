@@ -5,10 +5,12 @@ on:
       - "main"
     paths:
       - "frontend/**"
+      - ".tool-versions"
       - ".github/workflows/test_frontend.yml"
   pull_request:
     paths:
       - "frontend/**"
+      - ".tool-versions"
       - ".github/workflows/test_frontend.yml"
 
 jobs:
@@ -18,9 +20,20 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Read pinned Flutter version
+        id: flutter
+        run: |
+          version=$(awk '$1 == "flutter" { print $2 }' .tool-versions)
+          if [ -z "$version" ]; then
+            echo "`.tool-versions` 里没有 flutter 版本" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: ${{ steps.flutter.outputs.version }}
           channel: stable
           cache: true
 
