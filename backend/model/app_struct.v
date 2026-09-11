@@ -72,13 +72,8 @@ pub fn (mut ctx Context) acquire_scoped() !(orm.DB, &pool.ConnectionPoolable) {
 // 用法：ctx.t('common.success') or { '成功' }
 // locale 中间件未生效（ctx.locale 为空）时返回 none，交给调用方的 or 兜底
 pub fn (ctx &Context) t(key string) ?string {
-	if ctx.locale == unsafe { nil } {
+	if isnil(ctx.locale) {
 		return none
 	}
 	return ctx.locale.t(key)
-}
-
-// 便捷方法：不想写静态文案时，用 key 本身兜底（等价于 ctx.t(key) or { key }）
-pub fn (ctx &Context) t_key(key string) string {
-	return ctx.t(key) or { key }
 }
