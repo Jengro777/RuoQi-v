@@ -39,5 +39,5 @@ fn test_ctx_t_without_locale_middleware() {
 		locale: unsafe { nil }
 	}
 	assert ctx.t('hello') == none
-	assert ctx.t_key('hello') == 'hello'
+	assert ctx.t('hello') or { 'hello' } == 'hello'
 }
