@@ -21,6 +21,19 @@ void main() {
     expect(theme.extension<RuQiThemeExtension>()!.onDark, Colors.white);
   });
 
+  test('顶部导航标题显式取 onSurface', () {
+    // 规范 §6.7：AppBar 文本用 onSurface。颜色一旦缺失，文字会退回黑色，
+    // 暗色模式下标题与 surface 背景重合而完全不可见。
+    for (final brightness in Brightness.values) {
+      final theme = ruoQiTheme(brightness: brightness);
+      expect(
+        theme.appBarTheme.titleTextStyle?.color,
+        theme.colorScheme.onSurface,
+        reason: '$brightness 下 AppBar 标题必须显式带颜色',
+      );
+    }
+  });
+
   test('ruoQiTheme 营销模式覆盖主色为品牌蓝', () {
     final theme = ruoQiTheme(purpose: RuQiPurpose.marketing);
     expect(theme.colorScheme.primary, const Color(0xFF2563EB));
@@ -52,5 +65,26 @@ void main() {
       ),
     );
     expect(find.text('platform · v1.0.0'), findsOneWidget);
+  });
+
+  testWidgets('ruoQiSelectionBuilder 让全站文案可选中', (tester) async {
+    // 作为 MaterialApp.builder 使用时，SelectableRegion 需要祖先里有 Overlay，
+    // 这个用例同时守住「自带 Overlay」的实现（缺了会抛 No Overlay widget found）。
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: ruoQiSelectionBuilder,
+        home: const Scaffold(body: Text('可复制的文案')),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(SelectionArea), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.text('可复制的文案'),
+        matching: find.byType(SelectionArea),
+      ),
+      findsOneWidget,
+    );
   });
 }

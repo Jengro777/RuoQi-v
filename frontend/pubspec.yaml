@@ -6,14 +6,10 @@ environment:
   sdk: ^3.12.0
 
 workspace:
-  - apps/app/platform
-  - apps/app/customer
-  - apps/app/merchant
-  - apps/app/partner
-  - apps/pc/platform
-  - apps/pc/customer
-  - apps/pc/merchant
-  - apps/pc/partner
+  - apps/platform_app
+  - apps/platform_pc
+  - apps/business_app
+  - apps/business_pc
   - packages/ruoqi_common
   - packages/ruoqi_network
   - packages/ruoqi_platform_api

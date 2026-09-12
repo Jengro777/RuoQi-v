@@ -68,6 +68,8 @@ melos run run:platform_app   # or any run:* script, see frontend/README.md
 
 The full frontend layout and commands are documented in
 [frontend/README.md](frontend/README.md).
+The Flutter version is pinned in [.tool-versions](.tool-versions) (currently
+`3.44.0`) and the CI reads the same file.
 
 ### Splitting the Frontend Later
 

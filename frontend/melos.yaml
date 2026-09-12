@@ -23,21 +23,9 @@ scripts:
   run:platform_pc:
     run: melos exec --scope ruoqi_platform_pc --concurrency 1 -- flutter run
     description: Run the platform PC web app.
-  run:customer_app:
-    run: melos exec --scope ruoqi_customer_app --concurrency 1 -- flutter run
-    description: Run the customer mobile app.
-  run:customer_pc:
-    run: melos exec --scope ruoqi_customer_pc --concurrency 1 -- flutter run
-    description: Run the customer PC web app.
-  run:merchant_app:
-    run: melos exec --scope ruoqi_merchant_app --concurrency 1 -- flutter run
-    description: Run the merchant mobile app.
-  run:merchant_pc:
-    run: melos exec --scope ruoqi_merchant_pc --concurrency 1 -- flutter run
-    description: Run the merchant PC web app.
-  run:partner_app:
-    run: melos exec --scope ruoqi_partner_app --concurrency 1 -- flutter run
-    description: Run the partner mobile app.
-  run:partner_pc:
-    run: melos exec --scope ruoqi_partner_pc --concurrency 1 -- flutter run
-    description: Run the partner PC web app.
+  run:business_app:
+    run: melos exec --scope ruoqi_business_app --concurrency 1 -- flutter run
+    description: Run the business mobile app (customer / merchant / partner).
+  run:business_pc:
+    run: melos exec --scope ruoqi_business_pc --concurrency 1 -- flutter run
+    description: Run the business PC web app (customer / merchant / partner).
