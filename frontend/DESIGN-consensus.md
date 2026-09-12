@@ -556,6 +556,11 @@ FloatingPromo({
 `prefixIcon` 18px 搜索图标、内容垂直居中（侧栏菜单搜索 / 表格筛选搜索 /
 菜单内搜索都走它，避免各处 `isDense` / `contentPadding` 不同导致高度参差）。
 
+筛选栏统一版式：第一行 = `RuQiSearchField`（36）+ 其它筛选控件（下拉 / 时间范围
+一律 `SizedBox(height: RuQiSearchField.height)` 等高）+ 「筛选」（`button-primary`）
+与「重置」（`button-link`）；第二行 = 状态选项卡（`ChoiceChip` / `FilterChip`）
+另起一行、左对齐。
+
 线索收集组（`form-group-marketing`）：`Wrap` / `Row` —— 输入框 `Expanded`
 （最小宽 200）、`FilledButton` 不换行、同意文本 `bodySmall` + `inkTertiary`
 占满整行。

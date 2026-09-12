@@ -29,9 +29,26 @@ class UsersBody extends StatefulWidget {
 enum _StatusFilter { all, active, deactivated }
 
 class _UsersBodyState extends State<UsersBody> {
+  final TextEditingController _searchController = TextEditingController();
   String _query = '';
   _StatusFilter _status = _StatusFilter.all;
   String _role = '所有角色';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  /// 重置筛选：清空关键字、角色与状态。
+  void _resetFilters() {
+    _searchController.clear();
+    setState(() {
+      _query = '';
+      _role = '所有角色';
+      _status = _StatusFilter.all;
+    });
+  }
 
   /// 可编辑的用户列表（角色列弹窗修改会更新这里）。
   late final List<UserAccount> _users = List.of(userAccounts);
@@ -95,38 +112,62 @@ class _UsersBodyState extends State<UsersBody> {
           onAction: () => showInviteUserPanel(context),
         ),
         const SizedBox(height: RuQiSpacing.md),
+        // 筛选栏：搜索 + 角色下拉（两者等高）+ 筛选 / 重置。
         Row(
           children: [
             Expanded(
               flex: 3,
               child: RuQiSearchField(
                 hintText: '名称/账号/邮件/手机号',
+                controller: _searchController,
                 onChanged: (value) => setState(() => _query = value),
               ),
             ),
             const SizedBox(width: RuQiSpacing.md),
             Expanded(
-              flex: 1,
-              child: DropdownButtonFormField<String>(
-                initialValue: _role,
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: RuQiSpacing.sm,
-                    vertical: 8,
+              flex: 2,
+              child: SizedBox(
+                // 与搜索框严格等高（§6.5）。
+                height: RuQiSearchField.height,
+                child: DropdownButtonFormField<String>(
+                  initialValue: _role,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: RuQiSpacing.sm,
+                      vertical: 0,
+                    ),
                   ),
+                  items: [
+                    const DropdownMenuItem(value: '所有角色', child: Text('所有角色')),
+                    for (final role in roleGroups)
+                      DropdownMenuItem(value: role.name, child: Text(role.name)),
+                    const DropdownMenuItem(value: '自定义角色', child: Text('自定义角色')),
+                  ],
+                  onChanged: (value) =>
+                      setState(() => _role = value ?? '所有角色'),
                 ),
-                items: [
-                  const DropdownMenuItem(value: '所有角色', child: Text('所有角色')),
-                  for (final role in roleGroups)
-                    DropdownMenuItem(value: role.name, child: Text(role.name)),
-                  const DropdownMenuItem(value: '自定义角色', child: Text('自定义角色')),
-                ],
-                onChanged: (value) => setState(() => _role = value ?? '所有角色'),
               ),
             ),
-            const SizedBox(width: RuQiSpacing.md),
+            const SizedBox(width: RuQiSpacing.sm),
+            TextButton(
+              style: RuQiButtonStyles.link(context),
+              onPressed: _resetFilters,
+              child: const Text('重置'),
+            ),
+            const SizedBox(width: RuQiSpacing.xxs),
+            FilledButton(
+              style: RuQiButtonStyles.primary(context),
+              onPressed: () {},
+              child: const Text('筛选'),
+            ),
+          ],
+        ),
+        const SizedBox(height: RuQiSpacing.sm),
+        // 状态选项卡：独立一行、左对齐（在筛选栏下方）。
+        Row(
+          children: [
             for (final status in _StatusFilter.values)
               Padding(
                 padding: const EdgeInsets.only(right: RuQiSpacing.xs),
