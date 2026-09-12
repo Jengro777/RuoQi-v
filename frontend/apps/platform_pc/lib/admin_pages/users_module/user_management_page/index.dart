@@ -153,10 +153,16 @@ class _UsersBodyState extends State<UsersBody> {
           child: Column(
             children: [
               Container(
-                color: theme.colorScheme.surfaceContainerHigh,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
                 ),
                 child: const Row(
                   children: [
@@ -348,9 +354,9 @@ class _UserRow extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: deactivated
-                  ? OutlinedButton(
+                  ? TextButton(
                       onPressed: onReactivate,
-                      style: RuQiButtonStyles.secondary(context),
+                      style: RuQiButtonStyles.link(context),
                       child: const Text('恢复'),
                     )
                   : _UserActionsMenu(user: user, onAction: onAction),
@@ -507,7 +513,7 @@ class _RoleCellState extends State<_RoleCell> {
   }
 }
 
-/// 角色胶囊标签。
+/// 角色胶囊标签：中性底 + 中性文字（§6.6 状态徽章口径），不用主色高亮。
 class _RoleChip extends StatelessWidget {
   const _RoleChip({required this.label});
 
@@ -522,13 +528,13 @@ class _RoleChip extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.primary,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -544,14 +550,10 @@ class _UserActionsMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final items = ['编辑用户', '复制密码重置链接', '重置密码', '停用用户', '重新发送邀请电子邮件', '复制邀请链接'];
-    return PopupMenuButton<String>(
-      tooltip: '操作',
-      icon: Icon(Icons.more_horiz, color: theme.colorScheme.onSurfaceVariant),
-      onSelected: onAction,
-      itemBuilder: (context) => [
-        for (final item in items) PopupMenuItem(value: item, child: Text(item)),
+    return RuQiRowActionsMenu(
+      actions: [
+        for (final item in items) RuQiRowAction(item, () => onAction(item)),
       ],
     );
   }

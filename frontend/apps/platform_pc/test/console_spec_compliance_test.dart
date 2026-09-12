@@ -41,7 +41,7 @@ void main() {
   testWidgets('管理后台外壳使用规范令牌而非原型紫色', (tester) async {
     await open(tester, (ctx) => SystemSettingsDialog.show(ctx));
 
-    expect(containerColor(tester, 'XX管理后台'), const Color(0xFFFAFBFC));
+    expect(containerColor(tester, '管理后台'), const Color(0xFFFFFFFF));
     // 顶部导航不再是原型紫色（原型内容区可能自带紫色，仅检查外壳区域 y<136）
     final purple = find.byWidgetPredicate(
       (w) =>
@@ -73,7 +73,7 @@ void main() {
   testWidgets('运营后台外壳使用规范令牌而非原型紫色', (tester) async {
     await open(tester, (ctx) => OperationsConsoleDialog.show(ctx));
 
-    expect(containerColor(tester, 'XX运营后台'), const Color(0xFFFAFBFC));
+    expect(containerColor(tester, '运营后台'), const Color(0xFFFFFFFF));
     final purple = find.byWidgetPredicate(
       (w) =>
           w is Container &&
@@ -82,6 +82,36 @@ void main() {
     );
     expect(purple, findsNothing);
     expect(tester.takeException(), isNull);
+    tester.view.reset();
+  });
+
+  /// 打开弹窗后校验退出按钮贴住右上角，再点掉弹窗避免影响后续用例。
+  Future<void> expectExitAtTopRight(
+    WidgetTester tester,
+    Future<void> Function(BuildContext) show,
+  ) async {
+    await open(tester, show);
+
+    final rect = tester.getRect(find.widgetWithText(OutlinedButton, '退出'));
+    expect(
+      1600 - rect.right,
+      lessThanOrEqualTo(RuQiSpacing.md + 0.5),
+      reason: '退出按钮应贴住窗口右上角，而不是被标题的 flex 空档顶离右边缘',
+    );
+    expect(rect.top, lessThan(28), reason: '退出按钮应落在顶栏（高 56）上半区');
+    expect(tester.takeException(), isNull);
+
+    await tester.tap(find.text('退出'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('管理后台退出按钮贴右上角', (tester) async {
+    await expectExitAtTopRight(tester, SystemSettingsDialog.show);
+    tester.view.reset();
+  });
+
+  testWidgets('运营后台退出按钮贴右上角', (tester) async {
+    await expectExitAtTopRight(tester, OperationsConsoleDialog.show);
     tester.view.reset();
   });
 }

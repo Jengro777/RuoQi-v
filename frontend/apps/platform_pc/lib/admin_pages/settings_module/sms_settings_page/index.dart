@@ -99,9 +99,9 @@ class _ProviderCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: RuQiSpacing.sm),
-            OutlinedButton(
+            TextButton(
               onPressed: onSetting,
-              style: RuQiButtonStyles.secondary(context),
+                  style: RuQiButtonStyles.link(context),
               child: const Text('设置'),
             ),
           ],

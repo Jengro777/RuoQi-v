@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:common/common.dart';
 
 /// 租户团队（运营后台）——业务静态页。
 class TeamSpacePage extends StatelessWidget {
@@ -83,15 +84,11 @@ class TeamSpaceBody extends StatelessWidget {
         DataCell(Text(role)),
         DataCell(Text(status)),
         DataCell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: const Text('查看'),
-              ),
-              TextButton(onPressed: () {}, child: const Text('设置角色')),
-              TextButton(onPressed: () {}, child: const Text('移除')),
+          RuQiRowActionsMenu(
+            actions: [
+              RuQiRowAction('查看', () {}),
+              RuQiRowAction('设置角色', () {}),
+              RuQiRowAction('移除', () {}),
             ],
           ),
         ),

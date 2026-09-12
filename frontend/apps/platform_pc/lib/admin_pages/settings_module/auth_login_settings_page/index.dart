@@ -75,9 +75,9 @@ class AuthLoginBody extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: RuQiSpacing.sm),
-                OutlinedButton(
+                TextButton(
                   onPressed: () => showGoogleLoginSettingsDialog(context),
-                  style: RuQiButtonStyles.secondary(context),
+                  style: RuQiButtonStyles.link(context),
                   child: const Text('设置'),
                 ),
               ],

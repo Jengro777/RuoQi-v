@@ -35,7 +35,8 @@ class CellText extends StatelessWidget {
   }
 }
 
-/// 规范 §6.4 表格卡片：`surfaceContainerHigh` 表头 + `outlineVariant` 分隔行。
+/// 规范 §6.4 表格卡片：表头不铺色块（靠字重 + 1px `outlineVariant` 分隔）、
+/// 行间用 `outlineVariant` 描边。
 ///
 /// [rowBuilder] 返回与 [columns] 一一对应的单元格内容（无需自行包 `Expanded`），
 /// 行内每格按列的 flex 自动撑开。
@@ -63,10 +64,14 @@ class TableCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            color: theme.colorScheme.surfaceContainerHigh,
             padding: const EdgeInsets.symmetric(
               horizontal: RuQiSpacing.lg,
               vertical: RuQiSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: theme.colorScheme.outlineVariant),
+              ),
             ),
             child: Row(
               children: [

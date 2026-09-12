@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:common/common.dart';
 
 import '../../operations_action_dialog.dart';
 import '../project_settings_page/index.dart';
@@ -98,22 +99,18 @@ class ProjectListBody extends StatelessWidget {
         DataCell(Text(status)),
         DataCell(Text(time)),
         DataCell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: const Text('查看'),
-              ),
-              TextButton(
-                onPressed: () => showOperationsActionDialog(
+          RuQiRowActionsMenu(
+            actions: [
+              RuQiRowAction('查看', () {}),
+              RuQiRowAction(
+                '设置',
+                () => showOperationsActionDialog(
                   context,
                   title: '项目设置',
                   child: const ProjectSettingsBody(),
                 ),
-                child: const Text('设置'),
               ),
-              TextButton(onPressed: () {}, child: const Text('删除')),
+              RuQiRowAction('删除', () {}),
             ],
           ),
         ),

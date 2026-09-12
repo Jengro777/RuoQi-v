@@ -107,10 +107,10 @@ class _MessageCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: RuQiSpacing.sm),
-            OutlinedButton(
+            TextButton(
               onPressed: () =>
                   showVerificationMessageSettingsDialog(context, item),
-              style: RuQiButtonStyles.secondary(context),
+              style: RuQiButtonStyles.link(context),
               child: const Text('设置'),
             ),
           ],

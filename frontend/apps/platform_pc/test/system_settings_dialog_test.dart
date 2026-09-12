@@ -62,7 +62,7 @@ void main() {
     await openDialog(tester);
 
     // 顶部导航（样式还原自 管理后台 原型）
-    expect(inTopBar(tester, 'XX管理后台'), isTrue);
+    expect(inTopBar(tester, '管理后台'), isTrue);
     for (final tab in ['设置', '用户', '权限', '菜单', '基础', '语言', '日志']) {
       expect(inTopBar(tester, tab), isTrue, reason: '顶部 Tab 应有 $tab');
     }

@@ -36,7 +36,7 @@ class WorldGeoBody extends StatelessWidget {
               CellText(plate.zhName),
               CellText(plate.enName, muted: true),
               TextButton(
-                style: RuQiButtonStyles.tertiary(context),
+                style: RuQiButtonStyles.link(context),
                 onPressed: () => showGeoPlateEditPanel(context, plate),
                 child: const Text('编辑'),
               ),

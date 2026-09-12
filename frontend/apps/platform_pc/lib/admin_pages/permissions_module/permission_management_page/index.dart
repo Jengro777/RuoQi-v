@@ -25,8 +25,8 @@ class PermissionsBody extends StatelessWidget {
 /// 权限页可选角色（对应原型左侧角色列表）。
 const _permissionRoles = ['Administrators', 'All Users', '实施专员'];
 
-/// 系统范围选项卡（对应原型 运营 / 管理）。
-const _permissionScopes = ['运营', '管理'];
+/// 系统范围选项卡（管理 在左、运营 在右；默认仍选中 运营）。
+const _permissionScopes = ['管理', '运营'];
 
 /// 各系统范围下的一级菜单。
 const _modulesByScope = <String, List<String>>{
@@ -295,10 +295,16 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                     child: Column(
                       children: [
                         Container(
-                          color: theme.colorScheme.surfaceContainerHigh,
                           padding: const EdgeInsets.symmetric(
                             horizontal: RuQiSpacing.lg,
                             vertical: RuQiSpacing.sm,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: theme.colorScheme.outlineVariant,
+                              ),
+                            ),
                           ),
                           child: const Row(
                             children: [

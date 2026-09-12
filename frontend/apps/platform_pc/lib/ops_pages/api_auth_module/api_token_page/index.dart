@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:common/common.dart';
 
 /// API Token（运营后台）——业务静态页。
 class ApiTokenPage extends StatelessWidget {
@@ -52,6 +53,7 @@ class ApiTokenBody extends StatelessWidget {
               ],
               rows: [
                 _row(
+                  context,
                   '生产环境',
                   'rkp_live_****3f2a',
                   '2024-06-01',
@@ -59,6 +61,7 @@ class ApiTokenBody extends StatelessWidget {
                   '启用',
                 ),
                 _row(
+                  context,
                   '测试环境',
                   'rkp_test_****9b17',
                   '2024-06-15',
@@ -66,6 +69,7 @@ class ApiTokenBody extends StatelessWidget {
                   '启用',
                 ),
                 _row(
+                  context,
                   '数据同步',
                   'rkp_live_****c4e8',
                   '2024-04-02',
@@ -81,6 +85,7 @@ class ApiTokenBody extends StatelessWidget {
   }
 
   DataRow _row(
+    BuildContext context,
     String name,
     String key,
     String created,
@@ -99,7 +104,11 @@ class ApiTokenBody extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(onPressed: () {}, child: const Text('禁用')),
-              TextButton(onPressed: () {}, child: const Text('删除')),
+              TextButton(
+                onPressed: () {},
+                style: RuQiButtonStyles.linkDanger(context),
+                child: const Text('删除'),
+              ),
             ],
           ),
         ),

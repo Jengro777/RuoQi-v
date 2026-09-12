@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// 多因素认证（运营后台·个人中心）——业务静态页。
+/// 多因素认证（平台端个人中心）——业务静态页。
 class MfaPage extends StatelessWidget {
   const MfaPage({super.key});
 
@@ -13,7 +13,7 @@ class MfaPage extends StatelessWidget {
   }
 }
 
-/// 多因素认证正文（供运营后台对话框右侧内容区内嵌展示）。
+/// 多因素认证正文（供个人中心对话框内容区内嵌展示）。
 class MfaBody extends StatelessWidget {
   const MfaBody({super.key});
 

@@ -35,17 +35,19 @@ void main() {
     expect(find.text('业务工作台'), findsOneWidget);
   });
 
-  testWidgets('默认浅色，顶栏开关切到暗色', (tester) async {
+  testWidgets('默认浅色，顶栏背景模式切到暗色', (tester) async {
     await tester.pumpWidget(const BusinessApp());
 
-    expect(find.byIcon(Icons.light_mode), findsOneWidget);
-    await tester.tap(find.byTooltip('切换暗黑 / 亮色模式'));
+    expect(
+      tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+      ThemeMode.light,
+    );
+    await tester.tap(find.byTooltip('暗色'));
     await tester.pumpAndSettle();
 
     expect(
       tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
       ThemeMode.dark,
     );
-    expect(find.byIcon(Icons.dark_mode), findsOneWidget);
   });
 }

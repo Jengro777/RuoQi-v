@@ -36,7 +36,6 @@ class RegionCountryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.all(RuQiSpacing.lg),
       children: [
@@ -72,30 +71,23 @@ class RegionCountryBody extends StatelessWidget {
                 label: region.enabled ? '启用中' : '已停用',
                 tone: region.enabled ? StatusTone.success : StatusTone.neutral,
               ),
-              Wrap(
-                spacing: RuQiSpacing.xs,
-                children: [
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, region, '编辑'),
-                    child: const Text('编辑'),
+              RuQiRowActionsMenu(
+                actions: [
+                  RuQiRowAction(
+                    '编辑',
+                    () => _handleAction(context, region, '编辑'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(
+                  RuQiRowAction(
+                    region.enabled ? '停用' : '启用',
+                    () => _handleAction(
                       context,
                       region,
                       region.enabled ? '停用' : '启用',
                     ),
-                    child: Text(region.enabled ? '停用' : '启用'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, region, '删除'),
-                    child: Text(
-                      '删除',
-                      style: TextStyle(color: theme.colorScheme.error),
-                    ),
+                  RuQiRowAction(
+                    '删除',
+                    () => _handleAction(context, region, '删除'),
                   ),
                 ],
               ),

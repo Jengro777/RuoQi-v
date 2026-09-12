@@ -38,10 +38,16 @@ class EncodingRulesBody extends StatelessWidget {
             children: [
               // 表头：占满内容区宽度
               Container(
-                color: theme.colorScheme.surfaceContainerHigh,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
                 ),
                 child: const Row(
                   children: [
@@ -126,10 +132,10 @@ class EncodingRulesBody extends StatelessWidget {
                         flex: 13,
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: OutlinedButton(
+                          child: TextButton(
                             onPressed: () =>
                                 showEncodingRuleEditDialog(context, rule),
-                            style: RuQiButtonStyles.secondary(context),
+                            style: RuQiButtonStyles.link(context),
                             child: const Text('编辑'),
                           ),
                         ),

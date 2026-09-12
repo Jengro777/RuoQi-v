@@ -68,7 +68,7 @@ const double _contentMaxWidth = 1000;
 /// 卡片宽于该值时用横向版式（图标在左、动作在右）。
 const double _wideCardBreakpoint = 680;
 
-/// 顶栏：品牌 + 版本徽标成组在左，右侧只有深浅色开关。
+/// 顶栏：品牌 + 版本徽标成组在左，右侧是背景模式切换。
 class _TopBar extends StatelessWidget {
   const _TopBar({required this.themeMode, this.onThemeModeChanged});
 
@@ -240,7 +240,7 @@ class _EntryCardState extends State<_EntryCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final radius = BorderRadius.circular(RuQiSpacing.sm);
-    // 规范 §1.4 色块约束：卡片不铺灰底，底色取最浅的中性表面（亮色 #FAFBFC），
+    // 规范 §1.4 色块约束：卡片不铺灰底，底色取最浅的中性表面（亮色 #FFFFFF），
     // 层级交给 1px 描边 + 浅阴影（§4.1 深度 1）。
     final cardColor = theme.brightness == Brightness.dark
         ? colorScheme.surfaceContainerLow
@@ -260,9 +260,8 @@ class _EntryCardState extends State<_EntryCard> {
         decoration: BoxDecoration(
           color: _hovered ? hoverColor : cardColor,
           borderRadius: radius,
-          border: Border.all(
-            color: _hovered ? colorScheme.primary : colorScheme.outlineVariant,
-          ),
+          // 悬停高亮用底色（亮色 #FAFAFA）+ 上浮/阴影，不用主色描边。
+          border: Border.all(color: colorScheme.outlineVariant),
           // 填充与阴影同层：阴影先画、填充后盖，卡片内部不会被压暗。
           boxShadow: RuQiElevation.shadowsFor(
             theme.brightness,

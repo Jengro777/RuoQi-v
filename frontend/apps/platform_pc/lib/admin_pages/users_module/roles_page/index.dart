@@ -100,10 +100,16 @@ class RolesBody extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                color: theme.colorScheme.surfaceContainerHigh,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
                 ),
                 child: const Row(
                   children: [
@@ -197,27 +203,18 @@ class RolesBody extends StatelessWidget {
                         flex: 12,
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: PopupMenuButton<String>(
-                            tooltip: '操作',
-                            icon: Icon(
-                              Icons.more_horiz,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            onSelected: (action) =>
-                                _handleAction(context, role, action),
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: '编辑名称',
-                                child: Text('编辑名称'),
-                              ),
-                              const PopupMenuItem(
-                                value: '设置权限',
-                                child: Text('设置权限'),
-                              ),
-                              const PopupMenuItem(
-                                value: '删除角色组',
-                                child: Text('删除角色组'),
-                              ),
+                          // 与 用户 页一致：动作收进 `···` 菜单，hover 只高亮图标。
+                          child: RuQiRowActionsMenu(
+                            actions: [
+                              for (final action in const [
+                                '编辑名称',
+                                '设置权限',
+                                '删除角色组',
+                              ])
+                                RuQiRowAction(
+                                  action,
+                                  () => _handleAction(context, role, action),
+                                ),
                             ],
                           ),
                         ),

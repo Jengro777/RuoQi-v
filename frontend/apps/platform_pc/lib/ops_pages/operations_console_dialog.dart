@@ -10,7 +10,7 @@ import 'package:common/common.dart';
 import 'operations_nav.dart';
 import 'operations_sidebar.dart';
 
-/// 运营后台（一账通运营端 SSO）入口弹窗。
+/// 运营后台（租户管理后台）入口弹窗。
 class OperationsConsoleDialog {
   static Future<void> show(BuildContext context) {
     return showDialog<void>(
@@ -50,7 +50,7 @@ class _OperationsConsoleDialogState extends State<_OperationsConsoleDialog> {
         children: [
           // 顶部导航栏：品牌 + 退出
           ConsoleTopBar(
-            title: 'XX运营后台',
+            title: '运营后台',
             onExit: () => Navigator.of(context).pop(),
           ),
           Expanded(

@@ -93,23 +93,19 @@ class _TranslationsBodyState extends State<TranslationsBody> {
                 label: item.translated ? '已翻译' : '未翻译',
                 tone: item.translated ? StatusTone.success : StatusTone.warning,
               ),
-              Wrap(
-                spacing: RuQiSpacing.xs,
-                children: [
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => showTranslationEditPanel(context, item),
-                    child: const Text('编辑'),
+              RuQiRowActionsMenu(
+                actions: [
+                  RuQiRowAction(
+                    '编辑',
+                    () => showTranslationEditPanel(context, item),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => showTranslationHistoryPanel(context, item),
-                    child: const Text('历史'),
+                  RuQiRowAction(
+                    '历史',
+                    () => showTranslationHistoryPanel(context, item),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => showTranslationToast(context, '已标记为已读'),
-                    child: const Text('标记已读'),
+                  RuQiRowAction(
+                    '标记已读',
+                    () => showTranslationToast(context, '已标记为已读'),
                   ),
                 ],
               ),
