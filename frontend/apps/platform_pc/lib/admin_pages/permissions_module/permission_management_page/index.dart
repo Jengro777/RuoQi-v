@@ -145,10 +145,13 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
     return ListView(
       padding: const EdgeInsets.all(RuQiSpacing.lg),
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
+        // 权限板块隐藏了控制台左菜单，角色列与内容区之间需要自己补一条分隔线；
+        // IntrinsicHeight 让竖线与整行（含表格）等高。
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
               width: 220,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -185,8 +188,13 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                 ],
               ),
             ),
-            const SizedBox(width: RuQiSpacing.lg),
-            Expanded(
+              // 角色列 | 内容区 分隔线（与左菜单右描边同色同宽）
+              VerticalDivider(
+                width: RuQiSpacing.lg * 2,
+                thickness: 1,
+                color: theme.colorScheme.outlineVariant,
+              ),
+              Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -295,12 +303,12 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                     child: Column(
                       children: [
                         Container(
-                          color: theme.colorScheme.surfaceContainer,
                           padding: const EdgeInsets.symmetric(
                             horizontal: RuQiSpacing.lg,
                             vertical: RuQiSpacing.sm,
                           ),
                           decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainer,
                             border: Border(
                               bottom: BorderSide(
                                 color: theme.colorScheme.outlineVariant,
@@ -367,8 +375,9 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                   ),
                 ],
               ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ],
     );
