@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 import 'encoding_rule_edit_modal.dart';
 import 'encoding_rule_models.dart';

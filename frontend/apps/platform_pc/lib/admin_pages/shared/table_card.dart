@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 表格列定义：标签 + 宽度权重。
 typedef TableColumn = ({String label, int flex});

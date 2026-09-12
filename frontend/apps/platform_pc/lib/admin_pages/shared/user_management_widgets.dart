@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 用户板块共用小部件：页头、头像、状态徽章、分页脚。
 

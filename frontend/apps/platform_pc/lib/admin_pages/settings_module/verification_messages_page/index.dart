@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 import 'verification_message_models.dart';
 import 'verification_message_settings_modal.dart';

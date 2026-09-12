@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 创建自建应用。
 class CreateAppPage extends StatelessWidget {

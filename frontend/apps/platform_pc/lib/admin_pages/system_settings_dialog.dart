@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 import 'package:ruoqi_platform_pc/admin_pages/settings_module/auth_login_settings_page/index.dart';
 import 'package:ruoqi_platform_pc/admin_pages/settings_module/email_settings_page/index.dart';

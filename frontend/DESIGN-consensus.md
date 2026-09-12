@@ -602,7 +602,7 @@ showGeneralDialog<void>(
 
 判定统一使用 `MediaQuery.sizeOf(context).width` 或 `LayoutBuilder`。
 
-> 注意：`ruoqi_common` 现有 `RuoQiBreakpoints.tablet = 600` 与本规范 768
+> 注意：`common` 包现有 `RuoQiBreakpoints.tablet = 600` 与本规范 768
 > 不一致，落地时需统一（建议以本规范为准）。
 
 ### 组件响应式行为

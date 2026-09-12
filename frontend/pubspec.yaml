@@ -10,12 +10,8 @@ workspace:
   - apps/platform_pc
   - apps/business_app
   - apps/business_pc
-  - packages/ruoqi_common
-  - packages/ruoqi_network
-  - packages/ruoqi_platform_api
-  - packages/ruoqi_customer_api
-  - packages/ruoqi_merchant_api
-  - packages/ruoqi_partner_api
+  - packages/common
+  - packages/network
 
 dev_dependencies:
   melos: ^6.3.0

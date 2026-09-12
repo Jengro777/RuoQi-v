@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 元信息行：标签 + 值（创建 / 最后编辑等）。
 class UserMetaRow extends StatelessWidget {

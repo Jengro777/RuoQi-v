@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 通用确认对话框（内容区上方小弹窗，保留遮罩）。
 Future<bool> showUserConfirmDialog(

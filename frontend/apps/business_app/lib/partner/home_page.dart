@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 伙伴端（App）原型首页：伙伴移动端。
 class PartnerHomePage extends StatelessWidget {
