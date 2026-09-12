@@ -38,12 +38,12 @@ class EncodingRulesBody extends StatelessWidget {
             children: [
               // 表头：占满内容区宽度
               Container(
-                color: theme.colorScheme.surfaceContainer,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,
                 ),
                 decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainer,
                   border: Border(
                     bottom: BorderSide(
                       color: theme.colorScheme.outlineVariant,

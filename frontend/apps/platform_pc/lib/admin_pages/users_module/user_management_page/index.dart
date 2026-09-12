@@ -153,12 +153,12 @@ class _UsersBodyState extends State<UsersBody> {
           child: Column(
             children: [
               Container(
-                color: theme.colorScheme.surfaceContainer,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,
                 ),
                 decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainer,
                   border: Border(
                     bottom: BorderSide(
                       color: theme.colorScheme.outlineVariant,
