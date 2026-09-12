@@ -76,16 +76,16 @@ class _LogFilterBarState extends State<LogFilterBar> {
           ),
         ),
         const SizedBox(width: RuQiSpacing.sm),
-        TextButton(
-          style: RuQiButtonStyles.link(context),
-          onPressed: _reset,
-          child: const Text('重置'),
-        ),
-        const SizedBox(width: RuQiSpacing.xxs),
         FilledButton(
           style: RuQiButtonStyles.primary(context),
           onPressed: widget.onFilter ?? () => _pickRange(context),
           child: const Text('筛选'),
+        ),
+        const SizedBox(width: RuQiSpacing.xxs),
+        TextButton(
+          style: RuQiButtonStyles.link(context),
+          onPressed: _reset,
+          child: const Text('重置'),
         ),
       ],
     );

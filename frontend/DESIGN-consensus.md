@@ -560,8 +560,9 @@ FloatingPromo({
 （`button-primary`）与「重置」（`button-link`）；第二行 = 状态选项卡
 （`ChoiceChip` / `FilterChip`）另起一行、左对齐。
 
-筛选控件等高注意：`DropdownButtonFormField` 的 `InputDecorator` 按内容撑高
-（内容 24），`contentPadding` 垂直取 **6** 正好 36；时间范围等按钮包一层
+筛选控件等高注意：下拉统一用 `RuQiFilterDropdown`（固定 36 高的容器自带描边 +
+无下划线的 `DropdownButton`）——`DropdownButtonFormField` 的 `InputDecorator`
+按内容撑高，边框会短于占位框，不要用在筛选栏里；时间范围等按钮包一层
 `SizedBox(height: RuQiSearchField.height)` 由按钮填满。
 
 线索收集组（`form-group-marketing`）：`Wrap` / `Row` —— 输入框 `Expanded`

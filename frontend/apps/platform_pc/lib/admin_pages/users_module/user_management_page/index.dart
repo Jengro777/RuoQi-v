@@ -126,41 +126,30 @@ class _UsersBodyState extends State<UsersBody> {
             const SizedBox(width: RuQiSpacing.md),
             Expanded(
               flex: 2,
-              child: SizedBox(
-                // 与搜索框严格等高（§6.5）：下拉内容高 24，配 vertical 6 刚好 36。
-                height: RuQiSearchField.height,
-                child: DropdownButtonFormField<String>(
-                  initialValue: _role,
-                  isExpanded: true,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: RuQiSpacing.sm,
-                      vertical: 6,
-                    ),
-                  ),
-                  items: [
-                    const DropdownMenuItem(value: '所有角色', child: Text('所有角色')),
-                    for (final role in roleGroups)
-                      DropdownMenuItem(value: role.name, child: Text(role.name)),
-                    const DropdownMenuItem(value: '自定义角色', child: Text('自定义角色')),
-                  ],
-                  onChanged: (value) =>
-                      setState(() => _role = value ?? '所有角色'),
-                ),
+              // 与搜索框严格等高（§6.5）：走 RuQiFilterDropdown（显式 36 高描边容器）。
+              child: RuQiFilterDropdown<String>(
+                value: _role,
+                items: [
+                  const DropdownMenuItem(value: '所有角色', child: Text('所有角色')),
+                  for (final role in roleGroups)
+                    DropdownMenuItem(value: role.name, child: Text(role.name)),
+                  const DropdownMenuItem(value: '自定义角色', child: Text('自定义角色')),
+                ],
+                onChanged: (value) =>
+                    setState(() => _role = value ?? '所有角色'),
               ),
             ),
             const SizedBox(width: RuQiSpacing.sm),
-            TextButton(
-              style: RuQiButtonStyles.link(context),
-              onPressed: _resetFilters,
-              child: const Text('重置'),
-            ),
-            const SizedBox(width: RuQiSpacing.xxs),
             FilledButton(
               style: RuQiButtonStyles.primary(context),
               onPressed: () {},
               child: const Text('筛选'),
+            ),
+            const SizedBox(width: RuQiSpacing.xxs),
+            TextButton(
+              style: RuQiButtonStyles.link(context),
+              onPressed: _resetFilters,
+              child: const Text('重置'),
             ),
           ],
         ),
