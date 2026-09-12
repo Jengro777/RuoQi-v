@@ -69,8 +69,8 @@ class TableCard extends StatelessWidget {
               vertical: RuQiSpacing.sm,
             ),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainer,
               border: Border(
+                // 表头不铺底色：用比行线深一档的下分隔线 + 字重 w600 区分。
                 bottom: BorderSide(color: theme.colorScheme.outlineVariant),
               ),
             ),
@@ -82,7 +82,8 @@ class TableCard extends StatelessWidget {
                     child: Text(
                       column.label,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                        // 表头文案比正文轻一档：中性灰 + w600。
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -90,7 +91,6 @@ class TableCard extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
           if (rowCount == 0)
             Padding(
               padding: const EdgeInsets.all(RuQiSpacing.lg),

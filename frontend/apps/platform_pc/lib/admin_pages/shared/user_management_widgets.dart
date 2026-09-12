@@ -131,7 +131,8 @@ class UserColumnHeader extends StatelessWidget {
     return Text(
       label,
       style: theme.textTheme.bodyMedium?.copyWith(
-        color: theme.colorScheme.onSurface,
+        // 表头文案比正文轻一档：中性灰 + w600。
+        color: theme.colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w600,
       ),
     );

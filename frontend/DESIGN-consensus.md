@@ -49,7 +49,7 @@ related: 由原 CSS 版设计共识转换而来；本文件为 Flutter 端唯一
 | `surfaceContainerHighest` | 更深抬升表面（如组内徽章）     | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
 | `onSurface`               | 主文本与标题                 | `Color(0xFF0F172A)` | `Color(0xFFF0F2F5)` |
 | `onSurfaceVariant`        | 次级正文、描述               | `Color(0xFF64748B)` | `Color(0xFFCDD1D8)` |
-| `outlineVariant`          | 卡片 / 表格 / 面板 / 分隔线描边 | `Color(0xFFEAEAEA)` | `Color(0xFF26282F)` |
+| `outlineVariant`          | 卡片 / 表格 / 面板 / 分隔线描边 | `Color(0xFFF0F0F0)` | `Color(0xFF26282F)` |
 | `outline`                 | 更强描边                     | `Color(0xFFDBDBDB)` | `Color(0xFF353840)` |
 | `error`                   | 错误文本、破坏性操作         | `Color(0xFFCF222E)` | `Color(0xFFF85149)` |
 | `scrim`                   | 模态遮罩                     | `Color(0x80000000)` | `Color(0xA6000000)` |
@@ -103,8 +103,8 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
   悬停反馈靠底色变化 + 位移 / 阴影，不用主色描边或主色容器；
 - 卡片等大面积区域不铺灰底：亮色页面 / 顶栏 / 菜单 / 卡片统一 `#FFFFFF`，
   用 1px `outlineVariant`（`#EAEAEA`）描边 / 分隔线划分层级；
-- 表格表头例外：用最轻一档表面 `surfaceContainer`（亮色 `#F5F5F5`）作细带 +
-  下分隔线，保证「有表头」；不使用 `#EDEDED` 及以上灰阶铺整块；
+- 表格表头不铺底色：与卡片同色，文案取 `onSurfaceVariant` + `w600`（比正文轻一档），
+  下分隔线与行线同取 `outlineVariant`（`#F0F0F0`）——整表只有白底与隐约的线；
 - 实现注意：`BoxShadow` 必须与填充色写在同一层 `BoxDecoration` 里——若把填充放在
   外层 `Material`、`BoxShadow` 放在内层装饰上，阴影会盖在填充之上，把整块压暗
   约 9%（亮色 `#FFFFFF` 实测被压成 `#E8E8E8`）；
@@ -455,8 +455,8 @@ ComparisonTable({
 
 - 桌面（`MediaQuery.sizeOf(context).width >= 768`）：标准表格——容器
   `RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),
-side: BorderSide(color: outlineVariant))`；表头 `surfaceContainer` 细带 +
-  `outlineVariant` 下分隔线 + 字重 `w600`；
+side: BorderSide(color: outlineVariant))`；表头不铺底色（同卡片色 +
+  `outlineVariant` 下分隔线 + `onSurfaceVariant` 文案 + `w600`）；
   单元格 `EdgeInsets.symmetric(horizontal: 24, vertical: 16)`（紧凑 16/12）；
   特性列 `FontWeight.w500` + `onSurface`；值列居中；
   勾选 `Icon(Icons.check, size: 18, color: success)`；空值 `—` + `inkTertiary`；
@@ -749,7 +749,7 @@ darkTheme: ruoQiTheme(brightness: dark), themeMode: ThemeMode.system)`；
 需要着色时由主题设置的强调色注入（§1.5）。
 
 亮色「线框」分两级：结构性描边（卡片 / 表格 / 面板 / 分隔线）取
-`outlineVariant`（`#EAEAEA`），输入框与 Chip 等需要辨识的小元素取
+`outlineVariant`（`#F0F0F0`），输入框与 Chip 等需要辨识的小元素取
 `outline`（`#DBDBDB`）。既不铺灰底，又保留足够结构感——「白 + 一档可辨的线」。
 
 ### 9.4 背景模式（个人中心 → 主题）

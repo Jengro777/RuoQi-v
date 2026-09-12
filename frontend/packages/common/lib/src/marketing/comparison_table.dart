@@ -83,7 +83,6 @@ class ComparisonTable extends StatelessWidget {
           // 表头
           Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainer,
               border: Border(
                 bottom: BorderSide(
                   color: theme.colorScheme.outlineVariant,
@@ -153,7 +152,7 @@ class ComparisonTable extends StatelessWidget {
       textAlign: index == 0 ? TextAlign.left : TextAlign.center,
       style: theme.textTheme.bodyMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: theme.colorScheme.onSurface,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
     if (!isFeatured) return header;

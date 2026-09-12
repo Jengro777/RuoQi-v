@@ -67,7 +67,6 @@ class _RolePermissionsPanelState extends State<RolePermissionsPanel> {
                           vertical: RuQiSpacing.sm,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainer,
                           border: Border(
                             bottom: BorderSide(
                               color: theme.colorScheme.outlineVariant,

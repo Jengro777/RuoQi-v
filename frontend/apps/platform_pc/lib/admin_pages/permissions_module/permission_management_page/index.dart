@@ -308,7 +308,6 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                             vertical: RuQiSpacing.sm,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainer,
                             border: Border(
                               bottom: BorderSide(
                                 color: theme.colorScheme.outlineVariant,

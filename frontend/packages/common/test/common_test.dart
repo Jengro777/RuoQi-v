@@ -97,7 +97,7 @@ void main() {
     );
     expect(
       style.side!.resolve(const <WidgetState>{}),
-      const BorderSide(color: Color(0xFFEAEAEA), width: 1),
+      const BorderSide(color: Color(0xFFF0F0F0), width: 1),
     );
   });
 

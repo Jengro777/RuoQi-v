@@ -248,7 +248,8 @@ class RuQiColors {
       surfaceBright: const Color(0xFFFFFFFF),
       onSurface: const Color(0xFF0F172A),
       onSurfaceVariant: const Color(0xFF64748B),
-      outlineVariant: const Color(0xFFEAEAEA),
+      // 结构线再轻一档：卡片 / 表格 / 分隔线在亮色下只作「隐约的边界」。
+      outlineVariant: const Color(0xFFF0F0F0),
       outline: const Color(0xFFDBDBDB),
       error: const Color(0xFFCF222E),
       onError: const Color(0xFFFFFFFF),
