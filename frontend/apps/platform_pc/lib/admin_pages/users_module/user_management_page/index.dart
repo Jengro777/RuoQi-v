@@ -127,7 +127,7 @@ class _UsersBodyState extends State<UsersBody> {
             Expanded(
               flex: 2,
               child: SizedBox(
-                // 与搜索框严格等高（§6.5）。
+                // 与搜索框严格等高（§6.5）：下拉内容高 24，配 vertical 6 刚好 36。
                 height: RuQiSearchField.height,
                 child: DropdownButtonFormField<String>(
                   initialValue: _role,
@@ -136,7 +136,7 @@ class _UsersBodyState extends State<UsersBody> {
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: RuQiSpacing.sm,
-                      vertical: 0,
+                      vertical: 6,
                     ),
                   ),
                   items: [
