@@ -173,9 +173,9 @@ class RuQiColors {
               : (isDark ? const Color(0xFFFFB3C2) : const Color(0xFF8C1D32)));
     final hairlineInput = isDark
         ? (isMarketing ? const Color(0xFF4A4E59) : const Color(0xFF3E414A))
-        // 亮色线框统一到 #FAFAFA：搜索框 / 输入框描边与卡片、列表描边同色，
-        // 页面整体只剩「白 + 极淡的线」。
-        : const Color(0xFFFAFAFA);
+        // 亮色线框分两级：结构性描边（卡片 / 表格 / 分隔线）用 outlineVariant
+        // #EAEAEA；输入框、Chip 等需要辨识的元素用 outline #DBDBDB。
+        : const Color(0xFFDBDBDB);
 
     if (isDark) {
       return RuQiColors(
@@ -248,7 +248,7 @@ class RuQiColors {
       surfaceBright: const Color(0xFFFFFFFF),
       onSurface: const Color(0xFF0F172A),
       onSurfaceVariant: const Color(0xFF64748B),
-      outlineVariant: const Color(0xFFFAFAFA),
+      outlineVariant: const Color(0xFFEAEAEA),
       outline: const Color(0xFFDBDBDB),
       error: const Color(0xFFCF222E),
       onError: const Color(0xFFFFFFFF),
