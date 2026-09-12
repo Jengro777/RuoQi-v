@@ -32,7 +32,6 @@ class RateHistoryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.all(RuQiSpacing.lg),
       children: [
@@ -74,30 +73,23 @@ class RateHistoryBody extends StatelessWidget {
                 label: rate.enabled ? '启用中' : '已停用',
                 tone: rate.enabled ? StatusTone.success : StatusTone.neutral,
               ),
-              Wrap(
-                spacing: RuQiSpacing.xs,
-                children: [
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, rate, '编辑'),
-                    child: const Text('编辑'),
+              RuQiRowActionsMenu(
+                actions: [
+                  RuQiRowAction(
+                    '编辑',
+                    () => _handleAction(context, rate, '编辑'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(
+                  RuQiRowAction(
+                    rate.enabled ? '停用' : '启用',
+                    () => _handleAction(
                       context,
                       rate,
                       rate.enabled ? '停用' : '启用',
                     ),
-                    child: Text(rate.enabled ? '停用' : '启用'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, rate, '删除'),
-                    child: Text(
-                      '删除',
-                      style: TextStyle(color: theme.colorScheme.error),
-                    ),
+                  RuQiRowAction(
+                    '删除',
+                    () => _handleAction(context, rate, '删除'),
                   ),
                 ],
               ),

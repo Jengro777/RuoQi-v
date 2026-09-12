@@ -82,7 +82,14 @@ class ComparisonTable extends StatelessWidget {
         children: [
           // 表头
           Container(
-            color: theme.colorScheme.surfaceContainerHigh,
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: theme.colorScheme.outlineVariant,
+                  width: 1,
+                ),
+              ),
+            ),
             child: Row(
               children: [
                 for (var i = 0; i < columns.length; i++)
@@ -145,7 +152,7 @@ class ComparisonTable extends StatelessWidget {
       textAlign: index == 0 ? TextAlign.left : TextAlign.center,
       style: theme.textTheme.bodyMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: theme.colorScheme.onSurface,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
     if (!isFeatured) return header;
@@ -219,7 +226,6 @@ class ComparisonTable extends StatelessWidget {
         for (final row in rows)
           Card(
             margin: const EdgeInsets.only(bottom: RuQiSpacing.md),
-            color: theme.colorScheme.surfaceContainer,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: BorderSide(

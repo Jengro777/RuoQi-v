@@ -28,7 +28,7 @@ import 'package:ruoqi_platform_pc/admin_pages/logs_module/operation_logs_page/in
 import 'package:ruoqi_platform_pc/admin_pages/logs_module/payment_logs_page/index.dart';
 import 'package:ruoqi_platform_pc/admin_pages/logs_module/verification_logs_page/index.dart';
 
-/// 系统管理（一账通 ID 独立体系）入口弹窗。
+/// 系统管理（系统全局管理）入口弹窗。
 ///
 /// 按 DESIGN-consensus.md 规范实现：
 /// - 顶部导航栏：surface 背景 + onSurface 文本、高 56、无阴影（§6.7）；
@@ -187,7 +187,7 @@ class _SystemSettingsDialogState extends State<_SystemSettingsDialog> {
       child: Column(
         children: [
           ConsoleTopBar(
-            title: 'XX管理后台',
+            title: '管理后台',
             sectionIndex: _sectionIndex,
             onSectionSelected: _selectSection,
             onExit: () => Navigator.of(context).pop(),
@@ -264,19 +264,9 @@ class _LeftMenuState extends State<_LeftMenu> {
               RuQiSpacing.lg,
               RuQiSpacing.sm,
             ),
-            child: TextField(
-              onChanged: (value) {
-                setState(() => _query = value.trim());
-              },
-              decoration: const InputDecoration(
-                hintText: '搜索菜单',
-                prefixIcon: Icon(Icons.search, size: 18),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: RuQiSpacing.xs,
-                  vertical: 10,
-                ),
-              ),
+            child: RuQiSearchField(
+              hintText: '搜索菜单',
+              onChanged: (value) => setState(() => _query = value.trim()),
             ),
           ),
           Divider(height: 1, color: theme.colorScheme.outlineVariant),

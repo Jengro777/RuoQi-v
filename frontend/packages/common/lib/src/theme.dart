@@ -16,12 +16,18 @@ const Color ruoQiSeedColor = ruoQiBrandColor;
 ///
 /// 亮色 / 暗色两套取值，营销页通过 `purpose: RuQiPurpose.marketing`
 /// 标记；字体族默认 Inter（含 CJK 回退链）。
+/// `accent` 用于个性化强调色（个人中心 → 主题），为空时取规范品牌色。
 ThemeData ruoQiTheme({
   Brightness brightness = Brightness.light,
   RuQiPurpose purpose = RuQiPurpose.standard,
   String? fontFamily = 'Inter',
+  Color? accent,
 }) {
-  final colors = RuQiColors.forMode(brightness, purpose: purpose);
+  final colors = RuQiColors.forMode(
+    brightness,
+    purpose: purpose,
+    accent: accent,
+  );
   final isDark = brightness == Brightness.dark;
   final scheme = colors.toColorScheme(brightness);
   final textTheme = _ruoQiTextTheme(brightness);
@@ -41,7 +47,14 @@ ThemeData ruoQiTheme({
     scaffoldBackgroundColor: scheme.surface,
     textTheme: textTheme,
     extensions: [ext],
-    focusColor: scheme.primary.withValues(alpha: 0.5),
+    // 焦点高亮（InkWell / 列表行等）：取最浅中性表面，不再整块铺主色；
+    // 输入框等控件自身的聚焦描边仍会提示（见 inputDecorationTheme）。
+    focusColor: colors.surfaceContainerLow,
+    // 悬停高亮与焦点同源（#FAFAFA）：行、菜单项、按钮统一走中性色，
+    // 不用主色 / 主色容器做交互反馈。
+    hoverColor: colors.surfaceContainerLow,
+    // 按下高亮比悬停略深一档，仍是中性灰。
+    highlightColor: colors.surfaceContainerHigh,
     // ── 组件主题 ─────────────────────────────────────────────
     filledButtonTheme: FilledButtonThemeData(
       style: RuQiButtonStyles.primaryOf(scheme, ext, textTheme),
@@ -50,28 +63,66 @@ ThemeData ruoQiTheme({
       style: RuQiButtonStyles.secondaryOf(scheme, textTheme),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: RuQiButtonStyles.tertiaryOf(scheme, textTheme),
+      // 未指定样式的 TextButton 一律按行内文字动作（表格「操作」列等）渲染：
+      // 无描边无底色，hover / press 只把文字转主色。
+      style: RuQiButtonStyles.linkOf(scheme, ext, textTheme),
     ),
     inputDecorationTheme: _ruoQiInputDecoration(colors, scheme),
     cardTheme: CardThemeData(
-      color: scheme.surfaceContainer,
-      elevation: isDark ? 0 : 1,
+      // 规范 §1.4：需要底色时用最浅的中性表面。亮色卡片取白底 + 1px 描边，
+      // 不再整块铺灰（大面积色块）；暗色仍靠比页面更亮的表面分层。
+      color: isDark
+          ? scheme.surfaceContainer
+          : scheme.surfaceContainerLowest,
+      elevation: 0,
       surfaceTintColor: Colors.transparent,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: isDark
-            ? BorderSide(color: scheme.outlineVariant, width: 1)
-            : BorderSide.none,
+        side: BorderSide(color: scheme.outlineVariant, width: 1),
       ),
     ),
     chipTheme: _ruoQiChipTheme(scheme),
-    dataTableTheme: DataTableThemeData(
-      headingRowColor: WidgetStatePropertyAll(
-        scheme.surfaceContainerHigh,
+    // 分段选择（如 权限页「运营 / 管理」）：与 Chip、顶栏背景模式切换同源。
+    // M3 默认选中态用 `secondaryContainer`（品牌粉）会与强调色冲突，这里显式接管。
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? scheme.surfaceContainerHigh
+              : Colors.transparent,
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return ext.inkTertiary;
+          }
+          // 选中段文案用主色高亮，未选中取中性灰。
+          return states.contains(WidgetState.selected)
+              ? scheme.primary
+              : scheme.onSurfaceVariant;
+        }),
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.pressed)) {
+            return colors.surfaceContainerHigh;
+          }
+          if (states.contains(WidgetState.hovered) ||
+              states.contains(WidgetState.focused)) {
+            return colors.surfaceContainerLow;
+          }
+          return Colors.transparent;
+        }),
+        side: WidgetStatePropertyAll(
+          BorderSide(color: scheme.outlineVariant, width: 1),
+        ),
+        textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
       ),
+    ),
+    dataTableTheme: DataTableThemeData(
+      // 表头不铺色块：与卡片同色，用字重与下分隔线区分。
+      headingRowColor: const WidgetStatePropertyAll(Colors.transparent),
       headingTextStyle: textTheme.bodyMedium?.copyWith(
-        color: scheme.onSurface,
+        // 表头文案比正文轻一档：中性灰 + w600。
+        color: scheme.onSurfaceVariant,
         fontWeight: FontWeight.w600,
       ),
       dataTextStyle: textTheme.bodyMedium?.copyWith(
@@ -129,8 +180,9 @@ ThemeData ruoQiTheme({
       color: colors.inkMuted,
       selectedColor: scheme.onSurface,
       fillColor: scheme.surfaceContainerHigh,
-      hoverColor: scheme.surfaceContainerHigh,
-      focusColor: scheme.surfaceContainerHigh,
+      // 选中段用 surfaceContainerHigh；悬停 / 焦点仍是 #FAFAFA 的中性高亮。
+      hoverColor: colors.surfaceContainerLow,
+      focusColor: colors.surfaceContainerLow,
       highlightColor: scheme.surfaceContainerHigh,
       borderColor: scheme.outlineVariant,
       selectedBorderColor: scheme.outlineVariant,
@@ -162,11 +214,14 @@ InputDecorationTheme _ruoQiInputDecoration(
 ) {
   return InputDecorationTheme(
     filled: true,
-    fillColor: colors.surface,
+    // 输入框底色取最浅中性表面：亮色 = 卡片白（与底色一致），
+    // 聚焦时也不变深，只用描边提示。
+    fillColor: colors.surfaceContainerLowest,
     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     hintStyle: TextStyle(color: colors.inkTertiary),
     labelStyle: TextStyle(color: colors.inkMuted),
-    floatingLabelStyle: TextStyle(color: colors.primary),
+    // 浮动标签（有值 / 聚焦时贴在描边上）同样取中性灰，不用主色。
+    floatingLabelStyle: TextStyle(color: colors.inkMuted),
     helperStyle: const TextStyle(fontSize: 12, height: 1.4),
     errorStyle: const TextStyle(fontSize: 12, height: 1.4),
     prefixIconColor: colors.inkMuted,
@@ -181,7 +236,11 @@ InputDecorationTheme _ruoQiInputDecoration(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(6),
-      borderSide: BorderSide(width: 1.5, color: colors.primary),
+      // 聚焦沿用默认中性描边色，只把 1px 加粗到 1.5px（不再上主色）。
+      borderSide: BorderSide(
+        width: 1.5,
+        color: colors.hairlineInput,
+      ),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(6),
@@ -200,12 +259,14 @@ InputDecorationTheme _ruoQiInputDecoration(
 
 ChipThemeData _ruoQiChipTheme(ColorScheme scheme) {
   return ChipThemeData(
-    backgroundColor: scheme.surfaceContainerHighest,
+    // 规范 §1.4：Chip 用最浅表面 + 1px 描边，避免小色块叠色块。
+    backgroundColor: scheme.surfaceContainerLowest,
     selectedColor: scheme.primaryContainer,
     labelStyle: TextStyle(color: scheme.onSurfaceVariant),
     secondaryLabelStyle: TextStyle(color: scheme.onSurfaceVariant),
     checkmarkColor: scheme.primary,
-    side: BorderSide(color: scheme.outlineVariant, width: 1),
+    // 线框统一 #FAFAFA 后，Chip 这类小元素改用更强的 `outline` 保持可辨识。
+    side: BorderSide(color: scheme.outline, width: 1),
     shape: const StadiumBorder(),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     showCheckmark: false,

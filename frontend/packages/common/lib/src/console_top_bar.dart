@@ -21,7 +21,7 @@ class ConsoleTopBar extends StatelessWidget {
     this.onSectionSelected,
   });
 
-  /// 控制台名称，如「XX管理后台」。
+  /// 控制台名称，如「管理后台」。
   final String title;
 
   final VoidCallback onExit;
@@ -47,47 +47,62 @@ class ConsoleTopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const SizedBox(width: RuQiSpacing.md),
-          Icon(Icons.bolt_rounded, size: 26, color: theme.colorScheme.primary),
-          const SizedBox(width: RuQiSpacing.xs),
-          Text(
-            'RuoQi',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.w700,
+          // 左侧整组（品牌 + 标题 + 板块 Tab）吃掉剩余宽度，标题 flex
+          // 分到的空档留在组内；退出按钮是行尾的非 flex 项，始终贴右上角。
+          Expanded(
+            child: Row(
+              children: [
+                const SizedBox(width: RuQiSpacing.md),
+                Icon(
+                  Icons.bolt_rounded,
+                  size: 26,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: RuQiSpacing.xs),
+                Text(
+                  'RuoQi',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: RuQiSpacing.sm),
+                Container(
+                  width: 1,
+                  height: 20,
+                  color: theme.colorScheme.outlineVariant,
+                ),
+                const SizedBox(width: RuQiSpacing.sm),
+                // 窄屏（移动端弹窗）里标题让位给右侧退出按钮，超长省略。
+                Flexible(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: RuQiSpacing.lg),
+                for (var i = 0; i < tabs.length; i++)
+                  _ConsoleTab(
+                    label: tabs[i],
+                    selected: i == sectionIndex,
+                    onTap: () => onSectionSelected?.call(i),
+                  ),
+              ],
             ),
           ),
-          const SizedBox(width: RuQiSpacing.sm),
-          Container(
-            width: 1,
-            height: 20,
-            color: theme.colorScheme.outlineVariant,
-          ),
-          const SizedBox(width: RuQiSpacing.sm),
-          // 窄屏（移动端弹窗）里标题让位给右侧退出按钮，超长省略。
-          Flexible(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: RuQiSpacing.lg),
-          for (var i = 0; i < tabs.length; i++)
-            _ConsoleTab(
-              label: tabs[i],
-              selected: i == sectionIndex,
-              onTap: () => onSectionSelected?.call(i),
-            ),
-          const Spacer(),
           Padding(
-            padding: const EdgeInsets.only(right: RuQiSpacing.md),
+            padding: const EdgeInsets.only(
+              left: RuQiSpacing.sm,
+              right: RuQiSpacing.md,
+            ),
             child: OutlinedButton(
               onPressed: onExit,
+              // 次按钮：默认中性描边，hover / 聚焦才亮主色。
               style: RuQiButtonStyles.secondary(context),
               child: const Text('退出'),
             ),

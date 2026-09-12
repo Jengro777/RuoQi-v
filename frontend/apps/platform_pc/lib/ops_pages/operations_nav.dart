@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'api_auth_module/api_token_page/index.dart';
-import 'profile_module/account_security_page/index.dart';
-import 'profile_module/localization_page/index.dart';
-import 'profile_module/mfa_page/index.dart';
-import 'profile_module/profile_page/index.dart';
 import 'project_module/project_list_page/index.dart';
 import 'project_module/project_settings_page/index.dart';
 import 'project_module/subscription_billing_page/index.dart';
@@ -34,7 +30,8 @@ class OperationsNavSection {
   final List<OperationsNavItem> items;
 }
 
-/// 板块顺序与 运营后台 一致（租户 / 团队空间 / 项目 / API授权 / 个人中心）。
+/// 板块顺序与 运营后台 一致（租户 / 团队空间 / 项目 / API授权）。
+/// 个人中心已独立为 `personal_pages`，不再挂在运营后台下。
 const operationsNavSections = [
   OperationsNavSection('租户', [
     OperationsNavItem('租户列表', _build1),
@@ -57,12 +54,6 @@ const operationsNavSections = [
   OperationsNavSection('API授权', [
     OperationsNavItem('API令牌', _build13),
   ]),
-  OperationsNavSection('个人中心', [
-    OperationsNavItem('个人资料', _build14),
-    OperationsNavItem('账号安全', _build15),
-    OperationsNavItem('多因素认证', _build16),
-    OperationsNavItem('本地化', _build17),
-  ]),
 ];
 
 Widget _build1(BuildContext _) => const TenantListBody();
@@ -78,7 +69,3 @@ Widget _build10(BuildContext _) => const SubscriptionOpenAuditBody();
 Widget _build11(BuildContext _) => const SubscriptionChangeAuditBody();
 Widget _build12(BuildContext _) => const SubscriptionCancelAuditBody();
 Widget _build13(BuildContext _) => const ApiTokenBody();
-Widget _build14(BuildContext _) => const ProfileBody();
-Widget _build15(BuildContext _) => const AccountSecurityBody();
-Widget _build16(BuildContext _) => const MfaBody();
-Widget _build17(BuildContext _) => const LocalizationBody();

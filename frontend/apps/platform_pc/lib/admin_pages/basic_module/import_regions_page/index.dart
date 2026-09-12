@@ -94,7 +94,7 @@ class ImportRegionsBody extends StatelessWidget {
                       const SizedBox(width: RuQiSpacing.sm),
                       const Expanded(child: CellText('single_zh-CN1666161231788.xlsx')),
                       TextButton(
-                        style: RuQiButtonStyles.tertiary(context),
+                        style: RuQiButtonStyles.link(context),
                         onPressed: () {},
                         child: const Text('移除'),
                       ),

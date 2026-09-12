@@ -19,7 +19,7 @@ class BusinessApp extends StatefulWidget {
 }
 
 class _BusinessAppState extends State<BusinessApp> {
-  /// 深浅色模式：默认浅色，由工作台顶栏右上角的开关切换。
+  /// 背景模式：默认浅色，由工作台顶栏右上角的三档切换修改。
   ThemeMode _themeMode = ThemeMode.light;
 
   @override

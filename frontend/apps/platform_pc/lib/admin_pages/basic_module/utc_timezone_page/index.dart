@@ -75,7 +75,7 @@ class UtcBody extends StatelessWidget {
               CellText(row.center, muted: true),
               CellText(row.range, muted: true),
               TextButton(
-                style: RuQiButtonStyles.tertiary(context),
+                style: RuQiButtonStyles.link(context),
                 onPressed: () => showUtcZoneEditPanel(context, row),
                 child: const Text('编辑'),
               ),

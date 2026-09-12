@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:common/common.dart';
 
 /// 租户列表（运营后台）——业务静态页。
 class TenantListPage extends StatelessWidget {
@@ -22,30 +23,40 @@ class TenantListBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // 筛选栏：搜索 + 筛选 / 重置
         Row(
           children: [
             SizedBox(
               width: 260,
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: '搜索租户名称',
-                  prefixIcon: Icon(Icons.search),
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: RuQiSearchField(hintText: '搜索租户名称'),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: RuQiSpacing.md),
+            TextButton(
+              style: RuQiButtonStyles.link(context),
+              onPressed: () {},
+              child: const Text('重置'),
+            ),
+            const SizedBox(width: RuQiSpacing.xxs),
+            FilledButton(
+              style: RuQiButtonStyles.primary(context),
+              onPressed: () {},
+              child: const Text('筛选'),
+            ),
+          ],
+        ),
+        const SizedBox(height: RuQiSpacing.sm),
+        // 状态选项卡：独立一行、左对齐（在筛选栏下方）。
+        Row(
+          children: [
             for (final status in const ['全部', '活跃', '已锁定'])
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: RuQiSpacing.xs),
                 child: FilterChip(
                   label: Text(status),
                   selected: status == '全部',
                   onSelected: (_) {},
                 ),
               ),
-            const Spacer(),
           ],
         ),
         const SizedBox(height: 16),

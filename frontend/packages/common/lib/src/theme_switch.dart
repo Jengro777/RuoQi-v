@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'theme/tokens.dart';
-
-/// 顶栏的深浅色切换：Scalar 文档站 `.cs-toggle` 的胶囊开关样式。
+/// 顶栏的背景模式切换：与「个人中心 → 主题 → 背景」同一套三档选项。
 ///
-/// 几何与行为对齐 Scalar：38 × 24 的开关、12px 高的细胶囊轨道、
-/// 23px 圆形滑块压在轨道上（深色时右移 14px），位移 300ms ease-in-out，
-/// 滑块内是当前模式的图标（浅色太阳 / 深色月亮）。
+/// 三档对应 `ThemeMode.system / light / dark`，选中项用 `surfaceContainerHigh`
+/// 底 + 主色图标，未选中 `onSurfaceVariant`——与主题页的背景选项样式一致。
 ///
-/// 颜色取语义角色而非十六进制：轨道 `outlineVariant`、滑块 `surface` +
-/// `outline` 描边、图标 `onSurface`，避免顶栏出现抢眼的主色填充。
+/// 颜色取语义角色而非十六进制：`surfaceContainerHigh` 底、`primary` / `inkMuted`
+/// 图标，避免顶栏出现抢眼的大色块。
 class RuQiThemeModeSwitch extends StatelessWidget {
   const RuQiThemeModeSwitch({
     super.key,
@@ -20,90 +17,84 @@ class RuQiThemeModeSwitch extends StatelessWidget {
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode>? onChanged;
 
-  /// 开关整体尺寸。
-  static const double _width = 38;
-  static const double _height = 24;
+  /// 三档选项：模式 / 文案 / 图标（顺序与主题页一致）。
+  static const List<(ThemeMode, String, IconData)> options = [
+    (ThemeMode.system, '跟随系统', Icons.desktop_windows_outlined),
+    (ThemeMode.light, '亮色', Icons.light_mode_outlined),
+    (ThemeMode.dark, '暗色', Icons.dark_mode_outlined),
+  ];
 
-  /// 细胶囊轨道高度，以及左右各让出的 1px。
-  static const double _trackHeight = 12;
-  static const double _trackInset = 1;
+  /// 单个选项命中区与图标尺寸（顶栏内保持紧凑）。
+  static const double _itemSize = 26;
+  static const double _iconSize = 15;
 
-  /// 滑块直径、深色时的位移（38 − 23）与图标尺寸。
-  static const double _knobSize = 23;
-  static const double _knobTravel = _width - _knobSize;
-  static const double _iconSize = 12;
+  @override
+  Widget build(BuildContext context) {
+    final onChanged = this.onChanged;
+    final enabled = onChanged != null;
 
-  /// Scalar 的 `transition: transform 0.3s ease-in-out`。
-  static const Duration _slideDuration = Duration(milliseconds: 300);
+    return Semantics(
+      container: true,
+      label: '背景模式',
+      child: Opacity(
+        opacity: enabled ? 1 : 0.38,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final (mode, label, icon) in options)
+              _ThemeModeOption(
+                label: label,
+                icon: icon,
+                selected: mode == themeMode,
+                onTap: enabled ? () => onChanged(mode) : null,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 单个背景模式选项：图标按钮，选中项带 `surfaceContainerHigh` 底色。
+class _ThemeModeOption extends StatelessWidget {
+  const _ThemeModeOption({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = themeMode == ThemeMode.dark;
-    final onChanged = this.onChanged;
-    final enabled = onChanged != null;
-
     return Tooltip(
-      message: '切换暗黑 / 亮色模式',
-      child: Semantics(
-        button: true,
-        enabled: enabled,
-        toggled: isDark,
-        label: '切换暗黑 / 亮色模式',
-        child: Opacity(
-          opacity: enabled ? 1 : 0.38,
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: enabled
-                  ? () => onChanged(isDark ? ThemeMode.light : ThemeMode.dark)
-                  : null,
-              customBorder: const StadiumBorder(),
-              child: SizedBox(
-                width: _width,
-                height: _height,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: _trackInset,
-                      right: _trackInset,
-                      top: (_height - _trackHeight) / 2,
-                      height: _trackHeight,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colorScheme.outlineVariant,
-                          borderRadius: BorderRadius.circular(_trackHeight / 2),
-                        ),
-                      ),
-                    ),
-                    AnimatedPositioned(
-                      duration: RuQiMotion.resolve(context, _slideDuration),
-                      curve: RuQiMotion.resolveCurve(context, Curves.easeInOut),
-                      left: isDark ? _knobTravel : 0,
-                      top: (_height - _knobSize) / 2,
-                      width: _knobSize,
-                      height: _knobSize,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: colorScheme.outline),
-                          boxShadow: RuQiElevation.shadowsFor(
-                            theme.brightness,
-                            1,
-                          ),
-                        ),
-                        child: Icon(
-                          isDark ? Icons.dark_mode : Icons.light_mode,
-                          size: _iconSize,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      message: label,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            width: RuQiThemeModeSwitch._itemSize,
+            height: RuQiThemeModeSwitch._itemSize,
+            decoration: BoxDecoration(
+              color: selected
+                  ? colorScheme.surfaceContainerHigh
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(
+              icon,
+              size: RuQiThemeModeSwitch._iconSize,
+              color: selected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
             ),
           ),
         ),

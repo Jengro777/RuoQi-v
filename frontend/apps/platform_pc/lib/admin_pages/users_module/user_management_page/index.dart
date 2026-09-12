@@ -29,9 +29,26 @@ class UsersBody extends StatefulWidget {
 enum _StatusFilter { all, active, deactivated }
 
 class _UsersBodyState extends State<UsersBody> {
+  final TextEditingController _searchController = TextEditingController();
   String _query = '';
   _StatusFilter _status = _StatusFilter.all;
   String _role = '所有角色';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  /// 重置筛选：清空关键字、角色与状态。
+  void _resetFilters() {
+    _searchController.clear();
+    setState(() {
+      _query = '';
+      _role = '所有角色';
+      _status = _StatusFilter.all;
+    });
+  }
 
   /// 可编辑的用户列表（角色列弹窗修改会更新这里）。
   late final List<UserAccount> _users = List.of(userAccounts);
@@ -95,46 +112,51 @@ class _UsersBodyState extends State<UsersBody> {
           onAction: () => showInviteUserPanel(context),
         ),
         const SizedBox(height: RuQiSpacing.md),
+        // 筛选栏：搜索 + 角色下拉（两者等高）+ 筛选 / 重置。
         Row(
           children: [
             Expanded(
               flex: 3,
-              child: TextField(
+              child: RuQiSearchField(
+                hintText: '名称/账号/邮件/手机号',
+                controller: _searchController,
                 onChanged: (value) => setState(() => _query = value),
-                decoration: const InputDecoration(
-                  hintText: '名称/账号/邮件/手机号',
-                  prefixIcon: Icon(Icons.search, size: 18),
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: RuQiSpacing.xs,
-                    vertical: 10,
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: RuQiSpacing.md),
             Expanded(
-              flex: 1,
-              child: DropdownButtonFormField<String>(
-                initialValue: _role,
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: RuQiSpacing.sm,
-                    vertical: 8,
-                  ),
-                ),
+              flex: 2,
+              // 与搜索框严格等高（§6.5）：走 RuQiFilterDropdown（显式 36 高描边容器）。
+              child: RuQiFilterDropdown<String>(
+                value: _role,
                 items: [
                   const DropdownMenuItem(value: '所有角色', child: Text('所有角色')),
                   for (final role in roleGroups)
                     DropdownMenuItem(value: role.name, child: Text(role.name)),
                   const DropdownMenuItem(value: '自定义角色', child: Text('自定义角色')),
                 ],
-                onChanged: (value) => setState(() => _role = value ?? '所有角色'),
+                onChanged: (value) =>
+                    setState(() => _role = value ?? '所有角色'),
               ),
             ),
-            const SizedBox(width: RuQiSpacing.md),
+            const SizedBox(width: RuQiSpacing.sm),
+            FilledButton(
+              style: RuQiButtonStyles.primary(context),
+              onPressed: () {},
+              child: const Text('筛选'),
+            ),
+            const SizedBox(width: RuQiSpacing.xxs),
+            TextButton(
+              style: RuQiButtonStyles.link(context),
+              onPressed: _resetFilters,
+              child: const Text('重置'),
+            ),
+          ],
+        ),
+        const SizedBox(height: RuQiSpacing.sm),
+        // 状态选项卡：独立一行、左对齐（在筛选栏下方）。
+        Row(
+          children: [
             for (final status in _StatusFilter.values)
               Padding(
                 padding: const EdgeInsets.only(right: RuQiSpacing.xs),
@@ -153,10 +175,16 @@ class _UsersBodyState extends State<UsersBody> {
           child: Column(
             children: [
               Container(
-                color: theme.colorScheme.surfaceContainerHigh,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
                 ),
                 child: const Row(
                   children: [
@@ -348,9 +376,9 @@ class _UserRow extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: deactivated
-                  ? OutlinedButton(
+                  ? TextButton(
                       onPressed: onReactivate,
-                      style: RuQiButtonStyles.secondary(context),
+                      style: RuQiButtonStyles.link(context),
                       child: const Text('恢复'),
                     )
                   : _UserActionsMenu(user: user, onAction: onAction),
@@ -452,19 +480,10 @@ class _RoleCellState extends State<_RoleCell> {
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
           child: SizedBox(
             width: 240,
-            child: TextField(
+            child: RuQiSearchField(
+              hintText: '搜索角色',
               controller: _searchController,
               onChanged: (value) => setState(() => _query = value),
-              decoration: const InputDecoration(
-                hintText: '搜索角色',
-                prefixIcon: Icon(Icons.search, size: 16),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: RuQiSpacing.xs,
-                  vertical: 8,
-                ),
-              ),
-              style: theme.textTheme.bodySmall,
             ),
           ),
         ),
@@ -507,7 +526,7 @@ class _RoleCellState extends State<_RoleCell> {
   }
 }
 
-/// 角色胶囊标签。
+/// 角色胶囊标签：中性底 + 中性文字（§6.6 状态徽章口径），不用主色高亮。
 class _RoleChip extends StatelessWidget {
   const _RoleChip({required this.label});
 
@@ -522,13 +541,13 @@ class _RoleChip extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.primary,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -544,14 +563,10 @@ class _UserActionsMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final items = ['编辑用户', '复制密码重置链接', '重置密码', '停用用户', '重新发送邀请电子邮件', '复制邀请链接'];
-    return PopupMenuButton<String>(
-      tooltip: '操作',
-      icon: Icon(Icons.more_horiz, color: theme.colorScheme.onSurfaceVariant),
-      onSelected: onAction,
-      itemBuilder: (context) => [
-        for (final item in items) PopupMenuItem(value: item, child: Text(item)),
+    return RuQiRowActionsMenu(
+      actions: [
+        for (final item in items) RuQiRowAction(item, () => onAction(item)),
       ],
     );
   }

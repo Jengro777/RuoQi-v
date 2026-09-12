@@ -1,26 +1,39 @@
 import 'package:flutter/material.dart';
 
-import '../../operations_action_dialog.dart';
 import '../account_security_page/index.dart';
 import '../localization_page/index.dart';
 import '../mfa_page/index.dart';
 
-/// PC 个人中心（基本信息）（运营后台）——业务静态页。
+/// 个人资料（平台端个人中心）——业务静态页。
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('个人中心')),
+      appBar: AppBar(title: const Text('个人资料')),
       body: const ProfileBody(),
     );
   }
 }
 
-/// 个人中心正文（供运营后台对话框右侧内容区内嵌展示）。
+/// 个人资料正文（供个人中心对话框内容区内嵌展示）。
 class ProfileBody extends StatelessWidget {
-  const ProfileBody({super.key});
+  const ProfileBody({super.key, this.onOpenPage});
+
+  /// 打开个人中心下的其它页面（如「账号安全」），由个人中心外壳注入；
+  /// 为空时（整页路由 / 单页预览）退化为 push 对应整页。
+  final ValueChanged<String>? onOpenPage;
+
+  /// 页面内跳转：外壳内切换菜单选中项，独立打开时 push 整页路由。
+  void _openPage(BuildContext context, String label, Widget page) {
+    final onOpenPage = this.onOpenPage;
+    if (onOpenPage != null) {
+      onOpenPage(label);
+      return;
+    }
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +126,7 @@ class ProfileBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        // 个人中心子功能：以弹窗方式打开
+        // 个人中心下的其它页面
         Card(
           margin: EdgeInsets.zero,
           child: Column(
@@ -122,31 +135,21 @@ class ProfileBody extends StatelessWidget {
                 context,
                 icon: Icons.verified_user_outlined,
                 title: '账号安全',
-                onTap: () => showOperationsActionDialog(
-                  context,
-                  title: '账号安全',
-                  child: const AccountSecurityBody(),
-                ),
+                onTap: () =>
+                    _openPage(context, '账号安全', const AccountSecurityPage()),
               ),
               _navTile(
                 context,
                 icon: Icons.apps,
                 title: '多因素认证',
-                onTap: () => showOperationsActionDialog(
-                  context,
-                  title: '多因素认证',
-                  child: const MfaBody(),
-                ),
+                onTap: () =>
+                    _openPage(context, '多因素认证', const MfaPage()),
               ),
               _navTile(
                 context,
                 icon: Icons.language,
                 title: '本地化',
-                onTap: () => showOperationsActionDialog(
-                  context,
-                  title: '本地化',
-                  child: const LocalizationBody(),
-                ),
+                onTap: () => _openPage(context, '本地化', const LocalizationPage()),
               ),
             ],
           ),

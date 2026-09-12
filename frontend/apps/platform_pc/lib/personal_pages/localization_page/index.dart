@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// 本地化（运营后台·个人中心）——业务静态页。
+/// 本地化（平台端个人中心）——业务静态页。
 class LocalizationPage extends StatelessWidget {
   const LocalizationPage({super.key});
 
@@ -13,7 +13,7 @@ class LocalizationPage extends StatelessWidget {
   }
 }
 
-/// 本地化正文（供运营后台对话框右侧内容区内嵌展示）。
+/// 本地化正文（供个人中心对话框内容区内嵌展示）。
 class LocalizationBody extends StatelessWidget {
   const LocalizationBody({super.key});
 

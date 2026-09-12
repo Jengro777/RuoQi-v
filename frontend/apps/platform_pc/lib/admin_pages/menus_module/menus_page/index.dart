@@ -106,27 +106,14 @@ class MenusBody extends StatelessWidget {
               ),
               CellText(item.url.isEmpty ? '--' : item.url, muted: true),
               CellText('${item.sort}', muted: true),
-              Wrap(
-                spacing: RuQiSpacing.xs,
-                children: [
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, item, '新增下级'),
-                    child: const Text('新增下级'),
+              RuQiRowActionsMenu(
+                actions: [
+                  RuQiRowAction(
+                    '新增下级',
+                    () => _handleAction(context, item, '新增下级'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, item, '编辑'),
-                    child: const Text('编辑'),
-                  ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, item, '删除'),
-                    child: Text(
-                      '删除',
-                      style: TextStyle(color: theme.colorScheme.error),
-                    ),
-                  ),
+                  RuQiRowAction('编辑', () => _handleAction(context, item, '编辑')),
+                  RuQiRowAction('删除', () => _handleAction(context, item, '删除')),
                 ],
               ),
             ];

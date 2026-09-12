@@ -125,9 +125,9 @@ class _AliyunSmsSettingsFormState extends State<AliyunSmsSettingsForm> {
                 ),
               ),
               const SizedBox(width: RuQiSpacing.sm),
-              OutlinedButton(
+              TextButton(
                 onPressed: () {},
-                style: RuQiButtonStyles.secondary(context),
+                  style: RuQiButtonStyles.link(context),
                 child: const Text('修改'),
               ),
             ],

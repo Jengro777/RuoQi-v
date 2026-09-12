@@ -19,7 +19,7 @@ related: 由原 CSS 版设计共识转换而来；本文件为 Flutter 端唯一
 
 品牌锚点：
 
-- 主色：Douyin 热粉 `Color(0xFFFE2C55)`；
+- 主色：Douyin 热粉 `Color(0xFFFE2C55)`（规范默认；个性化强调色见 §1.5）；
 - 字体族：Inter（含 CJK 回退链）；
 - 默认按钮：`BorderRadius.circular(8)`；
 - 间距基准：4px；
@@ -35,56 +35,56 @@ related: 由原 CSS 版设计共识转换而来；本文件为 Flutter 端唯一
 
 ### 1.1 `ColorScheme` 角色
 
-| `ColorScheme` 角色 | 用途 | 亮色 | 暗色 |
-|---|---|---|---|
-| `primary` | CTA 填充、焦点、链接 | `Color(0xFFFE2C55)` | `Color(0xFFFE2C55)` |
-| `onPrimary` | 主色填充表面上的文本 | `Color(0xFFFFFFFF)` | `Color(0xFFFFFFFF)` |
-| `primaryContainer` | 柔和标签 / 徽章背景 | `Color(0xFFFFF0F3)` | `Color(0xFF2D0D14)` |
-| `secondary` | 高能强调（价格、倒计时数字） | `Color(0xFFFE2C55)` | `Color(0xFFFE2C55)` |
-| `surface` | 页面背景 | `Color(0xFFFAFBFC)` | `Color(0xFF0B0C0F)` |
-| `surfaceContainerLowest` | 页面背景最低层 | `Color(0xFFFAFBFC)` | `Color(0xFF0B0C0F)` |
-| `surfaceContainerLow` | 柔和交替背景带 | `Color(0xFFF0F4F8)` | `Color(0xFF101215)` |
-| `surfaceContainer` | 默认卡片 / 面板 | `Color(0xFFF2F4F7)` | `Color(0xFF141518)` |
-| `surfaceContainerHigh` | 精选卡片、悬停表面 | `Color(0xFFE8EBF0)` | `Color(0xFF1C1E23)` |
-| `surfaceContainerHighest` | 更深抬升表面、表头 | `Color(0xFFE8EBF0)` | `Color(0xFF1C1E23)` |
-| `onSurface` | 主文本与标题 | `Color(0xFF0F172A)` | `Color(0xFFF0F2F5)` |
-| `onSurfaceVariant` | 次级正文、描述 | `Color(0xFF64748B)` | `Color(0xFFCDD1D8)` |
-| `outlineVariant` | 卡片 / 分隔线描边 | `Color(0xFFE5E8EC)` | `Color(0xFF26282F)` |
-| `outline` | 更强描边 | `Color(0xFFD1D6DC)` | `Color(0xFF353840)` |
-| `error` | 错误文本、破坏性操作 | `Color(0xFFCF222E)` | `Color(0xFFF85149)` |
-| `scrim` | 模态遮罩 | `Color(0x80000000)` | `Color(0xA6000000)` |
+| `ColorScheme` 角色        | 用途                         | 亮色                | 暗色                |
+| ------------------------- | ---------------------------- | ------------------- | ------------------- |
+| `primary`                 | CTA 填充、焦点、链接         | `Color(0xFFFE2C55)` | `Color(0xFFFE2C55)` |
+| `onPrimary`               | 主色填充表面上的文本         | `Color(0xFFFFFFFF)` | `Color(0xFFFFFFFF)` |
+| `primaryContainer`        | 柔和标签 / 徽章背景          | `Color(0xFFFFF0F3)` | `Color(0xFF2D0D14)` |
+| `secondary`               | 高能强调（价格、倒计时数字） | `Color(0xFFFE2C55)` | `Color(0xFFFE2C55)` |
+| `surface`                 | 页面 / 顶栏 / 菜单背景       | `Color(0xFFFFFFFF)` | `Color(0xFF0B0C0F)` |
+| `surfaceContainerLowest`  | 页面背景最低层               | `Color(0xFFFFFFFF)` | `Color(0xFF0B0C0F)` |
+| `surfaceContainerLow`     | 柔和交替背景带               | `Color(0xFFFAFAFA)` | `Color(0xFF101215)` |
+| `surfaceContainer`        | 默认卡片 / 面板              | `Color(0xFFF5F5F5)` | `Color(0xFF141518)` |
+| `surfaceContainerHigh`    | 精选卡片、悬停表面           | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
+| `surfaceContainerHighest` | 更深抬升表面（如组内徽章）     | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
+| `onSurface`               | 主文本与标题                 | `Color(0xFF0F172A)` | `Color(0xFFF0F2F5)` |
+| `onSurfaceVariant`        | 次级正文、描述               | `Color(0xFF64748B)` | `Color(0xFFCDD1D8)` |
+| `outlineVariant`          | 卡片 / 表格 / 面板 / 分隔线描边 | `Color(0xFFF0F0F0)` | `Color(0xFF26282F)` |
+| `outline`                 | 更强描边                     | `Color(0xFFDBDBDB)` | `Color(0xFF353840)` |
+| `error`                   | 错误文本、破坏性操作         | `Color(0xFFCF222E)` | `Color(0xFFF85149)` |
+| `scrim`                   | 模态遮罩                     | `Color(0x80000000)` | `Color(0xA6000000)` |
 
 ### 1.2 `RuQiThemeExtension` 自定义角色
 
 Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtension>`，
 通过 `Theme.of(context).extension<RuQiThemeExtension>()` 读取：
 
-| 字段 | 用途 | 亮色 | 暗色 |
-|---|---|---|---|
-| `primaryHover` | 悬停 CTA | `Color(0xFFFF4D6A)` | `Color(0xFFFF4D6A)` |
-| `primaryPress` | 按下 CTA | `Color(0xFFE01A44)` | `Color(0xFFE01A44)` |
+| 字段             | 用途                                 | 亮色                | 暗色                |
+| ---------------- | ------------------------------------ | ------------------- | ------------------- |
+| `primaryHover`   | 悬停 CTA                             | `Color(0xFFFF4D6A)` | `Color(0xFFFF4D6A)` |
+| `primaryPress`   | 按下 CTA                             | `Color(0xFFE01A44)` | `Color(0xFFE01A44)` |
 | `primarySubdued` | 柔和标签背景（营销亮色用 `#EFF6FF`） | `Color(0xFFFFF0F3)` | `Color(0xFF2D0D14)` |
-| `accentEnergy` | 高能强调（营销模式保持热粉） | `Color(0xFFFE2C55)` | `Color(0xFFFE2C55)` |
-| `surface3` | 子导航、下拉层 | `Color(0xFFDDE1E7)` | `Color(0xFF23252B)` |
-| `surface4` | 最深抬升表面 | `Color(0xFFD2D7DF)` | `Color(0xFF2A2D34)` |
-| `hairlineStrong` | 更强描边 | `Color(0xFFD1D6DC)` | `Color(0xFF353840)` |
-| `hairlineInput` | 表单输入描边 | `Color(0xFFC2C7CF)` | `Color(0xFF3E414A)` |
-| `canvasSoft` | 柔和交替背景带 | `Color(0xFFF0F4F8)` | `Color(0xFF101215)` |
-| `canvasCream` | 暖色插曲带 | `Color(0xFFF8F4EA)` | `Color(0xFF1C1A12)` |
-| `brandDark` | 反色面板背景 | `Color(0xFF111B3D)` | `Color(0xFF0F1030)` |
-| `inkMuted` | 辅助文本、说明、页脚 | `Color(0xFF94A3B8)` | `Color(0xFF8B9098)` |
-| `inkTertiary` | 禁用态、脚注 | `Color(0xFFCBD5E1)` | `Color(0xFF63676E)` |
-| `onDark` | 反色表面上的文本 | `Color(0xFFFFFFFF)` | `Color(0xFFFFFFFF)` |
-| `success` | 成功状态 | `Color(0xFF1A7F37)` | `Color(0xFF3FB950)` |
-| `warning` | 警告状态 | `Color(0xFF9A6700)` | `Color(0xFFD29922)` |
-| `info` | 信息状态 | `Color(0xFF0969DA)` | `Color(0xFF58A6FF)` |
+| `accentEnergy`   | 高能强调（营销模式保持热粉）         | `Color(0xFFFE2C55)` | `Color(0xFFFE2C55)` |
+| `surface3`       | 子导航、下拉层                       | `Color(0xFFE4E4E4)` | `Color(0xFF23252B)` |
+| `surface4`       | 最深抬升表面                         | `Color(0xFFDCDCDC)` | `Color(0xFF2A2D34)` |
+| `hairlineStrong` | 更强描边                             | `Color(0xFFDBDBDB)` | `Color(0xFF353840)` |
+| `hairlineInput`  | 表单输入描边（同 `outline`）         | `Color(0xFFDBDBDB)` | `Color(0xFF3E414A)` |
+| `canvasSoft`     | 柔和交替背景带                       | `Color(0xFFF7F7F7)` | `Color(0xFF101215)` |
+| `canvasCream`    | 暖色插曲带                           | `Color(0xFFFAF7F0)` | `Color(0xFF1C1A12)` |
+| `brandDark`      | 反色面板背景                         | `Color(0xFF111B3D)` | `Color(0xFF0F1030)` |
+| `inkMuted`       | 辅助文本、说明、页脚                 | `Color(0xFF94A3B8)` | `Color(0xFF8B9098)` |
+| `inkTertiary`    | 禁用态、脚注                         | `Color(0xFFCBD5E1)` | `Color(0xFF63676E)` |
+| `onDark`         | 反色表面上的文本                     | `Color(0xFFFFFFFF)` | `Color(0xFFFFFFFF)` |
+| `success`        | 成功状态                             | `Color(0xFF1A7F37)` | `Color(0xFF3FB950)` |
+| `warning`        | 警告状态                             | `Color(0xFF9A6700)` | `Color(0xFFD29922)` |
+| `info`           | 信息状态                             | `Color(0xFF0969DA)` | `Color(0xFF58A6FF)` |
 
 营销模式覆盖（`RuQiPurpose.marketing`）：
 
-| 场景 | 覆盖字段 | 值 |
-|---|---|---|
+| 场景 | 覆盖字段                                                       | 值                                            |
+| ---- | -------------------------------------------------------------- | --------------------------------------------- |
 | 亮色 | `primary` / `primaryHover` / `primaryPress` / `primarySubdued` | `#2563EB` / `#1D4ED8` / `#1E40AF` / `#EFF6FF` |
-| 暗色 | `primarySubdued` / `hairlineInput` | `#3D1520` / `#4A4E59`（提升对比） |
+| 暗色 | `primarySubdued` / `hairlineInput`                             | `#3D1520` / `#4A4E59`（提升对比）             |
 
 ### 1.3 营销色约束
 
@@ -95,13 +95,56 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
 ### 1.4 色块约束（standard 模式）
 
 - 尽量避免大面积色块：整块背景、整屏横幅、整列卡片底色都不承载强色；
-- 需要底色时用最浅的中性表面（`surfaceContainerLowest`，亮色 `#FAFBFC`，
+- 需要底色时用最浅的中性表面（`surfaceContainerLowest`，亮色 `#FFFFFF`，
   暗色 `surfaceContainerLow`），层级交给 1px 描边 + 浅阴影（§4.1 深度 1）；
 - 主色 / `primaryContainer` 只用于小面积元素：图标底色、标签、按钮、1px 描边；
+- 交互高亮（hover / focus）统一走中性：两者都取 `surfaceContainerLow`
+  （亮色 `#FAFAFA`），按下 `highlightColor` 取 `surfaceContainerHigh`；
+  悬停反馈靠底色变化 + 位移 / 阴影，不用主色描边或主色容器；
+- 卡片等大面积区域不铺灰底：亮色页面 / 顶栏 / 菜单 / 卡片统一 `#FFFFFF`，
+  用 1px `outlineVariant`（`#EAEAEA`）描边 / 分隔线划分层级；
+- 表格表头不铺底色：与卡片同色，文案取 `onSurfaceVariant` + `w600`（比正文轻一档），
+  下分隔线与行线同取 `outlineVariant`（`#F0F0F0`）——整表只有白底与隐约的线；
 - 实现注意：`BoxShadow` 必须与填充色写在同一层 `BoxDecoration` 里——若把填充放在
   外层 `Material`、`BoxShadow` 放在内层装饰上，阴影会盖在填充之上，把整块压暗
-  约 9%（亮色 `#FAFBFC` 实测被压成 `#E2E3E4`）；
+  约 9%（亮色 `#FFFFFF` 实测被压成 `#E8E8E8`）；
 - 营销模式的 `brandDark` 面板规则见 §1.3，不适用于 standard 页面。
+
+### 1.5 强调色（个人中心 → 主题）
+
+个性强调色由用户在「个人中心 → 主题」选择，应用外壳把它交给
+`ruoQiTheme(accent:)`；`RuQiColors.forMode` 只接管主色一族，中性表面、文本与
+状态色不带入色相。色板九档（末档为规范品牌色）：
+
+| 档位 | 值                  | 说明                         |
+| ---- | ------------------- | ---------------------------- |
+| 绿色 | `Color(0xFF16A34A)` |                              |
+| 青色 | `Color(0xFF0D9488)` | **默认档**：平台端初始强调色 |
+| 蓝色 | `Color(0xFF2563EB)` |                              |
+| 靛蓝 | `Color(0xFF4F46E5)` |                              |
+| 紫色 | `Color(0xFF9333EA)` |                              |
+| 琥珀 | `Color(0xFFD97706)` |                              |
+| 橙色 | `Color(0xFFEA580C)` |                              |
+| 红色 | `Color(0xFFDC2626)` |                              |
+| 玫红 | `Color(0xFFFE2C55)` |                              |
+
+派生规则（`accent` 非空且不等于品牌色时生效）：
+
+| 角色                 | 亮色              | 暗色                           |
+| -------------------- | ----------------- | ------------------------------ |
+| `primary`            | `accent`          | `accent`                       |
+| `primaryHover`       | `accent` → 白 11% | 同左                           |
+| `primaryPress`       | `accent` → 黑 12% | 同左                           |
+| `primaryContainer`   | `accent` → 白 94% | `accent` 15% 压在 `#0B0C0F` 上 |
+| `onPrimaryContainer` | `accent` → 黑 45% | `accent` → 白 65%              |
+| `inversePrimary`     | `primary`         | `primary`                      |
+
+约定：
+
+- `accent` 为空或等于 `Color(0xFFFE2C55)` 时，§1.1 取值逐位保持规范值——
+  「默认」与「选回玫红」必须完全一致；
+- `secondary` / `accentEnergy` 不随强调色变化（营销语义固定为品牌热粉）；
+- 强调色的填充面积约束同 §1.4：只用于 CTA、选中态、图标与 1px 描边。
 
 ---
 
@@ -119,21 +162,21 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
 
 ### 2.2 `TextTheme` 层级
 
-| `TextTheme` 角色 | 字号 / 字重 / 行高 / 字距 | 用途 |
-|---|---|---|
-| `displayLarge` | 64 / 600 / 1.05 / -2.0 | Hero 主标题 |
-| `displayMedium` | 48 / 600 / 1.08 / -1.4 | 区块开场 |
-| `displaySmall` | 36 / 600 / 1.12 / -0.8 | 子区块标题 |
-| `headlineLarge` | 28 / 600 / 1.18 / -0.4 | 卡片组标题 |
-| `headlineMedium` | 22 / 600 / 1.25 / -0.2 | 定价档位标题、功能卡标题 |
-| `headlineSmall` | 18 / 400 / 1.40 / 0 | 导语、intro 正文 |
-| `bodyLarge` | 16 / 400 / 1.50 / 0 | 主正文 |
-| `bodyMedium` | 15 / 400 / 1.50 / 0 | 默认 UI 正文 |
-| `titleSmall` | 14 / 400 / 1.45 / 0 | 卡片正文、页脚、说明 |
-| `bodySmall` | 12 / 400 / 1.40 / 0 | 元信息、时间戳、状态 |
-| `labelLarge` | 14 / 500 / 1.20 / 0 | 按钮标签 |
-| `labelMedium` | 12 / 500 / 1.20 / 0 | 紧凑按钮标签 |
-| `labelSmall` | 13 / 500 / 1.30 / +0.3 | 区块眉题 |
+| `TextTheme` 角色 | 字号 / 字重 / 行高 / 字距 | 用途                     |
+| ---------------- | ------------------------- | ------------------------ |
+| `displayLarge`   | 64 / 600 / 1.05 / -2.0    | Hero 主标题              |
+| `displayMedium`  | 48 / 600 / 1.08 / -1.4    | 区块开场                 |
+| `displaySmall`   | 36 / 600 / 1.12 / -0.8    | 子区块标题               |
+| `headlineLarge`  | 28 / 600 / 1.18 / -0.4    | 卡片组标题               |
+| `headlineMedium` | 22 / 600 / 1.25 / -0.2    | 定价档位标题、功能卡标题 |
+| `headlineSmall`  | 18 / 400 / 1.40 / 0       | 导语、intro 正文         |
+| `bodyLarge`      | 16 / 400 / 1.50 / 0       | 主正文                   |
+| `bodyMedium`     | 15 / 400 / 1.50 / 0       | 默认 UI 正文             |
+| `titleSmall`     | 14 / 400 / 1.45 / 0       | 卡片正文、页脚、说明     |
+| `bodySmall`      | 12 / 400 / 1.40 / 0       | 元信息、时间戳、状态     |
+| `labelLarge`     | 14 / 500 / 1.20 / 0       | 按钮标签                 |
+| `labelMedium`    | 12 / 500 / 1.20 / 0       | 紧凑按钮标签             |
+| `labelSmall`     | 13 / 500 / 1.30 / +0.3    | 区块眉题                 |
 
 > 说明：`titleLarge` / `titleMedium` 分别复用 `headlineSmall` / `bodyLarge`
 > 的规格，供 `AppBar`、列表标题等 Material 组件使用。
@@ -142,11 +185,11 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
 
 以下样式不进入 `TextTheme`，由组件按需引用：
 
-| 常量 | 规格 | 用途 |
-|---|---|---|
-| `mono` | 13 / 400 / 1.5 | 代码、ID、数据令牌 |
-| `tabular` | 14 / 400 / 1.4 / -0.3 + `tabularFigures` | 金额、数值单元格 |
-| `countdownDigit` | 36 / 700 / 1.0 / -0.5 + `tabularFigures` | 倒计时数字 |
+| 常量             | 规格                                     | 用途               |
+| ---------------- | ---------------------------------------- | ------------------ |
+| `mono`           | 13 / 400 / 1.5                           | 代码、ID、数据令牌 |
+| `tabular`        | 14 / 400 / 1.4 / -0.3 + `tabularFigures` | 金额、数值单元格   |
+| `countdownDigit` | 36 / 700 / 1.0 / -0.5 + `tabularFigures` | 倒计时数字         |
 
 ### 2.4 CJK 字距重置
 
@@ -170,17 +213,17 @@ FontWeight displayWeightFor(Brightness brightness) =>
 
 ### 3.1 间距令牌（`RuQiSpacing`）
 
-| 常量 | 值 | 用途 |
-|---|---|---|
-| `xxs` | 4 | 精细间隙、图标与文字 |
-| `xs` | 8 | 紧凑行内间隙 |
-| `sm` | 12 | 卡片内容间隙 |
-| `md` | 16 | 组件与组件之间 |
-| `lg` | 24 | 区块内间距、卡片内边距 |
-| `xl` | 32 | 卡片间、引述内边距 |
-| `xxl` | 48 | CTA 横幅内边距 |
-| `section` | 80 | 区块纵向间距 |
-| `huge` | 120 | 主要区块分隔 |
+| 常量      | 值  | 用途                   |
+| --------- | --- | ---------------------- |
+| `xxs`     | 4   | 精细间隙、图标与文字   |
+| `xs`      | 8   | 紧凑行内间隙           |
+| `sm`      | 12  | 卡片内容间隙           |
+| `md`      | 16  | 组件与组件之间         |
+| `lg`      | 24  | 区块内间距、卡片内边距 |
+| `xl`      | 32  | 卡片间、引述内边距     |
+| `xxl`     | 48  | CTA 横幅内边距         |
+| `section` | 80  | 区块纵向间距           |
+| `huge`    | 120 | 主要区块分隔           |
 
 营销页保持 `section` 级间距，不压缩；留白 = 可读性。
 
@@ -202,13 +245,18 @@ FontWeight displayWeightFor(Brightness brightness) =>
 亮色模式阴影；暗色模式一律为空列表（`List<BoxShadow> const []`），深度改由
 「更亮的表面 + `BorderSide` 描边」承担：
 
-| 层级 | 亮色 | 暗色 |
-|---|---|---|
-| 0 | 无阴影、无描边 | 无阴影、无描边 |
-| 1 | `surfaceContainer` + `shadowSm` | `surfaceContainer` + `BorderSide(width: 1, color: outlineVariant)` |
-| 2 | `surfaceContainerHigh` + `shadowMd` | `surfaceContainerHigh` + `BorderSide(width: 1, color: hairlineStrong)` |
-| 3 | `surface3` + `shadowLg` + `BorderSide(width: 1, color: hairlineStrong)` | 同左 |
-| 4 | `BorderSide(width: 2, color: primary @ 50%)` 焦点环 | 同左 |
+| 层级 | 亮色                                                                    | 暗色                                                                   |
+| ---- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| 0    | 无阴影、无描边                                                          | 无阴影、无描边                                                         |
+| 1    | `surfaceContainerLowest` + `shadowSm`                                   | `surfaceContainer` + `BorderSide(width: 1, color: outlineVariant)`     |
+| 2    | `surfaceContainerHigh` + `shadowMd`                                     | `surfaceContainerHigh` + `BorderSide(width: 1, color: hairlineStrong)` |
+| 3    | `surface3` + `shadowLg` + `BorderSide(width: 1, color: hairlineStrong)` | 同左                                                                   |
+| 4    | 焦点高亮 `surfaceContainerLow`；输入框聚焦描边 = 默认中性灰（仅加粗至 1.5px）                     | 同左                                                                   |
+
+> 层级 1–3 用于自定义抬升容器（首页入口卡、浮动弹层、吸附 CTA）；
+> `Card` 组件按 §4.2 用「1px 描边 + `elevation: 0`」，不再铺灰底。
+> 例：首页入口卡默认 = 深度 1（`surfaceContainerLowest` + `shadowSm` + 1px
+> `outlineVariant`），悬停 = 深度 2 阴影 + `surfaceContainerLow` 底色（§1.4）。
 
 ```dart
 const List<BoxShadow> shadowSm = [
@@ -236,20 +284,21 @@ const List<BoxShadow> shadowXl = [
 
 ```dart
 CardThemeData(
-  color: colors.surfaceContainer,
-  elevation: isDark ? 0 : 1,            // 亮色阴影、暗色描边
+  // 亮色白底、暗色比页面更亮一档；两种模式都用 1px 描边分层
+  color: isDark ? scheme.surfaceContainer : scheme.surfaceContainerLowest,
+  elevation: 0,
   surfaceTintColor: Colors.transparent,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(12),
-    side: isDark
-        ? BorderSide(color: colors.outlineVariant, width: 1)
-        : BorderSide.none,
+    side: BorderSide(color: scheme.outlineVariant, width: 1),
   ),
 )
 ```
 
-焦点环：`ThemeData.focusColor = primary @ 50%`；输入框
-`focusedBorder = OutlineInputBorder(borderSide: BorderSide(color: primary, width: 1.5))`。
+焦点提示：`ThemeData.focusColor = surfaceContainerLow`（最浅中性表面，键盘焦点
+也不再整块上色）；输入框
+`focusedBorder = OutlineInputBorder(borderSide: BorderSide(color: hairlineInput, width: 1.5))`
+——聚焦沿用默认中性描边，只从 1px 加粗到 1.5px，不上主色（见 §6.5）。
 
 ---
 
@@ -257,22 +306,22 @@ CardThemeData(
 
 ### 5.1 时长（`RuQiMotion`）
 
-| 常量 | 值 | 用途 |
-|---|---|---|
-| `instant` | `Duration(milliseconds: 80)` | 波纹、开关、勾选 |
-| `fast` | `Duration(milliseconds: 150)` | 悬停、焦点环、气泡 |
-| `normal` | `Duration(milliseconds: 250)` | 弹窗、抽屉、下拉 |
-| `slow` | `Duration(milliseconds: 400)` | 页面转场、首屏淡入、跑马灯 |
+| 常量      | 值                            | 用途                       |
+| --------- | ----------------------------- | -------------------------- |
+| `instant` | `Duration(milliseconds: 80)`  | 波纹、开关、勾选           |
+| `fast`    | `Duration(milliseconds: 150)` | 悬停、焦点环、气泡         |
+| `normal`  | `Duration(milliseconds: 250)` | 弹窗、抽屉、下拉           |
+| `slow`    | `Duration(milliseconds: 400)` | 页面转场、首屏淡入、跑马灯 |
 
 ### 5.2 缓动（`Curve`）
 
-| 常量 | 值 |
-|---|---|
-| `easeDefault` | `Cubic(0.2, 0, 0, 1)` |
-| `easeIn` | `Cubic(0.4, 0, 1, 1)` |
-| `easeOut` | `Cubic(0, 0, 0.2, 1)` |
-| `easeSpring` | `Cubic(0.34, 1.56, 0.64, 1)` |
-| `easePulse` | `Cubic(0.4, 0, 0.2, 1)` |
+| 常量          | 值                           |
+| ------------- | ---------------------------- |
+| `easeDefault` | `Cubic(0.2, 0, 0, 1)`        |
+| `easeIn`      | `Cubic(0.4, 0, 1, 1)`        |
+| `easeOut`     | `Cubic(0, 0, 0.2, 1)`        |
+| `easeSpring`  | `Cubic(0.34, 1.56, 0.64, 1)` |
+| `easePulse`   | `Cubic(0.4, 0, 0.2, 1)`      |
 
 ### 5.3 减少动态
 
@@ -292,14 +341,17 @@ CardThemeData(
 统一基线：`RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))`、
 `EdgeInsets.symmetric(horizontal: 14, vertical: 8)`、`labelLarge`、最小高度 36。
 
-| 组件 | Flutter | 状态规则 |
-|---|---|---|
-| `button-primary` | `FilledButton` + `RuQiButtonStyles.primary` | `backgroundColor` 用 `WidgetStateProperty.resolveWith`：默认 `primary` / hover `primaryHover` / press `primaryPress` / disabled `surfaceContainerHigh`；前景 `onPrimary` |
-| `button-secondary` | `OutlinedButton` + `secondary` | 透明背景 + `BorderSide(width: 1, color: primary)` + `primary` 文本；hover 背景 `primaryContainer` |
-| `button-tertiary` | `TextButton` + `tertiary` | `onSurface` 文本；hover 背景 `surfaceContainer` |
-| `button-inverse` | `FilledButton` + `inverse` | 亮色 `surface` 背景 + 亮色 `onSurface` 文本（用于 `brandDark` 表面） |
-| `button-danger` | `FilledButton` + `danger` | `error` 背景 + `onPrimary` 文本；hover/press 用 `Color.lerp` 微调 |
-| `button-full-width` | `SizedBox(width: double.infinity, child: FilledButton(...))` | 小屏（<428px）所有主 CTA 全宽居中 |
+| 组件                | Flutter                                                      | 状态规则                                                                                                                                                                 |
+| ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `button-primary`    | `FilledButton` + `RuQiButtonStyles.primary`                  | 默认中性：`surfaceContainerHigh` 填充 + `onSurface` 文本；hover / 聚焦亮成主色（hover `primaryHover` / press `primaryPress` + `onPrimary`）；disabled `surfaceContainerLow` + `inkTertiary` |
+| `button-secondary`  | `OutlinedButton` + `secondary`                               | 默认中性：透明背景 + 1px `outline` 描边 + `onSurfaceVariant` 文本；hover / press / 聚焦时描边与文字转 `primary`（不铺底色） |
+| `button-tertiary`   | `TextButton` + `tertiary`                                    | `onSurface` 文本；hover 背景 `surfaceContainer`                                                                                                                          |
+| `button-link`       | `TextButton` + `link`（`textButtonTheme` 默认）               | 表格「操作」列行内动作：无描边 / 无底色 / 无水波纹；默认 `onSurfaceVariant` 文本，hover / press 只把文字转 `primary`                                                     |
+| `button-link-danger` | `TextButton` + `linkDanger`                            | 表格「操作」列的破坏性动作（删除 / 移除）：默认与 `button-link` 同为 `onSurfaceVariant` 中性文本、无描边无底色，hover / press / 聚焦才转 `error` |
+| `row-actions-menu`   | `RuQiRowActionsMenu`                                         | 表格「操作」列：动作 **≥3** 时统一收进 `···` 菜单（与 用户 页一致），≤2 时保持行内文字按钮；`···` 命中区 36×36，悬停只把图标转 `primary`（不渲染 tooltip，只保留无障碍标签）；菜单面板白底 + 1px `outlineVariant` 描边，菜单项 36 高、悬停文案转 `primary`（无灰底） |
+| `button-inverse`    | `FilledButton` + `inverse`                                   | 亮色 `surface` 背景 + 亮色 `onSurface` 文本（用于 `brandDark` 表面）                                                                                                     |
+| `button-danger`     | `FilledButton` + `danger`                                    | 默认中性：`surfaceContainerHigh` 填充 + `onSurface` 文本；hover / 聚焦亮成 `error`（press 更深一档）+ `onPrimary`；disabled `surfaceContainerLow` + `outline` |
+| `button-full-width` | `SizedBox(width: double.infinity, child: FilledButton(...))` | 小屏（<428px）所有主 CTA 全宽居中                                                                                                                                        |
 
 ### 6.2 营销组件（NEW）
 
@@ -403,7 +455,8 @@ ComparisonTable({
 
 - 桌面（`MediaQuery.sizeOf(context).width >= 768`）：标准表格——容器
   `RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),
-  side: BorderSide(color: outlineVariant))`；表头背景 `surfaceContainerHigh`；
+side: BorderSide(color: outlineVariant))`；表头不铺底色（同卡片色 +
+  `outlineVariant` 下分隔线 + `onSurfaceVariant` 文案 + `w600`）；
   单元格 `EdgeInsets.symmetric(horizontal: 24, vertical: 16)`（紧凑 16/12）；
   特性列 `FontWeight.w500` + `onSurface`；值列居中；
   勾选 `Icon(Icons.check, size: 18, color: success)`；空值 `—` + `inkTertiary`；
@@ -431,7 +484,7 @@ PromoCodeInput({
 - `invalid`：`enabledBorder` 用 `error` 描边 + `bodySmall` 错误消息；
 - `valid`：`success` 描边 + 成功消息；按钮变「Remove」；
 - 应用后显示优惠行：顶部 `BorderSide(width: 1, color: outlineVariant)`；原价 `TextDecoration.lineThrough`
-  + `inkTertiary`；优惠额 `success`；最终价 `FontWeight.w700` + `accentEnergy`。
+  - `inkTertiary`；优惠额 `success`；最终价 `FontWeight.w700` + `accentEnergy`。
 
 #### `FloatingPromo`
 
@@ -464,33 +517,53 @@ FloatingPromo({
 
 ### 6.3 定价组件
 
-| 组件 | Flutter | 关键规范 |
-|---|---|---|
-| 定价切换（未选中 / 选中） | `ToggleButtons` 或 `TabBar` | 未选中：`surface` 背景 + `inkMuted` + `labelMedium` + `StadiumBorder()`；选中：`surfaceContainerHigh` + `onSurface` |
-| 标准定价卡 | `Card` + 自定义布局 | `surfaceContainer`、`BorderRadius.circular(12)`、`EdgeInsets.all(24)`、深度 1；标题 `headlineMedium`、价格 `headlineLarge`、CTA 钉底 |
-| 推荐定价卡 | 自定义容器 | `brandDark` 背景 + `onDark` 文本、深度 2、CTA 用 `button-inverse` |
-| 营销定价卡 | 标准卡 + 附加 | 节省徽章（`tag-soft`）+ 内联 `SocialProofBar` |
+| 组件                      | Flutter                     | 关键规范                                                                                                                             |
+| ------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 定价切换（未选中 / 选中） | `ToggleButtons` 或 `TabBar` | 未选中：`surface` 背景 + `inkMuted` + `labelMedium` + `StadiumBorder()`；选中：`surfaceContainerHigh` + `onSurface`                  |
+| 标准定价卡                | `Card` + 自定义布局         | 按 §4.2（亮色白底 / 暗色比页面亮一档 + 1px `outlineVariant` 描边、`elevation: 0`）、`BorderRadius.circular(12)`、`EdgeInsets.all(24)`；标题 `headlineMedium`、价格 `headlineLarge`、CTA 钉底 |
+| 推荐定价卡                | 自定义容器                  | `brandDark` 背景 + `onDark` 文本、深度 2、CTA 用 `button-inverse`                                                                    |
+| 营销定价卡                | 标准卡 + 附加               | 节省徽章（`tag-soft`）+ 内联 `SocialProofBar`                                                                                        |
 
 ### 6.4 卡片与容器
 
-| 组件 | Flutter | 内边距 / 圆角 / 深度 |
-|---|---|---|
-| 功能卡 | `Card` + `headlineMedium` 标题 + 图标槽 | 24 / 12 / 1 |
-| 客户引述卡 | `Card` + 引述 + 40px 头像 | 32 / 12 / 1 |
-| 截图卡 | `Card` + 全宽截图 | 24 / 16 / 2 |
-| 仪表盘合成卡 | `Card` + 多面板合成图 | 24 / 12 / 2 |
-| 暖色插曲带 | `Container`（少用） | 32 / 12 / 0 |
-| 收尾 CTA 横幅 | 自定义容器，居中布局 | 48 / 12 / 2 |
-| 营销 CTA 横幅 | 自定义容器 | `brandDark`、64/48、倒计时 + 社交证明 + 双 CTA，移动端纵向堆叠 |
-| 客户 Logo 瓦片 | `Container` | 16 / 4 / 0 |
+| 组件           | Flutter                                 | 内边距 / 圆角 / 深度                                           |
+| -------------- | --------------------------------------- | -------------------------------------------------------------- |
+| 功能卡         | `Card` + `headlineMedium` 标题 + 图标槽 | 24 / 12 / 1                                                    |
+| 客户引述卡     | `Card` + 引述 + 40px 头像               | 32 / 12 / 1                                                    |
+| 截图卡         | `Card` + 全宽截图                       | 24 / 16 / 2                                                    |
+| 仪表盘合成卡   | `Card` + 多面板合成图                   | 24 / 12 / 2                                                    |
+| 暖色插曲带     | `Container`（少用）                     | 32 / 12 / 0                                                    |
+| 收尾 CTA 横幅  | 自定义容器，居中布局                    | 48 / 12 / 2                                                    |
+| 营销 CTA 横幅  | 自定义容器                              | `brandDark`、64/48、倒计时 + 社交证明 + 双 CTA，移动端纵向堆叠 |
+| 客户 Logo 瓦片 | `Container`                             | 16 / 4 / 0                                                     |
+
+> 「深度」列为 §4.1 的抬升等级，适用于自定义容器（首页入口卡、营销卡等）；
+> `Card` 一律按 §4.2：亮色白底 / 暗色比页面亮一档 + 1px `outlineVariant`
+> 描边 + `elevation: 0`。
 
 ### 6.5 输入与表单
 
-`TextField` 统一由 `InputDecorationTheme` 提供：`filled: true` + `surface` 填充、
+`TextField` 统一由 `InputDecorationTheme` 提供：`filled: true` +
+`surfaceContainerLowest` 填充（亮色 = 卡片白，与底色一致）、
 `OutlineInputBorder(borderRadius: BorderRadius.circular(6))` +
 `BorderSide(width: 1, color: hairlineInput)`
 描边、`EdgeInsets.symmetric(horizontal: 12, vertical: 8)`；占位 `inkTertiary`；
-焦点 1.5px `primary`；错误态 `error` 描边 + `bodySmall` 错误文本。
+浮动标签（有值 / 聚焦时贴在描边上）取 `inkMuted`，不使用主色；
+焦点沿用默认 `hairlineInput` 描边（仅 1px → 1.5px，不上主色，填充也不变深）；
+错误态 `error` 描边 + `bodySmall` 错误文本。
+
+搜索框统一用 `RuQiSearchField`：全站同高 **36**、1px `hairlineInput` 描边、
+`prefixIcon` 18px 搜索图标、内容垂直居中（侧栏菜单搜索 / 表格筛选搜索 /
+菜单内搜索都走它，避免各处 `isDense` / `contentPadding` 不同导致高度参差）。
+
+筛选栏统一版式：第一行 = `RuQiSearchField`（36）+ 其它筛选控件 + 「筛选」
+（`button-primary`）与「重置」（`button-link`）；第二行 = 状态选项卡
+（`ChoiceChip` / `FilterChip`）另起一行、左对齐。
+
+筛选控件等高注意：下拉统一用 `RuQiFilterDropdown`（固定 36 高的容器自带描边 +
+无下划线的 `DropdownButton`）——`DropdownButtonFormField` 的 `InputDecorator`
+按内容撑高，边框会短于占位框，不要用在筛选栏里；时间范围等按钮包一层
+`SizedBox(height: RuQiSearchField.height)` 由按钮填满。
 
 线索收集组（`form-group-marketing`）：`Wrap` / `Row` —— 输入框 `Expanded`
 （最小宽 200）、`FilledButton` 不换行、同意文本 `bodySmall` + `inkTertiary`
@@ -498,17 +571,20 @@ FloatingPromo({
 
 ### 6.6 标签、Pill 与状态
 
-| 组件 | Flutter | 规范 |
-|---|---|---|
-| `tag-soft` | `Chip` 或自定义容器 | `primaryContainer` 背景 + `primary` 文本 + `bodySmall` + `StadiumBorder()` |
-| `tag-outline` | `Chip` | 透明背景 + `BorderSide(width: 1, color: hairlineStrong)` + `onSurfaceVariant` |
-| 节省徽章 | 自定义容器 | `success` @ 12% 背景 + `success` 文本 + `FontWeight.w600` + `StadiumBorder()` |
-| 状态徽章 | `Chip` / 圆点 + 文本 | `surfaceContainerHigh` + `inkMuted`；语义变体 `success/warning/error/info` |
+| 组件          | Flutter              | 规范                                                                          |
+| ------------- | -------------------- | ----------------------------------------------------------------------------- |
+| `tag-soft`    | `Chip` 或自定义容器  | `primaryContainer` 背景 + `primary` 文本 + `bodySmall` + `StadiumBorder()`    |
+| `tag-outline` | `Chip`               | 透明背景 + `BorderSide(width: 1, color: hairlineStrong)` + `onSurfaceVariant` |
+| 节省徽章      | 自定义容器           | `success` @ 12% 背景 + `success` 文本 + `FontWeight.w600` + `StadiumBorder()` |
+| 状态徽章      | `Chip` / 圆点 + 文本 | `surfaceContainerHigh` + `inkMuted`；语义变体 `success/warning/error/info`    |
+| 筛选 Chip（默认） | `Chip` / `FilterChip` | `surfaceContainerLowest` 底（亮色 = 白）+ 1px `outline` 描边（比卡片描边深一档，保证小元素辨识）；选中 `primaryContainer`；文字 `onSurfaceVariant`、`StadiumBorder()` |
+| 分段选择（`SegmentedButton`） | `segmentedButtonTheme` | 选中段 `surfaceContainerHigh` 底 + **`primary` 文案高亮**，未选中透明 + `onSurfaceVariant`；整组 1px `outlineVariant` 描边；hover `surfaceContainerLow`；不使用 M3 默认 `secondaryContainer`（品牌粉） |
 
 ### 6.7 导航
 
 - 顶部导航 → `AppBar`（或自定义 `PreferredSizeWidget`）：`surface` 背景、
-  `onSurface` 文本、高 56、无阴影；左侧 Logo、中间链接、右侧次按钮 + 主按钮；
+  `onSurface` 文本、高 56、无阴影；左侧 Logo、中间链接、右侧次按钮 + 主按钮
+  （控制台顶栏的「退出」用 `button-secondary`：默认中性描边，hover 才转主色）；
   <768px 收起为抽屉 / 汉堡菜单；
 - 营销导航 → 同顶部导航，右侧主 CTA 与页面主 CTA 文案一致；滚动越过 Hero
   后高度缩至 48（`AppBar.scrolledUnderElevation` / 滚动监听调整）。
@@ -525,16 +601,16 @@ FloatingPromo({
 动作后，面板覆盖在内容区之上，左侧菜单与顶部导航保持可见；面板是内容区的
 内嵌层而非悬浮模态，返回时 `Navigator.pop` 关闭。
 
-| 项 | 规范 |
-|---|---|
-| 尺寸 | 与内容区同尺寸（大面板模式）：`Positioned(left: 菜单宽, top: 顶栏高, right: 0, bottom: 0)` |
-| 遮罩 | 无：`barrierColor: Colors.transparent`；仍保留 `barrierDismissible: true`（点击外部关闭）与 `barrierLabel` |
-| 阴影 | 无：深度 0，不引用 `RuQiElevation`，`Material` 不设 `elevation` |
-| 描边 | 仅 `left` / `top` 两条 `BorderSide(width: 1, color: outlineVariant)`，与菜单、顶栏分隔；右 / 下边缘贴齐窗口，不画框线 |
-| 背景 | `surface` |
+| 项     | 规范                                                                                                                                                      |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 尺寸   | 与内容区同尺寸（大面板模式）：`Positioned(left: 菜单宽, top: 顶栏高, right: 0, bottom: 0)`                                                                |
+| 遮罩   | 无：`barrierColor: Colors.transparent`；仍保留 `barrierDismissible: true`（点击外部关闭）与 `barrierLabel`                                                |
+| 阴影   | 无：深度 0，不引用 `RuQiElevation`，`Material` 不设 `elevation`                                                                                           |
+| 描边   | 仅 `left` / `top` 两条 `BorderSide(width: 1, color: outlineVariant)`，与菜单、顶栏分隔；右 / 下边缘贴齐窗口，不画框线                                     |
+| 背景   | `surface`                                                                                                                                                 |
 | 标题条 | 高 48、`surfaceContainerLow` 背景、左侧 `RuQiSpacing.md` 内边距；标题 `titleMedium` / 700 / `onSurface`，右侧关闭按钮（tooltip「关闭」，图标 `inkMuted`） |
-| 分隔线 | 标题条与正文之间 `Divider(height: 1, color: outlineVariant)` |
-| 正文 | 可滚动区域（`SingleChildScrollView` / `ListView`）；表单类弹层底部固定操作行：`button-tertiary` 取消 + `button-primary` 主操作 |
+| 分隔线 | 标题条与正文之间 `Divider(height: 1, color: outlineVariant)`                                                                                              |
+| 正文   | 可滚动区域（`SingleChildScrollView` / `ListView`）；表单类弹层底部固定操作行：`button-tertiary` 取消 + `button-primary` 主操作                            |
 
 动效（§5 令牌）：
 
@@ -570,6 +646,20 @@ showGeneralDialog<void>(
 参考实现：管理后台设置内容面板（`SettingsContentPanel` /
 `showSystemSettingsPanel`）与运营后台动作弹窗的大面板模式。
 
+### 6.10 主题设置（个人中心 → 主题）
+
+版式参考 hopscotch：左列为页面标题 + 说明，右列为设置分组；每组是
+「组标题 + 当前取值 + 选项行」。
+
+| 项         | 规范                                                                                                                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 布局       | `Row`：左列 `flex: 4`（标题 `titleLarge` / 600 + 说明 `bodyMedium` / `inkMuted`），右列 `flex: 6`，列间距 `RuQiSpacing.xxl`                                                                                               |
+| 分组       | 组标题 `titleSmall` / 700 / `onSurface`；当前取值 `bodySmall` / `inkMuted`（间距 2）；选项行距离取值 `RuQiSpacing.sm`；组间距 `RuQiSpacing.xl`                                                                            |
+| 背景选项   | 36 × 36 图标按钮：`desktop_windows_outlined`（跟随系统）/ `light_mode_outlined`（亮色）/ `dark_mode_outlined`（暗色）；选中 = `surfaceContainerHigh` 底 + `primary` 图标，未选中 = `onSurfaceVariant`；`Tooltip` 显示文案 |
+| 强调色选项 | 36 × 36 命中区 + 20px 圆环（2px 描边取色板原色），选中 = `surfaceContainerHigh` 底；`Tooltip` 显示色名                                                                                                                    |
+| 生效       | 背景写 `MaterialApp.themeMode`，强调色写 `ruoQiTheme(accent:)`，即时生效（§1.5、§9.4）                                                                                                                                    |
+| 数据源     | 取值由 App 根部持有；弹窗打开期间外壳持有当前值，切页返回不丢选择                                                                                                                                                         |
+
 ---
 
 ## 7. 营销约束
@@ -592,13 +682,13 @@ showGeneralDialog<void>(
 
 ### 断点
 
-| 名称 | 判定 | 说明 |
-|---|---|---|
-| Wide | `width >= 1440` | 内容最大宽 1440 |
-| Desktop | `width >= 1024` | 卡片 3 列、定价 3–4 列 |
-| Tablet | `width >= 768` | 卡片 2 列、定价 2 列、导航收起 |
-| Mobile | `width >= 428` | 单列、display 字号下调、定价手风琴 |
-| Small Mobile | `width < 428` | `displayLarge` 缩至 32、主 CTA 全宽 |
+| 名称         | 判定            | 说明                                |
+| ------------ | --------------- | ----------------------------------- |
+| Wide         | `width >= 1440` | 内容最大宽 1440                     |
+| Desktop      | `width >= 1024` | 卡片 3 列、定价 3–4 列              |
+| Tablet       | `width >= 768`  | 卡片 2 列、定价 2 列、导航收起      |
+| Mobile       | `width >= 428`  | 单列、display 字号下调、定价手风琴  |
+| Small Mobile | `width < 428`   | `displayLarge` 缩至 32、主 CTA 全宽 |
 
 判定统一使用 `MediaQuery.sizeOf(context).width` 或 `LayoutBuilder`。
 
@@ -607,13 +697,13 @@ showGeneralDialog<void>(
 
 ### 组件响应式行为
 
-| 组件 | 桌面 | 平板 | 移动 |
-|---|---|---|---|
-| 倒计时 | 行内横向 | 行内可换行 | 纵向堆叠、居中 |
-| 吸附 CTA | 两列（价格 + 按钮） | 两列 | 全宽堆叠 |
-| 对比表 | 标准表格 | 横向滚动 | 堆叠卡片 |
-| 浮动弹层 | 右下角 360px | 底部居中 90% 宽 | 全宽底部 |
-| 社交证明条 | 胶囊 | 胶囊 | 胶囊、文本换行 |
+| 组件       | 桌面                | 平板            | 移动           |
+| ---------- | ------------------- | --------------- | -------------- |
+| 倒计时     | 行内横向            | 行内可换行      | 纵向堆叠、居中 |
+| 吸附 CTA   | 两列（价格 + 按钮） | 两列            | 全宽堆叠       |
+| 对比表     | 标准表格            | 横向滚动        | 堆叠卡片       |
+| 浮动弹层   | 右下角 360px        | 底部居中 90% 宽 | 全宽底部       |
+| 社交证明条 | 胶囊                | 胶囊            | 胶囊、文本换行 |
 
 ---
 
@@ -626,22 +716,29 @@ ThemeData ruoQiTheme({
   Brightness brightness = Brightness.light,
   RuQiPurpose purpose = RuQiPurpose.standard,
   String? fontFamily = 'Inter',
+  Color? accent,                        // 见 §1.5：个人中心 → 主题
 }) {
-  final colors = RuQiColors.forMode(brightness, purpose: purpose);
+  final colors = RuQiColors.forMode(
+    brightness,
+    purpose: purpose,
+    accent: accent,
+  );
   final isDark = brightness == Brightness.dark;
   // 1. ColorScheme.copyWith：见「1.1 ColorScheme 角色」
   // 2. TextTheme：见「2.2 TextTheme 层级」（display 系字重按模式注入）
   // 3. 组件主题：filledButtonTheme / outlinedButtonTheme / textButtonTheme /
+  //    inputDecorationTheme / cardTheme / chipTheme / segmentedButtonTheme /
+  //    dataTableTheme …
   //    inputDecorationTheme / cardTheme / chipTheme / dataTableTheme …
   // 4. extensions: [RuQiThemeExtension(colors, elevation, displayWeight)]
-  // 5. 模式差异：亮色卡片 elevation 1 无描边；暗色 elevation 0 + 描边
+  // 5. 模式差异：卡片两种模式都是 1px outlineVariant 描边 + elevation 0（§4.2）
 }
 ```
 
 ### 9.2 模式检测与持久化
 
 - 默认跟随系统：`MaterialApp(theme: ruoQiTheme(brightness: light),
-  darkTheme: ruoQiTheme(brightness: dark), themeMode: ThemeMode.system)`；
+darkTheme: ruoQiTheme(brightness: dark), themeMode: ThemeMode.system)`；
 - 提供显式切换（`Brightness` 状态提升到 App 根部）；
 - 营销页同时声明 `purpose`；
 - 持久化：`shared_preferences` 保存 mode 与 purpose。
@@ -650,16 +747,40 @@ ThemeData ruoQiTheme({
 
 亮色与暗色需要**相反的深度策略**：
 
-| 属性 | 亮色 | 暗色 |
-|---|---|---|
-| 深度机制 | `BoxShadow` | 表面亮度（更亮的表面更近） |
-| 卡片分隔 | 阴影 + 轻微背景差 | 更亮背景 + 描边 |
-| 描边可见性 | 少用，避免视觉噪音 | 必需，用于边缘定义 |
-| 文本对比 | 深色文本 ≥ 4.5:1（WCAG AA） | 天然更高对比 |
-| 表面阶梯 | 每级相差 5–8% 亮度 | 2–3% 足够 |
+| 属性       | 亮色                                           | 暗色                       |
+| ---------- | ---------------------------------------------- | -------------------------- |
+| 深度机制   | `BoxShadow`                                    | 表面亮度（更亮的表面更近） |
+| 卡片分隔   | 白卡片 + 1px `outlineVariant` 描边（§4.2）     | 更亮背景 + 1px 描边        |
+| 描边可见性 | 用于卡片 / 表格 / 输入边界                     | 必需，用于边缘定义         |
+| 文本对比   | 深色文本 ≥ 4.5:1（WCAG AA）                    | 天然更高对比               |
+| 表面阶梯   | 页面 / 卡片 `#FFFFFF`、悬停 `#FAFAFA`、选中 `#EDEDED` | 每级 2–3% 亮度      |
 
-亮色卡片用 `shadowSm` 而非描边（浅灰描边对比度约 1.1:1，几乎不可见）；
-暗色背景上阴影不可见，改用描边。表面阶梯带轻微冷色调（色相约 220°）。
+亮色以「白卡片 + 1px 描边」为主，避免大面积灰底（§1.4）；阴影只用于抬升卡
+（首页入口卡、浮动弹层、吸附 CTA）。暗色背景上阴影不可见，改用描边。
+亮色底一律为白（页面 / 顶栏 / 菜单 / 卡片），柔和分层用无彩灰
+（`#FAFAFA` / `#F5F5F5` / `#EDEDED`），不带色相；
+需要着色时由主题设置的强调色注入（§1.5）。
+
+亮色「线框」分两级：结构性描边（卡片 / 表格 / 面板 / 分隔线）取
+`outlineVariant`（`#F0F0F0`），输入框与 Chip 等需要辨识的小元素取
+`outline`（`#DBDBDB`）。既不铺灰底，又保留足够结构感——「白 + 一档可辨的线」。
+
+### 9.4 背景模式（个人中心 → 主题）
+
+| 选项     | 图标                             | 解析结果                        |
+| -------- | -------------------------------- | ------------------------------- |
+| 跟随系统 | `Icons.desktop_windows_outlined` | `ThemeMode.system`              |
+| 亮色     | `Icons.light_mode_outlined`      | `ThemeMode.light`（平台端默认） |
+| 暗色     | `Icons.dark_mode_outlined`       | `ThemeMode.dark`                |
+
+- 单一数据源：App 根部持有 `themeMode` 与 `accent`，
+  `MaterialApp.themeMode` + `theme: ruoQiTheme(accent:)` +
+  `darkTheme: ruoQiTheme(brightness: dark, accent:)` 同时读取；
+- 顶栏背景模式切换与主题页写同一份状态，两处都是同样三档
+  （`RuQiThemeModeSwitch` 复用 `system / light / dark` 选项与选中样式）；
+- 弹窗（个人中心）打开期间由外壳持有当前值，切页返回仍是刚选的那套；
+- 持久化：`shared_preferences` 保存 `themeMode` 与 `accent`（建议键
+  `appearance.themeMode` / `appearance.accent`），启动读取后注入根部状态。
 
 ---
 
@@ -709,6 +830,8 @@ ThemeData ruoQiTheme({
   社交证明 ticker 的 `Semantics(liveRegion:)`）；
 - 减少动态需要更细粒度：倒计时脉冲应减弱而非完全禁用；
 - `RuoQiBreakpoints.tablet`（600）与本规范断点（768）需统一。
+- 外观设置（背景模式 / 强调色）尚未持久化：目前只存在 App 内存状态，
+  刷新后回到默认值（§9.4 的 `shared_preferences` 约定待落地）。
 
 ---
 
@@ -748,7 +871,7 @@ final passed = position.pixels >= position.viewportDimension * 0.7;
 ```dart
 // 亮色营销：primary = Color(0xFF2563EB)，accentEnergy 保持 Color(0xFFFE2C55)。
 // 暗色营销：primarySubdued = Color(0xFF3D1520)，hairlineInput = Color(0xFF4A4E59)。
-// 亮色卡片：无描边 + elevation 1；暗色卡片：outlineVariant 描边 + elevation 0。
+// 卡片：两种模式都是白底（暗色比页面亮一档）+ 1px outlineVariant 描边 + elevation 0。
 ```
 
 ### 全局营销重置

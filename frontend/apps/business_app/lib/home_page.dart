@@ -187,7 +187,7 @@ class _EntryCardState extends State<_EntryCard> {
         theme.extension<RuQiThemeExtension>()?.inkMuted ??
         colorScheme.onSurfaceVariant;
     final radius = BorderRadius.circular(RuQiSpacing.sm);
-    // 规范 §1.4 色块约束：卡片不铺灰底，底色取最浅的中性表面（亮色 #FAFBFC）。
+    // 规范 §1.4 色块约束：卡片不铺灰底，底色取最浅的中性表面（亮色 #FFFFFF）。
     final cardColor = theme.brightness == Brightness.dark
         ? colorScheme.surfaceContainerLow
         : colorScheme.surfaceContainerLowest;

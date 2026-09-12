@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// 规范默认强调色（品牌热粉）。
+const Color _brandPink = Color(0xFFFE2C55);
+
+Color _lighten(Color color, double amount) =>
+    Color.lerp(color, Colors.white, amount)!;
+
+Color _darken(Color color, double amount) =>
+    Color.lerp(color, Colors.black, amount)!;
+
 /// 主题用途：标准业务界面或营销落地页。
 ///
 /// 营销模式会按规范 §1.2 覆盖主色为品牌蓝，`accentEnergy` 保持热粉。
@@ -117,38 +126,63 @@ class RuQiColors {
   final Color info;
 
   /// 按模式与用途解析整套颜色角色。
+  ///
+  /// [accent] 为个性化强调色（个人中心 → 主题）：只接管主色一族，
+  /// 其余角色仍取规范固定值；为空或等于规范默认色时逐位保持规范取值。
   factory RuQiColors.forMode(
     Brightness brightness, {
     RuQiPurpose purpose = RuQiPurpose.standard,
+    Color? accent,
   }) {
     final isDark = brightness == Brightness.dark;
     final isMarketing = purpose == RuQiPurpose.marketing;
 
+    // 选了品牌默认色也走规范取值，避免「选回粉色反而和默认不一样」。
+    final custom = accent == null || accent == _brandPink ? null : accent;
+
     // 规范 §1.2 营销覆盖：亮色主色切换为品牌蓝；暗色提升柔色标签对比。
-    final primary = isMarketing && !isDark
-        ? const Color(0xFF2563EB)
-        : const Color(0xFFFE2C55);
-    final primaryHover = isMarketing && !isDark
-        ? const Color(0xFF1D4ED8)
-        : const Color(0xFFFF4D6A);
-    final primaryPress = isMarketing && !isDark
-        ? const Color(0xFF1E40AF)
-        : const Color(0xFFE01A44);
-    final primarySubdued = isDark
-        ? (isMarketing ? const Color(0xFF3D1520) : const Color(0xFF2D0D14))
-        : (isMarketing ? const Color(0xFFEFF6FF) : const Color(0xFFFFF0F3));
+    final primary =
+        custom ??
+        (isMarketing && !isDark ? const Color(0xFF2563EB) : _brandPink);
+    final primaryHover = custom != null
+        ? _lighten(custom, 0.11)
+        : (isMarketing && !isDark
+              ? const Color(0xFF1D4ED8)
+              : const Color(0xFFFF4D6A));
+    final primaryPress = custom != null
+        ? _darken(custom, 0.12)
+        : (isMarketing && !isDark
+              ? const Color(0xFF1E40AF)
+              : const Color(0xFFE01A44));
+    final primarySubdued = custom != null
+        // 暗色用强调色压在深表面上，与规范里 #2D0D14 的取法一致。
+        ? (isDark
+              ? Color.lerp(const Color(0xFF0B0C0F), custom, 0.15)!
+              : _lighten(custom, 0.94))
+        : (isDark
+              ? (isMarketing
+                    ? const Color(0xFF3D1520)
+                    : const Color(0xFF2D0D14))
+              : (isMarketing
+                    ? const Color(0xFFEFF6FF)
+                    : const Color(0xFFFFF0F3)));
+    final onPrimaryContainer = custom != null
+        ? (isDark ? _lighten(custom, 0.65) : _darken(custom, 0.45))
+        : (isMarketing
+              ? (isDark ? const Color(0xFFBFDBFE) : const Color(0xFF1E3A8A))
+              : (isDark ? const Color(0xFFFFB3C2) : const Color(0xFF8C1D32)));
     final hairlineInput = isDark
         ? (isMarketing ? const Color(0xFF4A4E59) : const Color(0xFF3E414A))
-        : const Color(0xFFC2C7CF);
+        // 亮色线框分两级：结构性描边（卡片 / 表格 / 分隔线）用 outlineVariant
+        // #EAEAEA；输入框、Chip 等需要辨识的元素用 outline #DBDBDB。
+        : const Color(0xFFDBDBDB);
 
     if (isDark) {
       return RuQiColors(
         primary: primary,
         onPrimary: const Color(0xFFFFFFFF),
         primaryContainer: primarySubdued,
-        onPrimaryContainer: isMarketing
-            ? const Color(0xFFBFDBFE)
-            : const Color(0xFFFFB3C2),
+        onPrimaryContainer: onPrimaryContainer,
         secondary: const Color(0xFFFE2C55),
         onSecondary: const Color(0xFFFFFFFF),
         secondaryContainer: const Color(0xFF2D0D14),
@@ -172,7 +206,7 @@ class RuQiColors {
         scrim: const Color(0xA6000000),
         inverseSurface: const Color(0xFFE5E8EC),
         onInverseSurface: const Color(0xFF1C1E23),
-        inversePrimary: const Color(0xFFFE2C55),
+        inversePrimary: primary,
         primaryHover: primaryHover,
         primaryPress: primaryPress,
         primarySubdued: primarySubdued,
@@ -197,25 +231,26 @@ class RuQiColors {
       primary: primary,
       onPrimary: const Color(0xFFFFFFFF),
       primaryContainer: primarySubdued,
-      onPrimaryContainer: isMarketing
-          ? const Color(0xFF1E3A8A)
-          : const Color(0xFF8C1D32),
+      onPrimaryContainer: onPrimaryContainer,
       secondary: const Color(0xFFFE2C55),
       onSecondary: const Color(0xFFFFFFFF),
       secondaryContainer: const Color(0xFFFFF0F3),
       onSecondaryContainer: const Color(0xFF8C1D32),
-      surface: const Color(0xFFFAFBFC),
-      surfaceContainerLowest: const Color(0xFFFAFBFC),
-      surfaceContainerLow: const Color(0xFFF0F4F8),
-      surfaceContainer: const Color(0xFFF2F4F7),
-      surfaceContainerHigh: const Color(0xFFE8EBF0),
-      surfaceContainerHighest: const Color(0xFFE8EBF0),
-      surfaceDim: const Color(0xFFE2E5EA),
-      surfaceBright: const Color(0xFFFAFBFC),
+      // 亮色以白为底：页面 / 顶栏 / 菜单 / 卡片都是 #FFFFFF，层级交给
+      // 1px 描边与 `surfaceContainerLow`（#FAFAFA）等浅档承载悬停与柔和切分。
+      surface: const Color(0xFFFFFFFF),
+      surfaceContainerLowest: const Color(0xFFFFFFFF),
+      surfaceContainerLow: const Color(0xFFFAFAFA),
+      surfaceContainer: const Color(0xFFF5F5F5),
+      surfaceContainerHigh: const Color(0xFFEDEDED),
+      surfaceContainerHighest: const Color(0xFFEDEDED),
+      surfaceDim: const Color(0xFFE8E8E8),
+      surfaceBright: const Color(0xFFFFFFFF),
       onSurface: const Color(0xFF0F172A),
       onSurfaceVariant: const Color(0xFF64748B),
-      outlineVariant: const Color(0xFFE5E8EC),
-      outline: const Color(0xFFD1D6DC),
+      // 结构线再轻一档：卡片 / 表格 / 分隔线在亮色下只作「隐约的边界」。
+      outlineVariant: const Color(0xFFF0F0F0),
+      outline: const Color(0xFFDBDBDB),
       error: const Color(0xFFCF222E),
       onError: const Color(0xFFFFFFFF),
       errorContainer: const Color(0xFFFFE3E0),
@@ -223,17 +258,17 @@ class RuQiColors {
       scrim: const Color(0x80000000),
       inverseSurface: const Color(0xFF2F3036),
       onInverseSurface: const Color(0xFFF0F2F5),
-      inversePrimary: const Color(0xFFFE2C55),
+      inversePrimary: primary,
       primaryHover: primaryHover,
       primaryPress: primaryPress,
       primarySubdued: primarySubdued,
       accentEnergy: const Color(0xFFFE2C55),
-      surface3: const Color(0xFFDDE1E7),
-      surface4: const Color(0xFFD2D7DF),
-      hairlineStrong: const Color(0xFFD1D6DC),
+      surface3: const Color(0xFFE4E4E4),
+      surface4: const Color(0xFFDCDCDC),
+      hairlineStrong: const Color(0xFFDBDBDB),
       hairlineInput: hairlineInput,
-      canvasSoft: const Color(0xFFF0F4F8),
-      canvasCream: const Color(0xFFF8F4EA),
+      canvasSoft: const Color(0xFFF7F7F7),
+      canvasCream: const Color(0xFFFAF7F0),
       brandDark: const Color(0xFF111B3D),
       inkMuted: const Color(0xFF94A3B8),
       inkTertiary: const Color(0xFFCBD5E1),

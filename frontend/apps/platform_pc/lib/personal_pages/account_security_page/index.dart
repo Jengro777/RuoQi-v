@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../operations_action_dialog.dart';
 import '../mfa_page/index.dart';
 
-/// 账号安全（运营后台·个人中心）——业务静态页。
+/// 账号安全（平台端个人中心）——业务静态页。
 class AccountSecurityPage extends StatelessWidget {
   const AccountSecurityPage({super.key});
 
@@ -16,9 +15,24 @@ class AccountSecurityPage extends StatelessWidget {
   }
 }
 
-/// 账号安全正文（供运营后台对话框右侧内容区内嵌展示）。
+/// 账号安全正文（供个人中心对话框内容区内嵌展示）。
 class AccountSecurityBody extends StatelessWidget {
-  const AccountSecurityBody({super.key});
+  const AccountSecurityBody({super.key, this.onOpenPage});
+
+  /// 打开个人中心下的其它页面（如「多因素认证」），由个人中心外壳注入；
+  /// 为空时（整页路由 / 单页预览）退化为 push 对应整页。
+  final ValueChanged<String>? onOpenPage;
+
+  void _openMfa(BuildContext context) {
+    final onOpenPage = this.onOpenPage;
+    if (onOpenPage != null) {
+      onOpenPage('多因素认证');
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const MfaPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,11 +71,7 @@ class AccountSecurityBody extends StatelessWidget {
           '多因素认证',
           '未开启',
           '开启',
-          onAction: () => showOperationsActionDialog(
-            context,
-            title: '多因素认证',
-            child: const MfaBody(),
-          ),
+          onAction: () => _openMfa(context),
         ),
         _item(
           context,

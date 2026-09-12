@@ -84,30 +84,23 @@ class CurrencyBody extends StatelessWidget {
                 label: currency.enabled ? '启用中' : '已停用',
                 tone: currency.enabled ? StatusTone.success : StatusTone.neutral,
               ),
-              Wrap(
-                spacing: RuQiSpacing.xs,
-                children: [
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, currency, '编辑'),
-                    child: const Text('编辑'),
+              RuQiRowActionsMenu(
+                actions: [
+                  RuQiRowAction(
+                    '编辑',
+                    () => _handleAction(context, currency, '编辑'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(
+                  RuQiRowAction(
+                    currency.enabled ? '停用' : '启用',
+                    () => _handleAction(
                       context,
                       currency,
                       currency.enabled ? '停用' : '启用',
                     ),
-                    child: Text(currency.enabled ? '停用' : '启用'),
                   ),
-                  TextButton(
-                    style: RuQiButtonStyles.tertiary(context),
-                    onPressed: () => _handleAction(context, currency, '删除'),
-                    child: Text(
-                      '删除',
-                      style: TextStyle(color: theme.colorScheme.error),
-                    ),
+                  RuQiRowAction(
+                    '删除',
+                    () => _handleAction(context, currency, '删除'),
                   ),
                 ],
               ),

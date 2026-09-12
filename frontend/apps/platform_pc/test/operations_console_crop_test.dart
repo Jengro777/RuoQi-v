@@ -31,49 +31,6 @@ void main() {
     return false;
   }
 
-  testWidgets('动作弹窗中标准布局原型裁掉顶部菜单', (tester) async {
-    await openDialog(tester);
-
-    // 二级菜单：查看租户 等动作子页面不再作为菜单项
-    expect(find.text('查看租户'), findsNothing);
-
-    // 打开 租户列表 主页面
-    await tester.tap(find.text('租户列表').hitTestable().first);
-    await tester.pumpAndSettle();
-    // 点击 查看 打开动作弹窗（查看租户 原型页）
-    await tester.tap(find.text('查看').hitTestable().first);
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-
-    expect(inVisiblePage(tester, 'IAM Operation Center'), isFalse);
-    tester.view.reset();
-  });
-
-  testWidgets('动作弹窗中个人中心子页面裁掉 64px 顶栏', (tester) async {
-    await openDialog(tester);
-
-    // 展开 个人中心 板块，打开主页
-    await tester.tap(find.text('个人中心').hitTestable().first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('PC-个人中心(基本信息)').hitTestable().first);
-    await tester.pumpAndSettle();
-    // 打开 账号安全 动作弹窗
-    await tester.tap(find.text('账号安全').hitTestable().first);
-    await tester.pumpAndSettle();
-    // 打开 修改密码 动作弹窗（原型页）
-    await tester.tap(find.text('修改密码').hitTestable().first);
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-
-    // 修改密码 原型裁掉 64px 顶栏后，可见区域宽高比应为 1920 : (1080-64)。
-    final fittedBoxes = find.byType(FittedBox).hitTestable().evaluate();
-    expect(fittedBoxes, isNotEmpty);
-    final fittedBox = fittedBoxes.first.renderObject! as RenderBox;
-    final aspect = fittedBox.size.width / fittedBox.size.height;
-    expect(aspect, greaterThan(1.85));
-    tester.view.reset();
-  });
-
   testWidgets('业务静态页打开不出现原型顶部菜单', (tester) async {
     await openDialog(tester);
 

@@ -80,7 +80,7 @@ class UserCopyRow extends StatelessWidget {
                 SnackBar(content: Text('$label已复制'), duration: RuQiMotion.fast),
               );
             },
-            style: RuQiButtonStyles.secondary(context),
+            style: RuQiButtonStyles.link(context),
             child: const Text('复制'),
           ),
         ],

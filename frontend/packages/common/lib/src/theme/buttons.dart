@@ -41,17 +41,25 @@ abstract final class RuQiButtonStyles {
       textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
       backgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
-          return colors.surfaceContainerHigh;
+          return colors.surfaceContainerLow;
         }
         if (states.contains(WidgetState.pressed)) return primaryPress;
-        if (states.contains(WidgetState.hovered)) return primaryHover;
-        return colors.primary;
+        if (states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.focused)) {
+          return primaryHover;
+        }
+        // 默认中性填充，不上主色；hover / 聚焦才亮成主色。
+        return colors.surfaceContainerHigh;
       }),
       foregroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
           return ext?.inkTertiary ?? colors.outline;
         }
-        return colors.onPrimary;
+        final highlighted =
+            states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.focused);
+        return highlighted ? colors.onPrimary : colors.onSurface;
       }),
       elevation: const WidgetStatePropertyAll(0),
       surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
@@ -70,30 +78,123 @@ abstract final class RuQiButtonStyles {
       padding: const WidgetStatePropertyAll(_padding),
       minimumSize: const WidgetStatePropertyAll(_minimumSize),
       textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
-      backgroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.hovered)
-            ? colors.primaryContainer
-            : Colors.transparent,
-      ),
-      foregroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled)
-            ? colors.outline
-            : colors.primary,
-      ),
-      side: WidgetStateProperty.resolveWith(
-        (states) => BorderSide(
-          color: states.contains(WidgetState.disabled)
-              ? colors.outlineVariant
-              : colors.primary,
+      backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return colors.outline;
+        }
+        final highlighted =
+            states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.focused);
+        // 默认中性文本，hover / 聚焦才切主色。
+        return highlighted ? colors.primary : colors.onSurfaceVariant;
+      }),
+      side: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return BorderSide(color: colors.outlineVariant, width: 1);
+        }
+        final highlighted =
+            states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.focused);
+        return BorderSide(
+          color: highlighted ? colors.primary : colors.outline,
           width: 1,
-        ),
-      ),
+        );
+      }),
       elevation: const WidgetStatePropertyAll(0),
       surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
     );
   }
 
-  /// `button-tertiary`：`TextButton` 文字按钮。
+  /// `button-link`：表格「操作」列的行内文字动作（编辑 / 查看 / 删除 …）。
+  ///
+  /// 无描边、无底色、无水波纹：默认 `onSurfaceVariant` 文本，
+  /// hover / press 只把文字转 `primary`，不做整块高亮。
+  static ButtonStyle link(BuildContext context) {
+    final theme = Theme.of(context);
+    return linkOf(
+      theme.colorScheme,
+      theme.extension<RuQiThemeExtension>(),
+      theme.textTheme,
+    );
+  }
+
+  static ButtonStyle linkOf(
+    ColorScheme colors,
+    RuQiThemeExtension? ext,
+    TextTheme textTheme,
+  ) {
+    return ButtonStyle(
+      shape: const WidgetStatePropertyAll(_shape),
+      padding: const WidgetStatePropertyAll(_padding),
+      minimumSize: const WidgetStatePropertyAll(_minimumSize),
+      textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
+      backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+      // 连按下 / 悬停的水波纹与底色都去掉，反馈只落在文字颜色上。
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      // 无描边：即使挂在 `OutlinedButton` 上也不会继承主题的主色边框。
+      side: const WidgetStatePropertyAll(BorderSide.none),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return ext?.inkTertiary ?? colors.outline;
+        }
+        if (states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.focused)) {
+          return colors.primary;
+        }
+        return colors.onSurfaceVariant;
+      }),
+      elevation: const WidgetStatePropertyAll(0),
+      surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+    );
+  }
+
+  /// `button-link-danger`：行内破坏性动作（表格「操作」列的删除 / 移除）。
+  ///
+  /// 与 `button-link` 同款：默认 `onSurfaceVariant` 中性文本，
+  /// hover / press / 聚焦才转 `error`。
+  static ButtonStyle linkDanger(BuildContext context) {
+    final theme = Theme.of(context);
+    return linkDangerOf(
+      theme.colorScheme,
+      theme.extension<RuQiThemeExtension>(),
+      theme.textTheme,
+    );
+  }
+
+  static ButtonStyle linkDangerOf(
+    ColorScheme colors,
+    RuQiThemeExtension? ext,
+    TextTheme textTheme,
+  ) {
+    return ButtonStyle(
+      shape: const WidgetStatePropertyAll(_shape),
+      padding: const WidgetStatePropertyAll(_padding),
+      minimumSize: const WidgetStatePropertyAll(_minimumSize),
+      textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
+      backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      side: const WidgetStatePropertyAll(BorderSide.none),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return ext?.inkTertiary ?? colors.outline;
+        }
+        if (states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.focused)) {
+          return colors.error;
+        }
+        return colors.onSurfaceVariant;
+      }),
+      elevation: const WidgetStatePropertyAll(0),
+      surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+    );
+  }
+
+  /// `button-tertiary`：`TextButton` 文字按钮（弹窗取消 / 关闭等）。
   static ButtonStyle tertiary(BuildContext context) {
     final theme = Theme.of(context);
     return tertiaryOf(theme.colorScheme, theme.textTheme);
@@ -124,7 +225,7 @@ abstract final class RuQiButtonStyles {
   }
 
   static ButtonStyle inverseOf(TextTheme textTheme) {
-    const surface = Color(0xFFFAFBFC);
+    const surface = Color(0xFFFFFFFF);
     const onSurface = Color(0xFF0F172A);
     return ButtonStyle(
       shape: const WidgetStatePropertyAll(_shape),
@@ -133,13 +234,13 @@ abstract final class RuQiButtonStyles {
       textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
       backgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
-          return const Color(0xFFE2E5EA);
+          return const Color(0xFFE8E8E8);
         }
         if (states.contains(WidgetState.pressed)) {
-          return const Color(0xFFD8DCE2);
+          return const Color(0xFFDCDCDC);
         }
         if (states.contains(WidgetState.hovered)) {
-          return const Color(0xFFF0F2F5);
+          return const Color(0xFFF5F5F5);
         }
         return surface;
       }),
@@ -167,21 +268,28 @@ abstract final class RuQiButtonStyles {
       textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
       backgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.disabled)) {
-          return colors.surfaceContainerHigh;
+          return colors.surfaceContainerLow;
         }
         if (states.contains(WidgetState.pressed)) {
           return Color.lerp(colors.error, Colors.black, 0.18)!;
         }
-        if (states.contains(WidgetState.hovered)) {
+        if (states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.focused)) {
           return Color.lerp(colors.error, Colors.black, 0.08)!;
         }
-        return colors.error;
+        // 默认中性填充，hover / 聚焦才亮成错误色。
+        return colors.surfaceContainerHigh;
       }),
-      foregroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled)
-            ? colors.outline
-            : colors.onPrimary,
-      ),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return colors.outline;
+        }
+        final highlighted =
+            states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.focused);
+        return highlighted ? colors.onPrimary : colors.onSurface;
+      }),
       elevation: const WidgetStatePropertyAll(0),
       surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
     );

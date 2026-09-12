@@ -25,8 +25,8 @@ class PermissionsBody extends StatelessWidget {
 /// 权限页可选角色（对应原型左侧角色列表）。
 const _permissionRoles = ['Administrators', 'All Users', '实施专员'];
 
-/// 系统范围选项卡（对应原型 运营 / 管理）。
-const _permissionScopes = ['运营', '管理'];
+/// 系统范围选项卡（管理 在左、运营 在右；默认仍选中 运营）。
+const _permissionScopes = ['管理', '运营'];
 
 /// 各系统范围下的一级菜单。
 const _modulesByScope = <String, List<String>>{
@@ -145,10 +145,13 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
     return ListView(
       padding: const EdgeInsets.all(RuQiSpacing.lg),
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
+        // 权限板块隐藏了控制台左菜单，角色列与内容区之间需要自己补一条分隔线；
+        // IntrinsicHeight 让竖线与整行（含表格）等高。
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
               width: 220,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -161,17 +164,7 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                     ),
                   ),
                   const SizedBox(height: RuQiSpacing.xs),
-                  const TextField(
-                    decoration: InputDecoration(
-                      hintText: '搜索角色',
-                      prefixIcon: Icon(Icons.search, size: 18),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: RuQiSpacing.xs,
-                        vertical: 8,
-                      ),
-                    ),
-                  ),
+                  const RuQiSearchField(hintText: '搜索角色'),
                   const SizedBox(height: RuQiSpacing.sm),
                   for (final role in _permissionRoles)
                     _RoleItem(
@@ -185,8 +178,13 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                 ],
               ),
             ),
-            const SizedBox(width: RuQiSpacing.lg),
-            Expanded(
+              // 角色列 | 内容区 分隔线（与左菜单右描边同色同宽）
+              VerticalDivider(
+                width: RuQiSpacing.lg * 2,
+                thickness: 1,
+                color: theme.colorScheme.outlineVariant,
+              ),
+              Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -295,10 +293,16 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                     child: Column(
                       children: [
                         Container(
-                          color: theme.colorScheme.surfaceContainerHigh,
                           padding: const EdgeInsets.symmetric(
                             horizontal: RuQiSpacing.lg,
                             vertical: RuQiSpacing.sm,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: theme.colorScheme.outlineVariant,
+                              ),
+                            ),
                           ),
                           child: const Row(
                             children: [
@@ -360,8 +364,9 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                   ),
                 ],
               ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ],
     );
