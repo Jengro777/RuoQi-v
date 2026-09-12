@@ -30,14 +30,7 @@ class ProjectListBody extends StatelessWidget {
           children: [
             SizedBox(
               width: 260,
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: '搜索项目名称',
-                  prefixIcon: Icon(Icons.search),
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: RuQiSearchField(hintText: '搜索项目名称'),
             ),
             const Spacer(),
             FilledButton.icon(

@@ -6,6 +6,7 @@ export 'src/adaptive/platform.dart';
 export 'src/theme.dart';
 export 'src/selection.dart';
 export 'src/row_actions_menu.dart';
+export 'src/search_field.dart';
 export 'src/theme_switch.dart';
 export 'src/theme/buttons.dart';
 export 'src/theme/colors.dart';

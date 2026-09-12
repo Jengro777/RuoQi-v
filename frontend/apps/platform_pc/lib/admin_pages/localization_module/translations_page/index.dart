@@ -44,13 +44,9 @@ class _TranslationsBodyState extends State<TranslationsBody> {
         Row(
           children: [
             Expanded(
-              child: TextField(
+              child: RuQiSearchField(
+                hintText: 'Filter...',
                 onChanged: (value) => setState(() => _query = value),
-                decoration: const InputDecoration(
-                  hintText: 'Filter...',
-                  prefixIcon: Icon(Icons.search, size: 18),
-                  isDense: true,
-                ),
               ),
             ),
             const SizedBox(width: RuQiSpacing.md),

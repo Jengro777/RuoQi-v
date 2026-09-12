@@ -27,14 +27,7 @@ class TeamSpaceBody extends StatelessWidget {
           children: [
             SizedBox(
               width: 260,
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: '搜索成员',
-                  prefixIcon: Icon(Icons.search),
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: RuQiSearchField(hintText: '搜索成员'),
             ),
             const Spacer(),
             FilledButton.icon(

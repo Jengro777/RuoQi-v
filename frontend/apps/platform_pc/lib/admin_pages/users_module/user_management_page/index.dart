@@ -99,17 +99,9 @@ class _UsersBodyState extends State<UsersBody> {
           children: [
             Expanded(
               flex: 3,
-              child: TextField(
+              child: RuQiSearchField(
+                hintText: '名称/账号/邮件/手机号',
                 onChanged: (value) => setState(() => _query = value),
-                decoration: const InputDecoration(
-                  hintText: '名称/账号/邮件/手机号',
-                  prefixIcon: Icon(Icons.search, size: 18),
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: RuQiSpacing.xs,
-                    vertical: 10,
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: RuQiSpacing.md),
@@ -458,19 +450,10 @@ class _RoleCellState extends State<_RoleCell> {
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
           child: SizedBox(
             width: 240,
-            child: TextField(
+            child: RuQiSearchField(
+              hintText: '搜索角色',
               controller: _searchController,
               onChanged: (value) => setState(() => _query = value),
-              decoration: const InputDecoration(
-                hintText: '搜索角色',
-                prefixIcon: Icon(Icons.search, size: 16),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: RuQiSpacing.xs,
-                  vertical: 8,
-                ),
-              ),
-              style: theme.textTheme.bodySmall,
             ),
           ),
         ),

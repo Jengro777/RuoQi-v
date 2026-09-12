@@ -164,17 +164,7 @@ class _PermissionManagementBodyState extends State<_PermissionManagementBody> {
                     ),
                   ),
                   const SizedBox(height: RuQiSpacing.xs),
-                  const TextField(
-                    decoration: InputDecoration(
-                      hintText: '搜索角色',
-                      prefixIcon: Icon(Icons.search, size: 18),
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: RuQiSpacing.xs,
-                        vertical: 8,
-                      ),
-                    ),
-                  ),
+                  const RuQiSearchField(hintText: '搜索角色'),
                   const SizedBox(height: RuQiSpacing.sm),
                   for (final role in _permissionRoles)
                     _RoleItem(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:common/common.dart';
 
 /// 租户列表（运营后台）——业务静态页。
 class TenantListPage extends StatelessWidget {
@@ -26,14 +27,7 @@ class TenantListBody extends StatelessWidget {
           children: [
             SizedBox(
               width: 260,
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: '搜索租户名称',
-                  prefixIcon: Icon(Icons.search),
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: RuQiSearchField(hintText: '搜索租户名称'),
             ),
             const SizedBox(width: 16),
             for (final status in const ['全部', '活跃', '已锁定'])

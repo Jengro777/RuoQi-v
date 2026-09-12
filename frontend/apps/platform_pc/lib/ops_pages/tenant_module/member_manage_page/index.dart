@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:common/common.dart';
 
 /// 成员管理（运营后台）——业务静态页。
 class MemberManagePage extends StatelessWidget {
@@ -26,14 +27,7 @@ class MemberManageBody extends StatelessWidget {
           children: [
             SizedBox(
               width: 260,
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: '搜索成员姓名或邮箱',
-                  prefixIcon: Icon(Icons.search),
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: RuQiSearchField(hintText: '搜索成员姓名或邮箱'),
             ),
             const Spacer(),
             FilledButton.icon(

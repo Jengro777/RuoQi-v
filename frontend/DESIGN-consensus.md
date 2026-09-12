@@ -552,6 +552,10 @@ FloatingPromo({
 焦点沿用默认 `hairlineInput` 描边（仅 1px → 1.5px，不上主色，填充也不变深）；
 错误态 `error` 描边 + `bodySmall` 错误文本。
 
+搜索框统一用 `RuQiSearchField`：全站同高 **36**、1px `hairlineInput` 描边、
+`prefixIcon` 18px 搜索图标、内容垂直居中（侧栏菜单搜索 / 表格筛选搜索 /
+菜单内搜索都走它，避免各处 `isDense` / `contentPadding` 不同导致高度参差）。
+
 线索收集组（`form-group-marketing`）：`Wrap` / `Row` —— 输入框 `Expanded`
 （最小宽 200）、`FilledButton` 不换行、同意文本 `bodySmall` + `inkTertiary`
 占满整行。

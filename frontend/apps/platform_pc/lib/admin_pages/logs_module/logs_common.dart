@@ -27,14 +27,7 @@ class LogFilterBar extends StatelessWidget {
       children: [
         Expanded(
           flex: 3,
-          child: TextField(
-            onChanged: onQueryChanged,
-            decoration: const InputDecoration(
-              hintText: '搜索',
-              prefixIcon: Icon(Icons.search, size: 18),
-              isDense: true,
-            ),
-          ),
+          child: RuQiSearchField(hintText: '搜索', onChanged: onQueryChanged),
         ),
         const SizedBox(width: RuQiSpacing.md),
         Expanded(

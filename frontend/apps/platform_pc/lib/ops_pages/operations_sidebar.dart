@@ -102,19 +102,9 @@ class _OperationsSidebarState extends State<OperationsSidebar> {
               RuQiSpacing.lg,
               RuQiSpacing.sm,
             ),
-            child: TextField(
-              onChanged: (value) {
-                setState(() => _query = value.trim());
-              },
-              decoration: const InputDecoration(
-                hintText: '搜索菜单',
-                prefixIcon: Icon(Icons.search, size: 18),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: RuQiSpacing.xs,
-                  vertical: 10,
-                ),
-              ),
+            child: RuQiSearchField(
+              hintText: '搜索菜单',
+              onChanged: (value) => setState(() => _query = value.trim()),
             ),
           ),
           Divider(height: 1, color: theme.colorScheme.outlineVariant),
