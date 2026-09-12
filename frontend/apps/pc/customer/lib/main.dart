@@ -17,6 +17,7 @@ class CustomerApp extends StatelessWidget {
       child: MaterialApp(
         title: 'RuoQi 客户',
         debugShowCheckedModeBanner: false,
+        builder: ruoQiSelectionBuilder,
         theme: ruoQiTheme(purpose: RuQiPurpose.marketing),
         darkTheme: ruoQiTheme(
           brightness: Brightness.dark,

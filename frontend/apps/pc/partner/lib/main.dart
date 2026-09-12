@@ -17,6 +17,7 @@ class PartnerApp extends StatelessWidget {
       child: MaterialApp(
         title: 'RuoQi 伙伴',
         debugShowCheckedModeBanner: false,
+        builder: ruoQiSelectionBuilder,
         theme: ruoQiTheme(),
         darkTheme: ruoQiTheme(brightness: Brightness.dark),
         themeMode: ThemeMode.light,

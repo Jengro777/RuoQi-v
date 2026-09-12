@@ -25,15 +25,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    // 文案可选中由 main.dart 的全站 builder 统一提供（ruoQiSelectionBuilder）。
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         // 规范 §6.7 顶部导航无阴影；用 1px 细线把顶栏与画布分开
         // （与入口页 `.doc-topbar` 的 border-bottom、ConsoleTopBar 一致）。
-        shape: Border(
-          bottom: BorderSide(color: colorScheme.outlineVariant),
-        ),
+        shape: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
         title: _TopBar(
           themeMode: themeMode,
           onThemeModeChanged: onThemeModeChanged,
@@ -295,7 +294,8 @@ class _PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final muted = theme.extension<RuQiThemeExtension>()?.inkMuted ??
+    final muted =
+        theme.extension<RuQiThemeExtension>()?.inkMuted ??
         theme.colorScheme.onSurfaceVariant;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,7 +329,8 @@ class _PageFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final muted = theme.extension<RuQiThemeExtension>()?.inkMuted ??
+    final muted =
+        theme.extension<RuQiThemeExtension>()?.inkMuted ??
         theme.colorScheme.onSurfaceVariant;
     return Text(
       'platform_pc · 平台端 PC 原型 · 端口 51000',
@@ -356,121 +357,133 @@ class _ConsoleEntryCardState extends State<_ConsoleEntryCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final entry = widget.entry;
-    final muted = theme.extension<RuQiThemeExtension>()?.inkMuted ??
+    final muted =
+        theme.extension<RuQiThemeExtension>()?.inkMuted ??
         colorScheme.onSurfaceVariant;
     final radius = BorderRadius.circular(RuQiSpacing.sm);
+    // 规范 §1.4 色块约束：卡片不铺灰底，底色取最浅的中性表面（亮色 #FAFBFC），
+    // 层级交给 1px 描边 + 浅阴影（§4.1 深度 1）。
+    final cardColor = theme.brightness == Brightness.dark
+        ? colorScheme.surfaceContainerLow
+        : colorScheme.surfaceContainerLowest;
+    final hoverColor = theme.brightness == Brightness.dark
+        ? colorScheme.surfaceContainer
+        : colorScheme.surfaceContainerLow;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: Material(
-        color: _hovered
-            ? colorScheme.surfaceContainerHigh
-            : colorScheme.surfaceContainer,
-        borderRadius: radius,
-        child: InkWell(
+      child: AnimatedContainer(
+        duration: RuQiMotion.resolve(context, RuQiMotion.fast),
+        curve: RuQiMotion.easeOut,
+        transform: Matrix4.translationValues(0, _hovered ? -2 : 0, 0),
+        decoration: BoxDecoration(
+          color: _hovered ? hoverColor : cardColor,
           borderRadius: radius,
-          onTap: () => entry.onOpen(context),
-          child: AnimatedContainer(
-            duration: RuQiMotion.resolve(context, RuQiMotion.fast),
-            curve: RuQiMotion.easeOut,
-            transform: Matrix4.translationValues(0, _hovered ? -2 : 0, 0),
-            padding: const EdgeInsets.all(RuQiSpacing.lg),
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              border: Border.all(
-                color: _hovered
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant,
-              ),
-              // 规范 §4.1 深度 1：亮色给阴影，暗色靠描边（阴影为空）。
-              boxShadow: RuQiElevation.shadowsFor(
-                theme.brightness,
-                _hovered ? 2 : 1,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(RuQiSpacing.sm),
+          border: Border.all(
+            color: _hovered ? colorScheme.primary : colorScheme.outlineVariant,
+          ),
+          // 规范 §4.1 深度 1：亮色给阴影、暗色为空（靠描边分层）。
+          // 填充与阴影同在一层装饰里，阴影先画、填充后盖，
+          // 不会像「Material 底色 + BoxShadow」那样把卡片内部压暗。
+          boxShadow: RuQiElevation.shadowsFor(
+            theme.brightness,
+            _hovered ? 2 : 1,
+          ),
+        ),
+        // 透明 Material 只承载 InkWell 水波纹，填充在上一层装饰里。
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: () => entry.onOpen(context),
+            child: Padding(
+              padding: const EdgeInsets.all(RuQiSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(RuQiSpacing.sm),
+                        ),
+                        child: Icon(
+                          entry.icon,
+                          size: 22,
+                          color: colorScheme.primary,
+                        ),
                       ),
-                      child: Icon(
-                        entry.icon,
-                        size: 22,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: RuQiSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            entry.title,
-                            style: zh(
-                              theme.textTheme.titleLarge!.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: colorScheme.onSurface,
+                      const SizedBox(width: RuQiSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              entry.title,
+                              style: zh(
+                                theme.textTheme.titleLarge!.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.onSurface,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: RuQiSpacing.xs),
-                          Text(
-                            entry.subtitle,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: muted,
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: RuQiSpacing.xxs),
-                          Text(
-                            entry.modules,
-                            style: zh(
-                              theme.textTheme.bodySmall!.copyWith(
-                                color: theme.extension<RuQiThemeExtension>()
-                                        ?.inkMuted ??
-                                    colorScheme.onSurfaceVariant,
+                            const SizedBox(height: RuQiSpacing.xs),
+                            Text(
+                              entry.subtitle,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: muted,
+                                height: 1.5,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: RuQiSpacing.xxs),
+                            Text(
+                              entry.modules,
+                              style: zh(
+                                theme.textTheme.bodySmall!.copyWith(
+                                  color:
+                                      theme
+                                          .extension<RuQiThemeExtension>()
+                                          ?.inkMuted ??
+                                      colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: RuQiSpacing.md),
-                Row(
-                  children: [
-                    for (final tag in entry.tags) ...[
-                      _TagPill(label: tag),
-                      const SizedBox(width: RuQiSpacing.xs),
                     ],
-                    const Spacer(),
-                    Text(
-                      '打开',
-                      style: theme.textTheme.labelLarge?.copyWith(
+                  ),
+                  const SizedBox(height: RuQiSpacing.md),
+                  Row(
+                    children: [
+                      for (final tag in entry.tags) ...[
+                        _TagPill(label: tag),
+                        const SizedBox(width: RuQiSpacing.xs),
+                      ],
+                      const Spacer(),
+                      Text(
+                        '打开',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: RuQiSpacing.xxs),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 18,
                         color: colorScheme.primary,
                       ),
-                    ),
-                    const SizedBox(width: RuQiSpacing.xxs),
-                    Icon(
-                      Icons.arrow_forward,
-                      size: 18,
-                      color: colorScheme.primary,
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

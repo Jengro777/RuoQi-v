@@ -92,6 +92,17 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
 - 主色仅用于：主 CTA、价格高亮、倒计时数字、链接下划线；
 - 禁止：大面积背景、多个并排主按钮、全宽横幅。
 
+### 1.4 色块约束（standard 模式）
+
+- 尽量避免大面积色块：整块背景、整屏横幅、整列卡片底色都不承载强色；
+- 需要底色时用最浅的中性表面（`surfaceContainerLowest`，亮色 `#FAFBFC`，
+  暗色 `surfaceContainerLow`），层级交给 1px 描边 + 浅阴影（§4.1 深度 1）；
+- 主色 / `primaryContainer` 只用于小面积元素：图标底色、标签、按钮、1px 描边；
+- 实现注意：`BoxShadow` 必须与填充色写在同一层 `BoxDecoration` 里——若把填充放在
+  外层 `Material`、`BoxShadow` 放在内层装饰上，阴影会盖在填充之上，把整块压暗
+  约 9%（亮色 `#FAFBFC` 实测被压成 `#E2E3E4`）；
+- 营销模式的 `brandDark` 面板规则见 §1.3，不适用于 standard 页面。
+
 ---
 
 ## 2. 字体

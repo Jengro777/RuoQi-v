@@ -17,6 +17,7 @@ class PlatformApp extends StatelessWidget {
       child: MaterialApp(
         title: 'RuoQi 平台 App',
         debugShowCheckedModeBanner: false,
+        builder: ruoQiSelectionBuilder,
         theme: ruoQiTheme(),
         darkTheme: ruoQiTheme(brightness: Brightness.dark),
         themeMode: ThemeMode.light,

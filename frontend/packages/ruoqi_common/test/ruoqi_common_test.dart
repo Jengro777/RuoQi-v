@@ -66,4 +66,25 @@ void main() {
     );
     expect(find.text('platform · v1.0.0'), findsOneWidget);
   });
+
+  testWidgets('ruoQiSelectionBuilder 让全站文案可选中', (tester) async {
+    // 作为 MaterialApp.builder 使用时，SelectableRegion 需要祖先里有 Overlay，
+    // 这个用例同时守住「自带 Overlay」的实现（缺了会抛 No Overlay widget found）。
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: ruoQiSelectionBuilder,
+        home: const Scaffold(body: Text('可复制的文案')),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(SelectionArea), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.text('可复制的文案'),
+        matching: find.byType(SelectionArea),
+      ),
+      findsOneWidget,
+    );
+  });
 }

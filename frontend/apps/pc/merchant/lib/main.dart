@@ -17,6 +17,7 @@ class MerchantApp extends StatelessWidget {
       child: MaterialApp(
         title: 'RuoQi 商户',
         debugShowCheckedModeBanner: false,
+        builder: ruoQiSelectionBuilder,
         theme: ruoQiTheme(),
         darkTheme: ruoQiTheme(brightness: Brightness.dark),
         themeMode: ThemeMode.light,

@@ -26,6 +26,8 @@ class _PlatformAppState extends State<PlatformApp> {
       child: MaterialApp(
         title: 'RuoQi 平台',
         debugShowCheckedModeBanner: false,
+        // 全站文案可选中复制（规范：原型里的版本号 / 端口 / ID 需要被拷走）。
+        builder: ruoQiSelectionBuilder,
         theme: ruoQiTheme(),
         darkTheme: ruoQiTheme(brightness: Brightness.dark),
         themeMode: _themeMode,
