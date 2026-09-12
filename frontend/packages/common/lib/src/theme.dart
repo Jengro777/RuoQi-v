@@ -264,7 +264,8 @@ ChipThemeData _ruoQiChipTheme(ColorScheme scheme) {
     labelStyle: TextStyle(color: scheme.onSurfaceVariant),
     secondaryLabelStyle: TextStyle(color: scheme.onSurfaceVariant),
     checkmarkColor: scheme.primary,
-    side: BorderSide(color: scheme.outlineVariant, width: 1),
+    // 线框统一 #FAFAFA 后，Chip 这类小元素改用更强的 `outline` 保持可辨识。
+    side: BorderSide(color: scheme.outline, width: 1),
     shape: const StadiumBorder(),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     showCheckmark: false,

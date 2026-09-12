@@ -49,7 +49,7 @@ related: 由原 CSS 版设计共识转换而来；本文件为 Flutter 端唯一
 | `surfaceContainerHighest` | 更深抬升表面（如组内徽章）     | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
 | `onSurface`               | 主文本与标题                 | `Color(0xFF0F172A)` | `Color(0xFFF0F2F5)` |
 | `onSurfaceVariant`        | 次级正文、描述               | `Color(0xFF64748B)` | `Color(0xFFCDD1D8)` |
-| `outlineVariant`          | 卡片 / 分隔线描边            | `Color(0xFFEAEAEA)` | `Color(0xFF26282F)` |
+| `outlineVariant`          | 卡片 / 分隔线描边（亮色线框统一色） | `Color(0xFFFAFAFA)` | `Color(0xFF26282F)` |
 | `outline`                 | 更强描边                     | `Color(0xFFDBDBDB)` | `Color(0xFF353840)` |
 | `error`                   | 错误文本、破坏性操作         | `Color(0xFFCF222E)` | `Color(0xFFF85149)` |
 | `scrim`                   | 模态遮罩                     | `Color(0x80000000)` | `Color(0xA6000000)` |
@@ -68,7 +68,7 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
 | `surface3`       | 子导航、下拉层                       | `Color(0xFFE4E4E4)` | `Color(0xFF23252B)` |
 | `surface4`       | 最深抬升表面                         | `Color(0xFFDCDCDC)` | `Color(0xFF2A2D34)` |
 | `hairlineStrong` | 更强描边                             | `Color(0xFFDBDBDB)` | `Color(0xFF353840)` |
-| `hairlineInput`  | 表单输入描边                         | `Color(0xFFC6C6C6)` | `Color(0xFF3E414A)` |
+| `hairlineInput`  | 表单输入描边（同 `outlineVariant`）   | `Color(0xFFFAFAFA)` | `Color(0xFF3E414A)` |
 | `canvasSoft`     | 柔和交替背景带                       | `Color(0xFFF7F7F7)` | `Color(0xFF101215)` |
 | `canvasCream`    | 暖色插曲带                           | `Color(0xFFFAF7F0)` | `Color(0xFF1C1A12)` |
 | `brandDark`      | 反色面板背景                         | `Color(0xFF111B3D)` | `Color(0xFF0F1030)` |
@@ -562,7 +562,7 @@ FloatingPromo({
 | `tag-outline` | `Chip`               | 透明背景 + `BorderSide(width: 1, color: hairlineStrong)` + `onSurfaceVariant` |
 | 节省徽章      | 自定义容器           | `success` @ 12% 背景 + `success` 文本 + `FontWeight.w600` + `StadiumBorder()` |
 | 状态徽章      | `Chip` / 圆点 + 文本 | `surfaceContainerHigh` + `inkMuted`；语义变体 `success/warning/error/info`    |
-| 筛选 Chip（默认） | `Chip` / `FilterChip` | `surfaceContainerLowest` 底（亮色 = 白）+ 1px `outlineVariant` 描边；选中 `primaryContainer`；文字 `onSurfaceVariant`、`StadiumBorder()` |
+| 筛选 Chip（默认） | `Chip` / `FilterChip` | `surfaceContainerLowest` 底（亮色 = 白）+ 1px `outline` 描边（线框统一 #FAFAFA 后小元素改用 `outline` 保辨识）；选中 `primaryContainer`；文字 `onSurfaceVariant`、`StadiumBorder()` |
 | 分段选择（`SegmentedButton`） | `segmentedButtonTheme` | 选中段 `surfaceContainerHigh` 底 + **`primary` 文案高亮**，未选中透明 + `onSurfaceVariant`；整组 1px `outlineVariant` 描边；hover `surfaceContainerLow`；不使用 M3 默认 `secondaryContainer`（品牌粉） |
 
 ### 6.7 导航
@@ -745,6 +745,10 @@ darkTheme: ruoQiTheme(brightness: dark), themeMode: ThemeMode.system)`；
 亮色底一律为白（页面 / 顶栏 / 菜单 / 卡片），柔和分层用无彩灰
 （`#FAFAFA` / `#F5F5F5` / `#EDEDED`），不带色相；
 需要着色时由主题设置的强调色注入（§1.5）。
+
+亮色「线框」统一为 `#FAFAFA`（搜索框 / 输入框描边与卡片、表格、面板、分隔线
+同色），页面整体只剩「白 + 极淡的线」；Chip、快捷键角标等小元素改用
+`outline`（`#DBDBDB`）/ `hairlineStrong`，避免线框过淡后失去辨识。
 
 ### 9.4 背景模式（个人中心 → 主题）
 

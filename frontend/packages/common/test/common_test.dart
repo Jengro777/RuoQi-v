@@ -58,7 +58,8 @@ void main() {
     expect(theme.inputDecorationTheme.fillColor, const Color(0xFFFFFFFF));
     final focused =
         theme.inputDecorationTheme.focusedBorder! as OutlineInputBorder;
-    expect(focused.borderSide.color, const Color(0xFFC6C6C6));
+    // 亮色线框统一 #FAFAFA（搜索框 / 输入框与卡片、列表同色）。
+    expect(focused.borderSide.color, const Color(0xFFFAFAFA));
     expect(focused.borderSide.width, 1.5);
     final enabled =
         theme.inputDecorationTheme.enabledBorder! as OutlineInputBorder;
@@ -96,7 +97,7 @@ void main() {
     );
     expect(
       style.side!.resolve(const <WidgetState>{}),
-      const BorderSide(color: Color(0xFFEAEAEA), width: 1),
+      const BorderSide(color: Color(0xFFFAFAFA), width: 1),
     );
   });
 
