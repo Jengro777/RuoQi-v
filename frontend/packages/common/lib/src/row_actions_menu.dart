@@ -19,11 +19,13 @@ class RuQiRowActionsMenu extends StatefulWidget {
   const RuQiRowActionsMenu({
     super.key,
     required this.actions,
-    this.tooltip = '操作',
+    this.semanticsLabel = '操作',
   });
 
   final List<RuQiRowAction> actions;
-  final String tooltip;
+
+  /// 无障碍标签（不渲染为 tooltip，避免 hover 时弹出灰色浮层）。
+  final String semanticsLabel;
 
   @override
   State<RuQiRowActionsMenu> createState() => _RuQiRowActionsMenuState();
@@ -92,8 +94,9 @@ class _RuQiRowActionsMenuState extends State<RuQiRowActionsMenu> {
               ),
             ),
         ],
-        builder: (context, controller, child) => Tooltip(
-          message: widget.tooltip,
+        builder: (context, controller, child) => Semantics(
+          button: true,
+          label: widget.semanticsLabel,
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
             onEnter: (_) => setState(() => _hovered = true),
