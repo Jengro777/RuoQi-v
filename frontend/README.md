@@ -7,16 +7,10 @@ RuoQi 多项目 Flutter 巨仓（monorepo），基于 Dart 原生 pub workspace 
 
 ```
 apps/
-  app/                       # 移动端
-    platform/                # 平台 App（ruoqi_platform_app）
-    customer/                # 客户 App（ruoqi_customer_app）
-    merchant/                # 商户 App（ruoqi_merchant_app）
-    partner/                 # 伙伴 App（ruoqi_partner_app）
-  pc/                        # PC 端（Web）
-    platform/                # 平台（ruoqi_platform_pc）
-    customer/                # 客户（ruoqi_customer_pc）
-    merchant/                # 商户（ruoqi_merchant_pc）
-    partner/                 # 伙伴（ruoqi_partner_pc）
+  platform_pc/               # 平台端 PC（ruoqi_platform_pc）：系统管理 / 运营后台
+  platform_app/              # 平台端 App（ruoqi_platform_app）
+  business_pc/               # 业务端 PC（ruoqi_business_pc）：客户 / 商户 / 伙伴
+  business_app/              # 业务端 App（ruoqi_business_app）：客户 / 商户 / 伙伴
 packages/
   ruoqi_common/              # 品牌主题、通用组件、端类型
   ruoqi_network/             # 网络基础设施（不绑定后端）
@@ -73,12 +67,8 @@ melos gen
 # 运行某个端（App 或 PC）
 melos run run:platform_app
 melos run run:platform_pc
-melos run run:customer_app
-melos run run:customer_pc
-melos run run:merchant_app
-melos run run:merchant_pc
-melos run run:partner_app
-melos run run:partner_pc
+melos run run:business_app
+melos run run:business_pc
 ```
 
 ## 分层约定
@@ -87,7 +77,9 @@ melos run run:partner_pc
   不含任何后端地址或接口。
 - `packages/ruoqi_<域>_api`：每个业务域一份，包含该域后端的 DTO 与 API 客户端，
   App 端与 PC 端共用；`json_serializable` 生成 `*.g.dart`，改动后执行 `melos gen`。
-- `apps/`：只放 UI。移动端（`apps/app/*`）与 PC 端（`apps/pc/*`）各自维护页面与交互，
+- `apps/`：只放 UI，按「应用壳 + 端类型」划分——`platform_*` 是平台端
+  （系统管理 / 运营后台），`business_*` 是业务端（客户 / 商户 / 伙伴，
+  三个业务域的页面放在同一个壳里，由工作台入口在弹窗内打开）。
   共享逻辑一律从域包引用。
 
 后端地址通过 `--dart-define` 注入，例如：
@@ -100,10 +92,8 @@ flutter run --dart-define=CUSTOMER_API_BASE_URL=https://customer.example.com
 
 | 域 | App（移动端） | PC（Web） |
 |---|---|---|
-| platform | apps/app/platform | apps/pc/platform |
-| customer | apps/app/customer | apps/pc/customer |
-| merchant | apps/app/merchant | apps/pc/merchant |
-| partner | apps/app/partner | apps/pc/partner |
+| platform（系统管理 / 运营后台） | apps/platform_app | apps/platform_pc |
+| business（客户 / 商户 / 伙伴） | apps/business_app | apps/business_pc |
 
 每个 App 在 `main.dart` 用 `RuoQiPlatformScope` 声明端类型（`RuoQiPlatform.mobile` / `pc`），
 布局代码通过 `RuoQiPlatformScope.of(context)` 或 `RuoQiBreakpoints` 断点自适应。
@@ -112,11 +102,19 @@ flutter run --dart-define=CUSTOMER_API_BASE_URL=https://customer.example.com
 ## 新增域
 
 1. 新建域 API 包 `packages/ruoqi_<域>_api`（参考现有域包）；
-2. 分别创建移动端与 PC 端工程：
+2. 在对应的应用壳里新增 `lib/<域>/` 目录与工作台入口卡片：
 
 ```bash
-flutter create --org com.ruoqi --platforms android,ios,web apps/app/<name>
-flutter create --org com.ruoqi --platforms web apps/pc/<name>
+# PC 端 / App 端分别对应
+apps/business_pc/lib/<域>/
+apps/business_app/lib/<域>/
+```
+
+3. 若该域需要独立的 App 壳（不走业务端），再按现有壳复制目录：
+
+```bash
+flutter create --org com.ruoqi --platforms android,ios,web apps/<name>_app
+flutter create --org com.ruoqi --platforms web apps/<name>_pc
 ```
 
 3. 两个工程的 `pubspec.yaml` 改为 `ruoqi_<name>_app` / `ruoqi_<name>_pc`，

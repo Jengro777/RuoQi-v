@@ -34,14 +34,10 @@ LOG_DIR="${LOG_DIR:-$ROOT/build/dev-all-logs}"
 
 # 相对目录|显示名|端类型|包名；端口按顺序从 BASE_PORT 递增。
 ENTRIES=(
-  "apps/pc/platform|平台 PC|PC|ruoqi_platform_pc"
-  "apps/app/platform|平台 App|App|ruoqi_platform_app"
-  "apps/pc/merchant|商户 PC|PC|ruoqi_merchant_pc"
-  "apps/app/merchant|商户 App|App|ruoqi_merchant_app"
-  "apps/pc/customer|客户 PC|PC|ruoqi_customer_pc"
-  "apps/app/customer|客户 App|App|ruoqi_customer_app"
-  "apps/pc/partner|伙伴 PC|PC|ruoqi_partner_pc"
-  "apps/app/partner|伙伴 App|App|ruoqi_partner_app"
+  "apps/platform_pc|平台 PC|PC|ruoqi_platform_pc"
+  "apps/platform_app|平台 App|App|ruoqi_platform_app"
+  "apps/business_pc|业务 PC|PC|ruoqi_business_pc"
+  "apps/business_app|业务 App|App|ruoqi_business_app"
 )
 
 PIDS=()

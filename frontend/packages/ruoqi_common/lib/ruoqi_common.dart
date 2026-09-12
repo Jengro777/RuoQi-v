@@ -1,9 +1,11 @@
 library;
 
 export 'src/app_badge.dart';
+export 'src/console_top_bar.dart';
 export 'src/adaptive/ruoqi_platform.dart';
 export 'src/ruoqi_theme.dart';
 export 'src/ruoqi_selection.dart';
+export 'src/ruoqi_theme_switch.dart';
 export 'src/theme/ruoqi_buttons.dart';
 export 'src/theme/ruoqi_colors.dart';
 export 'src/theme/ruoqi_extension.dart';

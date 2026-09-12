@@ -37,33 +37,19 @@ frontend_gen:
 # 默认 web-server 模式：只起本地服务，用任意浏览器打开下方地址访问。
 # 想用设备直接跑可覆盖，如：just platform_pc linux
 platform_pc DEVICE="web-server" PORT="51000":
-    cd frontend/apps/pc/platform && flutter run -d {{DEVICE}} --web-port {{PORT}}
+    cd frontend/apps/platform_pc && flutter run -d {{DEVICE}} --web-port {{PORT}}
 
 platform_app DEVICE="web-server" PORT="51001":
-    cd frontend/apps/app/platform && flutter run -d {{DEVICE}} --web-port {{PORT}}
+    cd frontend/apps/platform_app && flutter run -d {{DEVICE}} --web-port {{PORT}}
 
-# 商户端（租户端）原型服务
-merchant_pc DEVICE="web-server" PORT="51002":
-    cd frontend/apps/pc/merchant && flutter run -d {{DEVICE}} --web-port {{PORT}}
+# 业务端原型服务（客户 / 商户 / 伙伴三个业务域共用一个应用壳）
+business_pc DEVICE="web-server" PORT="51002":
+    cd frontend/apps/business_pc && flutter run -d {{DEVICE}} --web-port {{PORT}}
 
-merchant_app DEVICE="web-server" PORT="51003":
-    cd frontend/apps/app/merchant && flutter run -d {{DEVICE}} --web-port {{PORT}}
+business_app DEVICE="web-server" PORT="51003":
+    cd frontend/apps/business_app && flutter run -d {{DEVICE}} --web-port {{PORT}}
 
-# 客户端原型服务
-customer_pc DEVICE="web-server" PORT="51004":
-    cd frontend/apps/pc/customer && flutter run -d {{DEVICE}} --web-port {{PORT}}
-
-customer_app DEVICE="web-server" PORT="51005":
-    cd frontend/apps/app/customer && flutter run -d {{DEVICE}} --web-port {{PORT}}
-
-# 伙伴端原型服务
-partner_pc DEVICE="web-server" PORT="51006":
-    cd frontend/apps/pc/partner && flutter run -d {{DEVICE}} --web-port {{PORT}}
-
-partner_app DEVICE="web-server" PORT="51007":
-    cd frontend/apps/app/partner && flutter run -d {{DEVICE}} --web-port {{PORT}}
-
-# 一条命令并行拉起全部 8 个原型（51000-51007）+ 静态入口页（51090）。
+# 一条命令并行拉起全部 4 个原型（51000-51003）+ 静态入口页（51090）。
 # 打开 http://localhost:51090 一页点进所有端；Ctrl-C 全部停止。
 # 覆盖示例：just apps chrome 51010 51099
 # 也可用环境变量：DEVICE=chrome BASE_PORT=51010 HUB_PORT=51099 just apps
