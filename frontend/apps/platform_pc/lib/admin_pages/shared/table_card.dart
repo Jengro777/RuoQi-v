@@ -64,6 +64,7 @@ class TableCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
+            color: theme.colorScheme.surfaceContainer,
             padding: const EdgeInsets.symmetric(
               horizontal: RuQiSpacing.lg,
               vertical: RuQiSpacing.sm,

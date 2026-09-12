@@ -101,8 +101,10 @@ Material 角色覆盖不到的颜色统一放进 `ThemeExtension<RuQiThemeExtens
 - 交互高亮（hover / focus）统一走中性：两者都取 `surfaceContainerLow`
   （亮色 `#FAFAFA`），按下 `highlightColor` 取 `surfaceContainerHigh`；
   悬停反馈靠底色变化 + 位移 / 阴影，不用主色描边或主色容器；
-- 卡片、表格表头等大面积区域不铺灰底：亮色页面 / 顶栏 / 菜单 / 卡片统一
-  `#FFFFFF`，用 1px `outlineVariant` 描边 / 分隔线划分层级；
+- 卡片等大面积区域不铺灰底：亮色页面 / 顶栏 / 菜单 / 卡片统一 `#FFFFFF`，
+  用 1px `outlineVariant`（`#EAEAEA`）描边 / 分隔线划分层级；
+- 表格表头例外：用最轻一档表面 `surfaceContainer`（亮色 `#F5F5F5`）作细带 +
+  下分隔线，保证「有表头」；不使用 `#EDEDED` 及以上灰阶铺整块；
 - 实现注意：`BoxShadow` 必须与填充色写在同一层 `BoxDecoration` 里——若把填充放在
   外层 `Material`、`BoxShadow` 放在内层装饰上，阴影会盖在填充之上，把整块压暗
   约 9%（亮色 `#FFFFFF` 实测被压成 `#E8E8E8`）；
@@ -453,8 +455,8 @@ ComparisonTable({
 
 - 桌面（`MediaQuery.sizeOf(context).width >= 768`）：标准表格——容器
   `RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),
-side: BorderSide(color: outlineVariant))`；表头不铺色块（与卡片同色 +
-  `outlineVariant` 下分隔线 + 字重 `w600`）；
+side: BorderSide(color: outlineVariant))`；表头 `surfaceContainer` 细带 +
+  `outlineVariant` 下分隔线 + 字重 `w600`；
   单元格 `EdgeInsets.symmetric(horizontal: 24, vertical: 16)`（紧凑 16/12）；
   特性列 `FontWeight.w500` + `onSurface`；值列居中；
   勾选 `Icon(Icons.check, size: 18, color: success)`；空值 `—` + `inkTertiary`；

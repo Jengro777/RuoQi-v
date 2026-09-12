@@ -118,8 +118,9 @@ ThemeData ruoQiTheme({
       ),
     ),
     dataTableTheme: DataTableThemeData(
-      // 表头不铺色块：与卡片同色，用 1px 分隔线与字重区分。
-      headingRowColor: const WidgetStatePropertyAll(Colors.transparent),
+      // 表头用最轻的一档表面（#F5F5F5）作细带，比旧值 #EDEDED 轻一档：
+      // 既让表格「有表头」，又不形成灰块。
+      headingRowColor: WidgetStatePropertyAll(scheme.surfaceContainer),
       headingTextStyle: textTheme.bodyMedium?.copyWith(
         color: scheme.onSurface,
         fontWeight: FontWeight.w600,

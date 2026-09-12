@@ -62,6 +62,7 @@ class _RolePermissionsPanelState extends State<RolePermissionsPanel> {
                   child: Column(
                     children: [
                       Container(
+                        color: theme.colorScheme.surfaceContainer,
                         padding: const EdgeInsets.symmetric(
                           horizontal: RuQiSpacing.md,
                           vertical: RuQiSpacing.sm,

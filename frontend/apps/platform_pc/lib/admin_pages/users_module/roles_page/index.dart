@@ -100,6 +100,7 @@ class RolesBody extends StatelessWidget {
           child: Column(
             children: [
               Container(
+                color: theme.colorScheme.surfaceContainer,
                 padding: const EdgeInsets.symmetric(
                   horizontal: RuQiSpacing.lg,
                   vertical: RuQiSpacing.sm,

@@ -82,6 +82,7 @@ class ComparisonTable extends StatelessWidget {
         children: [
           // 表头
           Container(
+            color: theme.colorScheme.surfaceContainer,
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
