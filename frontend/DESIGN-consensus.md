@@ -46,7 +46,7 @@ related: 由原 CSS 版设计共识转换而来；本文件为 Flutter 端唯一
 | `surfaceContainerLow`     | 柔和交替背景带               | `Color(0xFFFAFAFA)` | `Color(0xFF101215)` |
 | `surfaceContainer`        | 默认卡片 / 面板              | `Color(0xFFF5F5F5)` | `Color(0xFF141518)` |
 | `surfaceContainerHigh`    | 精选卡片、悬停表面           | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
-| `surfaceContainerHighest` | 更深抬升表面、表头           | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
+| `surfaceContainerHighest` | 更深抬升表面（如组内徽章）     | `Color(0xFFEDEDED)` | `Color(0xFF1C1E23)` |
 | `onSurface`               | 主文本与标题                 | `Color(0xFF0F172A)` | `Color(0xFFF0F2F5)` |
 | `onSurfaceVariant`        | 次级正文、描述               | `Color(0xFF64748B)` | `Color(0xFFCDD1D8)` |
 | `outlineVariant`          | 卡片 / 分隔线描边            | `Color(0xFFEAEAEA)` | `Color(0xFF26282F)` |
@@ -253,6 +253,8 @@ FontWeight displayWeightFor(Brightness brightness) =>
 
 > 层级 1–3 用于自定义抬升容器（首页入口卡、浮动弹层、吸附 CTA）；
 > `Card` 组件按 §4.2 用「1px 描边 + `elevation: 0`」，不再铺灰底。
+> 例：首页入口卡默认 = 深度 1（`surfaceContainerLowest` + `shadowSm` + 1px
+> `outlineVariant`），悬停 = 深度 2 阴影 + `surfaceContainerLow` 底色（§1.4）。
 
 ```dart
 const List<BoxShadow> shadowSm = [
@@ -293,7 +295,8 @@ CardThemeData(
 
 焦点提示：`ThemeData.focusColor = surfaceContainerLow`（最浅中性表面，键盘焦点
 也不再整块上色）；输入框
-`focusedBorder = OutlineInputBorder(borderSide: BorderSide(color: primary @ 35%, width: 1.5))`。
+`focusedBorder = OutlineInputBorder(borderSide: BorderSide(color: hairlineInput, width: 1.5))`
+——聚焦沿用默认中性描边，只从 1px 加粗到 1.5px，不上主色（见 §6.5）。
 
 ---
 
@@ -340,7 +343,6 @@ CardThemeData(
 | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `button-primary`    | `FilledButton` + `RuQiButtonStyles.primary`                  | 默认中性：`surfaceContainerHigh` 填充 + `onSurface` 文本；hover / 聚焦亮成主色（hover `primaryHover` / press `primaryPress` + `onPrimary`）；disabled `surfaceContainerLow` + `inkTertiary` |
 | `button-secondary`  | `OutlinedButton` + `secondary`                               | 默认中性：透明背景 + 1px `outline` 描边 + `onSurfaceVariant` 文本；hover / press / 聚焦时描边与文字转 `primary`（不铺底色） |
-| `button-neutral`    | `OutlinedButton` + `neutral`                                 | 顶栏次要动作（控制台「退出」等）：透明背景 + 1px `hairlineStrong` + `onSurfaceVariant` 文本，默认不上主色；hover `surfaceContainerHigh` + `onSurface`                    |
 | `button-tertiary`   | `TextButton` + `tertiary`                                    | `onSurface` 文本；hover 背景 `surfaceContainer`                                                                                                                          |
 | `button-link`       | `TextButton` + `link`（`textButtonTheme` 默认）               | 表格「操作」列行内动作：无描边 / 无底色 / 无水波纹；默认 `onSurfaceVariant` 文本，hover / press 只把文字转 `primary`                                                     |
 | `button-link-danger` | `TextButton` + `linkDanger`                            | 表格「操作」列的破坏性动作（删除 / 移除）：默认与 `button-link` 同为 `onSurfaceVariant` 中性文本、无描边无底色，hover / press / 聚焦才转 `error` |
@@ -516,7 +518,7 @@ FloatingPromo({
 | 组件                      | Flutter                     | 关键规范                                                                                                                             |
 | ------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | 定价切换（未选中 / 选中） | `ToggleButtons` 或 `TabBar` | 未选中：`surface` 背景 + `inkMuted` + `labelMedium` + `StadiumBorder()`；选中：`surfaceContainerHigh` + `onSurface`                  |
-| 标准定价卡                | `Card` + 自定义布局         | `surfaceContainer`、`BorderRadius.circular(12)`、`EdgeInsets.all(24)`、深度 1；标题 `headlineMedium`、价格 `headlineLarge`、CTA 钉底 |
+| 标准定价卡                | `Card` + 自定义布局         | 按 §4.2（亮色白底 / 暗色比页面亮一档 + 1px `outlineVariant` 描边、`elevation: 0`）、`BorderRadius.circular(12)`、`EdgeInsets.all(24)`；标题 `headlineMedium`、价格 `headlineLarge`、CTA 钉底 |
 | 推荐定价卡                | 自定义容器                  | `brandDark` 背景 + `onDark` 文本、深度 2、CTA 用 `button-inverse`                                                                    |
 | 营销定价卡                | 标准卡 + 附加               | 节省徽章（`tag-soft`）+ 内联 `SocialProofBar`                                                                                        |
 
@@ -532,6 +534,10 @@ FloatingPromo({
 | 收尾 CTA 横幅  | 自定义容器，居中布局                    | 48 / 12 / 2                                                    |
 | 营销 CTA 横幅  | 自定义容器                              | `brandDark`、64/48、倒计时 + 社交证明 + 双 CTA，移动端纵向堆叠 |
 | 客户 Logo 瓦片 | `Container`                             | 16 / 4 / 0                                                     |
+
+> 「深度」列为 §4.1 的抬升等级，适用于自定义容器（首页入口卡、营销卡等）；
+> `Card` 一律按 §4.2：亮色白底 / 暗色比页面亮一档 + 1px `outlineVariant`
+> 描边 + `elevation: 0`。
 
 ### 6.5 输入与表单
 
@@ -556,13 +562,14 @@ FloatingPromo({
 | `tag-outline` | `Chip`               | 透明背景 + `BorderSide(width: 1, color: hairlineStrong)` + `onSurfaceVariant` |
 | 节省徽章      | 自定义容器           | `success` @ 12% 背景 + `success` 文本 + `FontWeight.w600` + `StadiumBorder()` |
 | 状态徽章      | `Chip` / 圆点 + 文本 | `surfaceContainerHigh` + `inkMuted`；语义变体 `success/warning/error/info`    |
+| 筛选 Chip（默认） | `Chip` / `FilterChip` | `surfaceContainerLowest` 底（亮色 = 白）+ 1px `outlineVariant` 描边；选中 `primaryContainer`；文字 `onSurfaceVariant`、`StadiumBorder()` |
 | 分段选择（`SegmentedButton`） | `segmentedButtonTheme` | 选中段 `surfaceContainerHigh` 底 + **`primary` 文案高亮**，未选中透明 + `onSurfaceVariant`；整组 1px `outlineVariant` 描边；hover `surfaceContainerLow`；不使用 M3 默认 `secondaryContainer`（品牌粉） |
 
 ### 6.7 导航
 
 - 顶部导航 → `AppBar`（或自定义 `PreferredSizeWidget`）：`surface` 背景、
   `onSurface` 文本、高 56、无阴影；左侧 Logo、中间链接、右侧次按钮 + 主按钮
-  （控制台顶栏的「退出」用 `button-neutral`，默认不上主色）；
+  （控制台顶栏的「退出」用 `button-secondary`：默认中性描边，hover 才转主色）；
   <768px 收起为抽屉 / 汉堡菜单；
 - 营销导航 → 同顶部导航，右侧主 CTA 与页面主 CTA 文案一致；滚动越过 Hero
   后高度缩至 48（`AppBar.scrolledUnderElevation` / 滚动监听调整）。
@@ -705,6 +712,8 @@ ThemeData ruoQiTheme({
   // 1. ColorScheme.copyWith：见「1.1 ColorScheme 角色」
   // 2. TextTheme：见「2.2 TextTheme 层级」（display 系字重按模式注入）
   // 3. 组件主题：filledButtonTheme / outlinedButtonTheme / textButtonTheme /
+  //    inputDecorationTheme / cardTheme / chipTheme / segmentedButtonTheme /
+  //    dataTableTheme …
   //    inputDecorationTheme / cardTheme / chipTheme / dataTableTheme …
   // 4. extensions: [RuQiThemeExtension(colors, elevation, displayWeight)]
   // 5. 模式差异：卡片两种模式都是 1px outlineVariant 描边 + elevation 0（§4.2）
@@ -843,7 +852,7 @@ final passed = position.pixels >= position.viewportDimension * 0.7;
 ```dart
 // 亮色营销：primary = Color(0xFF2563EB)，accentEnergy 保持 Color(0xFFFE2C55)。
 // 暗色营销：primarySubdued = Color(0xFF3D1520)，hairlineInput = Color(0xFF4A4E59)。
-// 亮色卡片：无描边 + elevation 1；暗色卡片：outlineVariant 描边 + elevation 0。
+// 卡片：两种模式都是白底（暗色比页面亮一档）+ 1px outlineVariant 描边 + elevation 0。
 ```
 
 ### 全局营销重置
