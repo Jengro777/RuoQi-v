@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 import 'package:ruoqi_business_pc/customer/marketing_page.dart';
 
 Widget _app(Widget home) => MaterialApp(theme: ruoQiTheme(), home: home);

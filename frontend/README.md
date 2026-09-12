@@ -1,7 +1,7 @@
 # RuoQi Flutter UI
 
 RuoQi 多项目 Flutter 巨仓（monorepo），基于 Dart 原生 pub workspace 与 [melos](https://melos.invertase.dev) 管理。
-每个业务域都有 App（移动端）与 PC（Web）两个 UI 项目，共享同一份域 API 包。
+每个业务域都有 App（移动端）与 PC（Web）两个 UI 项目，各自在 `lib/api/` 下持有本端的域 API 层。
 
 ## 目录结构
 
@@ -12,16 +12,23 @@ apps/
   business_pc/               # 业务端 PC（ruoqi_business_pc）：客户 / 商户 / 伙伴
   business_app/              # 业务端 App（ruoqi_business_app）：客户 / 商户 / 伙伴
 packages/
-  ruoqi_common/              # 品牌主题、通用组件、端类型
-  ruoqi_network/             # 网络基础设施（不绑定后端）
-  ruoqi_platform_api/        # 平台域 DTO + 客户端（两端共用）
-  ruoqi_customer_api/        # 客户域 DTO + 客户端（两端共用）
-  ruoqi_merchant_api/        # 商户域 DTO + 客户端（两端共用）
-  ruoqi_partner_api/         # 伙伴域 DTO + 客户端（两端共用）
+  common/                    # 品牌主题、通用组件、端类型、营销组件
+  network/                   # 网络基础设施（不绑定后端）
 ```
 
-> 说明：`platform` 与 pub.dev 上的 `platform` 包同名，会与 workspace 解析冲突，
-> 因此 Dart 包名统一使用 `ruoqi_` 前缀，App 包名再带 `_app` / `_pc` 后缀区分两端。
+域 API 随应用壳走，不再是独立包。以业务端为例：
+
+```
+apps/business_pc/
+  lib/api/customer/           # 客户域 DTO + 客户端（本端一份）
+  lib/api/merchant/           # 商户域 DTO + 客户端
+  lib/api/partner/            # 伙伴域 DTO + 客户端
+  lib/customer|merchant|partner/   # 对应域的 UI 页面
+```
+
+> 说明：App 包名用 `ruoqi_` 前缀 + `_app` / `_pc` 后缀——`platform` 之类的名字与
+> pub.dev 上的同名包（Flutter SDK 的传递依赖）冲突，会让 workspace 解析失败；
+> 共享包则直接叫 `common` / `network`，import 时一眼能看出用途。
 
 ## 环境准备
 
@@ -61,7 +68,7 @@ flutter pub get
 melos analyze
 melos test
 
-# 重新生成 JSON 序列化代码（改过 packages/ruoqi_*_api 的 models 后执行）
+# 重新生成 JSON 序列化代码（改过 apps/*/lib/api 下的 models 后执行）
 melos gen
 
 # 运行某个端（App 或 PC）
@@ -73,14 +80,16 @@ melos run run:business_pc
 
 ## 分层约定
 
-- `packages/ruoqi_network`：只提供「怎么发请求」的能力——超时、token 注入、统一错误；
+- `packages/network`：只提供「怎么发请求」的能力——超时、token 注入、统一错误；
   不含任何后端地址或接口。
-- `packages/ruoqi_<域>_api`：每个业务域一份，包含该域后端的 DTO 与 API 客户端，
-  App 端与 PC 端共用；`json_serializable` 生成 `*.g.dart`，改动后执行 `melos gen`。
-- `apps/`：只放 UI，按「应用壳 + 端类型」划分——`platform_*` 是平台端
+- `packages/common`：品牌主题、通用组件、`RuoQiPlatform` 端类型与营销组件，
+  四个端共用同一份，改一次四端生效。
+- `apps/<壳>/lib/api/<域>/`：该应用壳自己的域 API 层（DTO + `<域>_api.dart` 客户端），
+  `json_serializable` 生成 `*.g.dart`，改动后执行 `melos gen`；各端接口本来就不同，
+  因此按端各持一份，互不牵连。
+- `apps/<壳>/lib/<域>/`：该域的 UI 页面，按「应用壳 + 端类型」划分——`platform_*` 是平台端
   （系统管理 / 运营后台），`business_*` 是业务端（客户 / 商户 / 伙伴，
   三个业务域的页面放在同一个壳里，由工作台入口在弹窗内打开）。
-  共享逻辑一律从域包引用。
 
 后端地址通过 `--dart-define` 注入，例如：
 
@@ -101,13 +110,13 @@ flutter run --dart-define=CUSTOMER_API_BASE_URL=https://customer.example.com
 
 ## 新增域
 
-1. 新建域 API 包 `packages/ruoqi_<域>_api`（参考现有域包）；
-2. 在对应的应用壳里新增 `lib/<域>/` 目录与工作台入口卡片：
+1. 在对应的应用壳里新增域 API 目录 `lib/api/<域>/`（DTO + 客户端，参考现有域）；
+2. 在同一个壳里新增 `lib/<域>/` 页面目录与工作台入口卡片：
 
 ```bash
 # PC 端 / App 端分别对应
-apps/business_pc/lib/<域>/
-apps/business_app/lib/<域>/
+apps/business_pc/lib/api/<域>/   +   apps/business_pc/lib/<域>/
+apps/business_app/lib/api/<域>/  +   apps/business_app/lib/<域>/
 ```
 
 3. 若该域需要独立的 App 壳（不走业务端），再按现有壳复制目录：
@@ -117,6 +126,6 @@ flutter create --org com.ruoqi --platforms android,ios,web apps/<name>_app
 flutter create --org com.ruoqi --platforms web apps/<name>_pc
 ```
 
-3. 两个工程的 `pubspec.yaml` 改为 `ruoqi_<name>_app` / `ruoqi_<name>_pc`，
-   添加 `resolution: workspace`，接入 `ruoqi_common` 与域 API 包；
-4. 根 `pubspec.yaml` 的 `workspace:` 加入新目录，`melos.yaml` 按需添加运行脚本。
+4. 两个工程的 `pubspec.yaml` 改为 `ruoqi_<name>_app` / `ruoqi_<name>_pc`，
+   添加 `resolution: workspace`，接入共享包 `common` 与 `network`；
+5. 根 `pubspec.yaml` 的 `workspace:` 加入新目录，`melos.yaml` 按需添加运行脚本。

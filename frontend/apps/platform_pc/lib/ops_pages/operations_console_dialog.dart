@@ -5,7 +5,7 @@
 // 弹窗顶部为按规范 §6.7 实现的控制台导航栏（品牌 + 退出）；
 // 菜单导航全部在左侧树形菜单中（板块 → 页面），来源为真实业务页。
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 import 'operations_nav.dart';
 import 'operations_sidebar.dart';

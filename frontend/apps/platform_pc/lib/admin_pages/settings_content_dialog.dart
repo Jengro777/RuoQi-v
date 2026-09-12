@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 管理后台左侧菜单宽度与顶部导航栏高度（与 system_settings_dialog 布局一致）。
 const systemSettingsMenuWidth = 300.0;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 设置-电子邮件 业务正文（替换静态原型复刻页）。
 class EmailSettingsBody extends StatefulWidget {

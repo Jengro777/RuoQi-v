@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 import 'package:ruoqi_platform_pc/admin_pages/settings_content_dialog.dart';
 
 /// 打开阿里云短信配置面板。

@@ -4,7 +4,7 @@
 // 而是由主页面按钮打开的动作弹窗：与主页面占用相同的空间，
 // 覆盖在内容区之上（左侧菜单与顶部导航栏保持可见）。
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 左侧菜单宽度与顶部导航栏高度（与 运营后台 弹窗布局一致）。
 const _leftMenuWidth = 300.0;

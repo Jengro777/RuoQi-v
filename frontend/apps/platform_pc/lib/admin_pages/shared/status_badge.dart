@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 状态徽章语义色调。
 enum StatusTone { neutral, success, warning, error, info }

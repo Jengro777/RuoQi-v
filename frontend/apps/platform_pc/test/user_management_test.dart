@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 import 'package:ruoqi_platform_pc/admin_pages/settings_content_dialog.dart';
 import 'package:ruoqi_platform_pc/admin_pages/users_module/roles_page/index.dart';
 import 'package:ruoqi_platform_pc/admin_pages/users_module/user_management_page/index.dart';

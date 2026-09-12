@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 取消导入确认对话框。
 Future<bool?> showImportCancelConfirmDialog(BuildContext context) {

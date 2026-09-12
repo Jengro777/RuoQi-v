@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ruoqi_common/ruoqi_common.dart';
+import 'package:common/common.dart';
 
 /// 业务原型的统一弹窗壳：控制台顶栏（品牌 + 退出）+ 原型内容。
 ///
